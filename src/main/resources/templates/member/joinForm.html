@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>델리비 회원가입</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<style>
+		body {
+			font-family: 'Arial', sans-serif;
+			background-color: #f5f5f7;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			margin: 0;
+		}
+		.signup-form {
+			background-color: white;
+			padding: 40px;
+			border-radius: 10px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			width: 300px;
+		}
+		h2 {
+			text-align: center;
+			color: #333;
+			margin-bottom: 20px;
+		}
+		input, select {
+			width: 100%;
+			padding: 10px;
+			margin-bottom: 15px;
+			border: 1px solid #ddd;
+			border-radius: 5px;
+			box-sizing: border-box;
+		}
+		button, input[type="submit"], input[type="reset"] {
+			width: 100%;
+			padding: 10px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 16px;
+			margin-bottom: 10px;
+		}
+		button:hover, input[type="submit"]:hover, input[type="reset"]:hover {
+			background-color: #45a049;
+		}
+		.error {
+			color: red;
+			font-size: 12px;
+			margin-top: -10px;
+			margin-bottom: 10px;
+		}
+		.radio-group {
+			display: flex;
+			justify-content: space-around;
+			margin-bottom: 15px;
+		}
+	</style>
+</head>
+<body>
+<div class="signup-form">
+	<h2>델리비 회원가입</h2>
+	<form action="join" method="POST" th:object="${member}" onsubmit="return formCheck()">
+		<div th:if="${#fields.hasGlobalErrors()}">
+			<p th:each="err : ${#fields.globalErrors}" th:text="${err}" class="error"></p>
+		</div>
+
+		<input type="text" th:field="*{member_id}" placeholder="아이디 (4~20자)">
+		<div th:errors="*{member_id}" class="error"></div>
+
+		<input type="password" th:field="*{password}" placeholder="비밀번호 (4~20자)">
+		<div th:errors="*{password}" class="error"></div>
+
+		<input type="text" th:field="*{name}" placeholder="이름">
+		<div th:errors="*{name}" class="error"></div>
+
+		<div class="radio-group">
+			<th:block th:each="gender : ${T(com.example.deliciousBee.model.member.GenderType).values()}">
+				<label th:for ="${#ids.next('gender')}" th:text="${gender.description}"></label> <!-- ids: 1 2 3 숫자붙혀줌, 글자건들여도 선택되게함  -->
+				<input type="radio" th:field="*{gender}" th:value="${gender}">
+				<!--[[${gender.description}]]: getDescription을 불러옴 그럼 글자 남성 여성을 차례로 반복
+                 젠터타입이늄에서 메일과 피메일 뽑아서 gender에넣어줌  그리고 그젠더를 input태그의 gender에넣어줌
+                * 왜이러느냐? 오타 방지-->
+			</th:block>
+		</div>
+		<div th:errors="*{gender}" class="error"></div>
+
+		<input type="date" th:field="*{birth}">
+		<div th:errors="*{birth}" class="error"></div>
+
+		<input type="email" th:field="*{email}" placeholder="이메일">
+		<div th:errors="*{email}" class="error"></div>
+
+		<input type="submit" value="가입하기">
+	</form>
+</div>
+
+<script th:inline="javascript">
+	function formCheck() {
+		let member_id = $("#member_id");
+		if (member_id.val().length < 4 || member_id.val().length > 20) {
+			alert("아이디는 4~20자여야 합니다.");
+			member_id.focus();
+			return false;
+		}
+
+		let password = $("#password");
+		if (password.val().length < 4 || password.val().length > 20) {
+			alert("비밀번호는 4~20자여야 합니다.");
+			password.focus();
+			return false;
+		}
+
+		let name = $("#name");
+		if (name.val().trim() == "") {
+			alert("이름을 입력해주세요.");
+			name.focus();
+			return false;
+		}
+
+		let gender = $("input[name='gender']:checked");
+		if (gender.length < 1) {
+			alert('성별을 선택해주세요.');
+			return false;
+		}
+
+		let birth = $("#birth");
+		let now = new Date();
+		let inputDate = new Date(birth.val());
+
+		if (birth.val() == "") {
+			alert("생년월일을 선택해주세요.")
+			birth.focus();
+			return false;
+		}
+		if(now < inputDate) {
+			alert("올바른 생년월일을 선택해주세요.")
+			birth.focus();
+			return false;
+		}
+
+		if (confirm("가입하시겠습니까?")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delicious Bee - 맛집 등록</title>
+    <!-- 부트스트랩 CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- 헤더 -->
+        <header class="text-center">
+            <h1>맛집 등록</h1>
+            <p class="lead">맛집 정보를 입력해주세요</p>
+        </header>
+
+        <!-- 맛집 등록 폼 -->
+        <form action="restaurants" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">이름</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="address">주소</label>
+                <input type="text" class="form-control" id="address" name="address">
+            </div>
+            <div class="form-group">
+                <label for="phone_number">전화번호</label>
+                <input type="text" class="form-control" id="phone_number" name="phone_number">
+            </div>
+            <div class="form-group">
+                <label for="opening_hours">영업 시간</label>
+                <input type="text" class="form-control" id="opening_hours" name="opening_hours">
+            </div>
+            <div class="form-group">
+                <label for="price_range">가격대</label>
+                <input type="text" class="form-control" id="price_range" name="price_range">
+            </div>
+            <div class="form-group">
+                <label for="homepage_url">홈페이지 URL</label>
+                <input type="url" class="form-control" id="homepage_url" name="homepage_url">
+            </div>
+            <div class="form-group">
+                <label for="description">설명</label>
+                <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="longitude">경도</label>
+                <input type="number" step="0.000001" class="form-control" id="longitude" name="longitude" required>
+            </div>
+            <div class="form-group">
+                <label for="latitude">위도</label>
+                <input type="number" step="0.000001" class="form-control" id="latitude" name="latitude" required>
+            </div>
+            <div class="form-group">
+                <label for="image">이미지 업로드</label>
+                <input type="file" class="form-control-file" id="image" name="image" accept="image/*">
+            </div>
+            <input type="submit" class="btn btn-primary" value="등록"></a>
+        </form>
+    </div>
+
+    <!-- 부트스트랩 JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

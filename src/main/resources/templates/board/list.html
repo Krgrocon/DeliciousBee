@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판</title>
+  <!-- 부트스트랩 CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div id="container">
+  <h1>게시판</h1>
+  <p>
+  <table>
+    <tr>
+      <th>No</th>
+      <th>제목</th>
+      <th>작성자</th>
+      <th>작성일</th>
+    </tr>
+    <tr th:each="board : ${boardlist}">
+      <td class="center" th:text = "${boardStat.count}">일련번호</td>
+      	   <td class= "center" th:text = "${board.title}"></td>
+      	   <td>" "</td>
+           <td class= "center" th:text = "${#temporals.format(board.create_at, 'yyyy_MM_dd')}"></td>
+    </tr>
+  </table>
+  <p>
+  <div class="center">
+    <input type="button" onclick="location.href='/'" value="메인으로">
+    <input type="button" onclick="location.href='/board/write'" value="글쓰기">
+  </div>
+</div>
+</body>
+</html>

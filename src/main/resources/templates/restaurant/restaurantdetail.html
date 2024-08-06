@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delicious Bee - 맛집 소개</title>
+  <!-- 부트스트랩 CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="text-center mt-5">
+      <h1>Delicious Bee</h1>
+      <p class="lead">당신이 사랑할 맛집</p>
+
+      <!-- 네비게이션 바 -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#about-section">맛집 소개</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#menu-section">주요 메뉴</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#review-section">리뷰</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#contact-section">연락처</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/saveapi">데이터 불러오기</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <br>
+    
+    <section id="about-section" class="restaurant-info">
+      <div class="row">
+        <div class="col-md-6">
+          <h2>맛집 소개</h2>
+          <p>Delicious Bee는 최고의 요리와 아름다운 분위기를 제공합니다. 저희는 고품질의 식재료로 매일 신선하게 준비한 요리를 제공하고 있습니다.</p>
+          <p>저희의 특별 메뉴에는 스테이크, 파스타, 해산물 등 다양한 옵션이 포함되어 있습니다.</p>
+          <p>더 많은 정보를 원하시면 아래의 주소를 방문해 주세요.</p>
+          <address>
+            <strong>Delicious Bee</strong><br>
+            서울시 강남구 신사동 123-45<br>
+            전화: 02-1234-5678
+          </address>
+        </div>
+        <div class="col-md-6">
+          <h2>주요 메뉴</h2>
+          <ul class="list-group">
+            <li class="list-group-item menu-item">스테이크</li>
+            <li class="list-group-item menu-item">파스타</li>
+            <li class="list-group-item menu-item">해산물 요리</li>
+            <li class="list-group-item menu-item">디저트</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    
+    <section id="review-section" class="review">
+      <div class="row">
+        <div class="col-md-6">
+          <h2>고객 리뷰</h2>
+        </div>
+          <div class="col-md-6 text-right">
+          <p><a th:href="@{/review/allreview}" class="btn btn-link">리뷰 더보기</a></p>
+          </div>
+          
+          <div>
+          <div class="card" th:each="review, iterStat : ${allReview}">
+            <div class="card-body">
+              <h5 class="card-title" th:text="${review.userName}"></h5>
+              <p class="card-text" th:text="${review.reviewContents}"></p>
+              <p>평점: [[${review.rating}]] / 5</p>
+              <p>추천 메뉴: [[${review.recommendItems}]]</p>
+              <p>방문 시기: [[${review.visitDate}]]</p>
+            </div>
+          </div>
+          <div th:if="${iterStat != null and iterStat.index % 2 == 1}" class="clearfix"></div>
+        </div>
+      </div>
+    </section>
+    <footer id="contact-section" class="text-center mt-5">
+      <p>&copy; 2024 Delicious Bee. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <!-- 부트스트랩 및 자바스크립트 라이브러리 -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+.restaurant-info {
+	margin-top: 20px;
+}
+
+.menu-item {
+	margin-bottom: 10px;
+}
+
+.review {
+	margin-top: 20px;
+}
+
+.text-right {
+	text-align: right;
+}
+
+/* 마이페이지 */
+.header {
+	border: 1px solid black;
+	border-radius: 50px;
+	margin: 20px;
+	height: 100px;
+}
+
+.home-image {
+	width: 100px;
+	height: 100px;
+}
+
+.bee-image {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.contents {
+	border: 1px solid black;
+	display: flex;
+	flex-direction: column;
+	width: 250px;
+	height: 1000px;
+	margin: 20px;
+}
+
+.main {
+	border: 1px solid black;
+	display: flex;
+	flex-direction: column;
+	margin: 20px;
+	padding: 30px;
+	width: 1000px;
+	height: 1000px;
+}
+
+.container {
+	display: flex;
+	flex-direction: row;
+}
+
+/* 로그인 페이지 */
+.login-header {
+	border: 1px solid black;
+	border-radius: 50px;
+	margin: 20px;
+	height: 100px;
+	display: flex;
+	justify-content: center;
+	margin-top: 100px;
+}
+
+.login-main {
+	border: 1px solid black;
+	border-radius: 50px;
+	display: flex;
+	flex-direction: column;
+	margin: 50px;
+	padding: 20px;
+	justify-content: center;
+	align-items: center;
+}
+
+.loginButton input[type="submit"] {
+	width: 100%; /* 전체 너비 사용 */
+	padding: 15px 0; /* 상하 여백 */
+	font-size: 18px; /* 폰트 크기 */
+	font-weight: bold; /* 폰트 굵기 */
+	color: #fff; /* 텍스트 색상 */
+	background-color: #005fcc; /* 버튼 배경색 */
+	border: none; /* 테두리 제거 */
+	border-radius: 5px; /* 둥근 테두리 */
+	cursor: pointer; /* 커서 모양 변경 */
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 */
+	transition: background-color 0.3s, transform 0.3s; /* 애니메이션 */
+}
+
+.loginButton input[type="submit"]:hover {
+	background-color: #004bb5; /* 호버 시 배경색 */
+	transform: translateY(-2px); /* 호버 시 살짝 위로 이동 */
+}
+
+.loginButton input[type="submit"]:active {
+	background-color: #003f99; /* 클릭 시 배경색 */
+	transform: translateY(0); /* 클릭 시 원래 위치로 */
+}
+
+.loginButton {
+	max-width: 300px; /* 최대 너비 설정 */
+	margin: 0 auto; /* 가운데 정렬 */
+}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delicious Bee - 리뷰 작성</title>
+  <!-- 부트스트랩 CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="mt-5">리뷰 작성하기</h1>
+    
+    <form action="write" method="POST" th:object="${writeForm}" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="userName">사용자 이름</label>
+        <input type="text" class="form-control" id="userName" name="userName" required>
+      </div>
+      <div class="form-group">
+        <label for="reviewContents">리뷰 내용</label>
+        <textarea class="form-control" id="reviewContents" name="reviewContents" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="rating">평점</label>
+        <input type="number" class="form-control" id="rating" name="rating" min="1" max="5" step="1" required>
+      </div>
+      <div class="form-group">
+        <label for="recommendItems">추천 메뉴</label>
+        <input type="text" class="form-control" id="recommendItems" name="recommendItems">
+      </div>
+      <div class="form-group">
+        <label for="visitDate">방문 시기</label>
+        <input type="date" class="form-control" id="visitDate" name="visitDate" required>
+      </div>
+      <div class="form-group">
+        <label for="file">리뷰 사진 업로드</label>
+        <input type="file" class="form-control-file" id="file" name="file">
+      </div>
+      <button type="submit" class="btn btn-primary">리뷰 작성 완료</button>
+    </form>
+    
+  </div>
+</body>
+</html>

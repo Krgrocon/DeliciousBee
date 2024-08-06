@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delicious Bee - 전체 리뷰</title>
+  <!-- 부트스트랩 CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    // 모든 카드 요소를 가져와서 반복 처리
+    document.querySelectorAll('.card').forEach(function(card) {
+        let starsElement = card.querySelector('.stars');
+        let rating = parseFloat(starsElement.getAttribute('data-rating'));
+        let ratingWidth = (rating / 5) * 100;
+        let maxWidth = 100;
+        
+        starsElement.style.setProperty('--rating-width', (ratingWidth / 100) * maxWidth + 'px');
+    });
+  });
+	
+  // 좋아요 처리 부분
+  function likeReview(button) {
+	 	const card = button.closest('.card');
+	    const reviewId = card.querySelector('.review-id').value;
+		
+		$.ajax({
+			url: "/review/" + reviewId,
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({
+				"reviewId": reviewId,
+			}),
+			success: function(data){
+    			console.log("서버응답", data);
+    			if (data.success) {
+                    const likeCountElement = button.querySelector('.like-count');
+                    likeCountElement.textContent = data.likeCount;
+                } else {
+                    alert('좋아요 처리에 실패했습니다.');
+                }
+    		},
+    		error: function(xhr){
+    			console.error('AJAX 요청 실패:', xhr);
+            }
+		})
+	}
+  
+</script>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1 class="mt-5">전체 리뷰</h1>
+      </div>
+      <div class="col-12 text-right mb-3">
+        <a th:href="@{/review/write}" class="btn btn-success">리뷰 작성하기</a>
+        <a class="btn btn-secondary  ml-2" th:href="@{/review/sort(category_name=${category_name}, orderby=id)}">최신순</a>
+        <a class="btn btn-secondary  ml-2" th:href="@{/review/sort(category_name=${category_name}, orderby=likeCount)}">좋아요 많은순</a>
+      </div>
+    </div>
+    
+    <div class="card mt-3" th:each="review : ${allReview}">
+      <div class="card-body">
+        <h5 class="card-title" th:text="${review.userName}"></h5>
+        <p class="card-text" th:text="${review.reviewContents}"></p>
+        <div class="rating" data-review-id="[[${review.id}]]">
+          <div class="stars" th:attr="data-rating=${review.rating}"></div>
+        </div>
+        <p class="rating-text">평점: [[${review.rating}]] / 5</p>
+        <p>추천 메뉴: [[${review.recommendItems}]]</p>
+        <p>방문 시기: [[${review.visitDate}]]</p>
+        
+        <div th:each="file : ${review.attachedFile}">
+          <div th:if="${file.saved_filename}">
+            <img th:src="@{'/review/display?filename='+${file.saved_filename}}" alt="Review Image" class="img-fluid mb-2 img-thumbnail">
+          </div>
+        </div>
+        
+        <input type="hidden" class="review-id" th:value="${review.id}">
+        <button type="button" class="btn btn-primary mr-2" th:onclick="likeReview(this)">
+          좋아요 <span class="like-count">[[${review.likeCount}]]</span>
+        </button>
+        
+        <!-- <button type="button" class="btn btn-danger mr-2">싫어요</button> -->
+        <button type="button" class="btn btn-danger">신고 하기</button>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-12 text-right mb-3">
+        <a th:href="@{/review/write}" class="btn btn-success">리뷰 작성하기</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

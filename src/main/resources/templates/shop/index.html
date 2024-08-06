@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delicious Bee - 맛집 소개</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .auth-buttons button {
+            background-color: #ffc107;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+
+        .auth-buttons button:hover {
+            background-color: #e0a800;
+        }
+
+        .promo-box {
+            margin: 2rem 0;
+            height: 300px;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: #666;
+            border-radius: 10px;
+            background-image: url('https://via.placeholder.com/1200x300'); /* 예시 이미지 */
+            background-size: cover;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .restaurant-grid {
+            flex: 3;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 카드 6개 정도 */
+            gap: 1.5rem;
+        }
+
+        .login-box {
+            flex: 1;
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .restaurant-card {
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .restaurant-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .restaurant-info {
+            padding: 1.5rem;
+        }
+
+        .restaurant-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .restaurant-info p {
+            margin: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        nav {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: inline-flex; /* 인라인으로 변경 */
+            gap: 2rem;
+            justify-content: center; /* 가운데 정렬 */
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #ffc107;
+        }
+
+        .login-box input[type="text"],
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .login-box button[type="submit"] {
+            background-color: #ffc107;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .login-box button[type="submit"]:hover {
+            background-color: #e0a800;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 992px) {
+            .content-wrapper {
+                flex-direction: column; /* 세로로 배치 */
+            }
+
+            .login-box {
+                flex: none; /* 크기 자동 조정 */
+                width: 100%;
+                margin-top: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .restaurant-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 576px) {
+            .restaurant-grid {
+                grid-template-columns: 1fr; /* 한 줄에 하나씩 */
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <header>
+        <div class="header-content">
+            <h1>Delicious Bee</h1>
+            <div class="auth-buttons">
+                <div th:unless="${session.loginMember}">
+                    <input type="button" onclick="location.href='/member/join'" value="회원가입">
+                    <input type="button" onclick="location.href='/member/login'" value="로그인">
+                </div>
+                <div th:if="${session.loginMember}">
+                    <p>[[${session.loginMember.name}]] 님 환영합니다</p>
+                    <input type="button" onclick="location.href='/board/list'" value="게시판">
+                    <input type="button" onclick="location.href='/member/logout'" value="로그아웃">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div>
+        <nav>
+            <ul>
+                <li><a href="#" th:onclick="|location.href='@{/restaurant/rtwrite}'|">맛집 등록</a></li>
+                <li><a href="#board-section">게시글</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="promo-box">
+        <!-- 홍보 이미지 영역 -->
+    </div>
+
+    <div class="content-wrapper">
+        <div class="restaurant-grid">
+            <!-- 레스토랑 카드 반복문 -->
+            <div class="restaurant-card" th:each="restaurant : ${restaurantlist}">
+                <img th:src="@{/images/restaurant1.jpg}" class="card-img-top" alt="Restaurant Image">
+                <div class="restaurant-info">
+                    <h3><a th:href="@{/restaurant/rtread(id=${restaurant.id})}" th:text="${restaurant.name}">맛집이름</a></h3>
+                    <p th:text="${restaurant.description}">맛집 설명</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button type="button" onclick="location.href='/review/allreview'" class="btn btn-sm btn-outline-secondary">리뷰 보기</button>
+                        </div>
+                        <small class="text-muted" th:text="${#temporals.format(restaurant.create_at, 'yyyy-MM-dd')}">등록 시간</small>
+                    </div>
+                </div>
+            </div>
+            <!-- /레스토랑 카드 반복문 -->
+        </div>
+        <div class="login-box">
+            <h2>로그인</h2>
+            <form>
+                <input type="text" placeholder="아이디" required><br><br>
+                <input type="password" placeholder="비밀번호" required><br><br>
+                <button type="submit">로그인</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

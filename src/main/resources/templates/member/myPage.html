@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/default.css">
+<title>마이 페이지</title>
+</head>
+<body>
+ <div class="header">
+        <a href="/" class="bee-image">
+            <img src="/image/bee.jpg" class="home-image" alt="메인 페이지로 이동">
+        </a>
+ </div>
+ <div class=container>
+ 		<div class="contents">
+ 			<ul>
+ 				<li>
+ 				<li>
+ 				<li>
+ 				<li>
+ 				<li>
+ 				<li>
+ 				<li>
+ 			</ul>
+ 		</div>
+        <div class="main">
+        	<h1>내 정보</h1>
+            <div class="info">
+                <h4>이름</h4>
+                <div class="name" th:text="${loginMember.name}"></div>
+            </div>
+            <div class="info">
+                <h4>아이디</h4>
+                <div class="id" th:text="${loginMember.member_id}"></div>
+            </div>
+            <div class="info">
+                <h4>이메일</h4>
+                <div class="email" th:text="${loginMember.email}"></div>
+            </div>
+            <div class="info">
+                <h4>생년월일</h4>
+                <div class="birth" th:text="${loginMember.birth}"></div>
+            </div>
+            <div class="info">
+                <h4>성별</h4>
+                <div class="gender" th:text="${loginMember.gender}"></div>
+            </div>
+        	 <form action="/member/updateMyInfo">
+                    <button onclick="location.href='/member/updateMyInfo'" >수정하기</button>
+             </form>
+        </div>
+</div>
+</body>
+</html>
