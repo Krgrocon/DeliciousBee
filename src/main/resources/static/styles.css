@@ -1,0 +1,43 @@
+.rating {
+  display: inline-block; /* 인라인 블록으로 설정하여 요소들이 가로로 정렬되도록 합니다. */
+  text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+.stars {
+  position: relative; /* 위치를 절대적으로 설정할 가상 요소에 대비하여 상대적인 위치를 설정 */
+  display: inline-block; /* 인라인 블록으로 설정하여 텍스트와 나란히 배치되도록 합니다. */
+  font-size: 20px;
+  color: #ddd; /* 기본 색상 */
+}
+
+.stars::before {
+  content: '★★★★★'; /* 별점의 채워진 부분 */
+  color: #ffd700; /* 채워진 별의 색상 */
+  position: absolute; /* 별점을 위로 이동시키기 위해 절대 위치 설정 */
+  top: -30px; /* 위쪽으로 이동 (조정 가능) */
+  left: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  width: var(--rating-width, 0); /* CSS 변수로 별의 채워진 너비 조정 */
+}
+
+.stars::after {
+  content: '★★★★★'; /* 별점의 빈 부분 */
+  color: #ddd; /* 빈 별의 색상 */
+  position: absolute; /* 위치 조정 */
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%; /* 전체 별을 표시 */
+}
+
+.rating-text {
+  font-size: 1em; /* 평점 텍스트의 폰트 크기 조정 */
+}
+
+.img-thumbnail {
+    width: 150px;
+    height: 150px;
+    object-fit: cover; /* 이미지가 비율에 맞게 잘리도록 설정 */
+}

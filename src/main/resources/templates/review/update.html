@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>리뷰 수정 페이지</title>
+  <!-- 부트스트랩 CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/reviewUpdate.css">
+  <script>
+    function removeFile() {
+      document.getElementById("fileRemoved").value="true";
+      document.getElementById("attachedFile").style.display = "none";
+      
+    }
+  
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="detail-card">
+      <div class="card-header">리뷰 수정</div>
+      <div class="card-body">
+        <form th:action="@{/review/update(reviewId=${reviewUpdateForm.reviewId})}" method="POST" enctype="multipart/form-data" th:object="${reviewUpdateForm}">
+          <div class="form-group">
+            <label for="reviewContents" class="detail-label">내용</label>
+            <textarea class="form-control" id="reviewContents" rows="4" th:field="*{reviewContents}"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="recommendItems" class="detail-label">추천 메뉴</label>
+            <textarea class="form-control" id="recommendItems" rows="4" th:field="*{recommendItems}"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="reviewRating" class="detail-label">평점</label>
+            <input type="number" class="form-control" id="reviewRating" min="1" max="5" step="1" th:field="*{rating}">
+          </div>
+
+          <!-- 첨부파일 등록 부분 -->
+          <div class="container">
+            <div class="detail-card">
+              <div class="card-header">리뷰 사진 업로드</div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label for="file" class="detail-label">리뷰 사진 업로드</label>
+                  <th:block th:if="${file}">
+                    <div class="file-info">
+                      <span id="attachedFile" class="file-name" th:text="${file.original_filename}"></span>
+                      <div class="button-group">
+                        <a class="btn btn-danger-custom" onclick="removeFile()">삭제</a>
+                        <input type="file" class="form-control-file" id="file" name="file">
+                      </div>
+                    </div>
+                  </th:block>
+                  <th:block th:if="${file == null}">
+                    <input type="file" class="form-control-file" id="file" name="file">
+                  </th:block>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 버튼 기능 -->
+          <div class="button-group">
+            <button type="submit" class="btn-custom">저장</button>
+            <button type="button" class="btn-danger-custom">삭제</button>
+            <a class="btn-custom" onclick="history.back()">전체 리뷰로</a>
+          </div>
+        <input type="hidden" th:field="*{fileRemoved}">
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

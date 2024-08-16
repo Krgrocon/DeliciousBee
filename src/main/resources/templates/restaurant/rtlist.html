@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시물 리스트 페이지</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+</head>
+<style>
+    .layout{
+        width : 500px;
+        margin : 0 auto;
+        margin-top: 40px;
+    } /*layout 하위에 있는 input태그 스타일 설정*/
+</style>
+
+
+<body>
+
+<div class="layout">
+  <table>
+      <thead>
+      <tr>
+          <th>글번호</th>
+          <th>제목</th>
+      </tr>
+      </thead>
+      <tbody>
+      <!--list에 testboard가 담겨있는것을 하나씩 빼준다-->
+      <tr th:each="restaurant : ${restaurantlist}">
+      <td th:text="${restaurant.id}">1</td>
+
+      <td><!--list와 상세 연결-->
+          <!--href a태그에 링크를 걸어주는역할 --> <!--localhost:8080/board/view?id=board.id-->
+          <a th:text="${restaurant.name}" th:href="@{/(id=${restaurant.id})}"></a>
+          <!--제목입니다-->
+      </td>
+
+      </tr>
+      </td>
+      </tbody>
+  </table>
+
+    <!--굳이 태그로 감쌀필요가없는 부분을 타임리프 문법을 사용할때 쓰는 문법 th:block-->
+    <th:block th:each= "page : ${#numbers.sequence(startPage, endPage)}">
+                                                        <!--검색기능-4-->
+        <a th:if="${page != nowPage}"
+           th:href="@{/restaurant/rtlist(page = ${page -1}, searchKeyword = ${param.searchKeyword})}"
+           th:text="${page}">
+        </a>
+
+        <strong th:if="${page == nowPage}" th:text="${page}" style="color : red"></strong>
+    </th:block>
+
+</div>
+
+</body>
+</html>

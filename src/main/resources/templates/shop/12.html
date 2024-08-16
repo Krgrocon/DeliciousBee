@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delicious Bee - 맛집 소개</title>
+    <!-- 부트스트랩 CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header class="text-center mt-5">
+            <h1>Delicious Bee</h1>
+            <p class="lead">당신이 사랑할 맛집</p>
+            <!-- 네비게이션 바 -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="location.href='/restaurant/rtwrite'">맛집 등록</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about-section">맛집 소개</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#board-section">게시글</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#menu-section">주요 메뉴</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#review-section">리뷰</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contact-section">연락처</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/saveapi">데이터 불러오기</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <!-- 맛집 리스트 섹션 -->
+        <section id="restaurant-section" class="mt-5">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                                <tr th:each="restaurant : ${restaurants}">
+                <td th:text="${restaurant.name}"></td>
+                <td th:text="${restaurant.description}"></td>
+                <td th:text="${restaurant.longitude}"></td>
+                <td th:text="${restaurant.latitude}"></td>
+            </tr>
+                        <img src="restaurant1.jpg" class="card-img-top" alt="Restaurant 1">
+                        <div class="card-body">
+                            <h5 class="card-title">맛집 1</h5>
+                            <p class="card-text">이곳은 맛집 1입니다. 맛있는 음식과 멋진 분위기를 자랑합니다.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">더 알아보기</button>
+                                    <button type="button" onclick="location.href='review/allreview'" class="btn btn-sm btn-outline-secondary">리뷰 보기</button>
+                                </div>
+                                <small class="text-muted">9 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <img src="restaurant2.jpg" class="card-img-top" alt="Restaurant 2">
+                        <div class="card-body">
+                            <h5 class="card-title">맛집 2</h5>
+                            <p class="card-text">이곳은 맛집 2입니다. 신선한 재료와 정성을 다한 요리를 제공합니다.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">더 알아보기</button>
+                                    <button type="button" onclick="location.href='review/allreview'" class="btn btn-sm btn-outline-secondary">리뷰 보기</button>
+                                </div>
+                                <small class="text-muted">15 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <img src="restaurant3.jpg" class="card-img-top" alt="Restaurant 3">
+                        <div class="card-body">
+                            <h5 class="card-title">맛집 3</h5>
+                            <p class="card-text">이곳은 맛집 3입니다. 다양한 메뉴와 특별한 서비스를 경험하세요.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">더 알아보기</button>
+                                    <button type="button" onclick="location.href='review/allreview'" class="btn btn-sm btn-outline-secondary">리뷰 보기</button>
+                                </div>
+                                <small class="text-muted">20 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 부트스트랩 JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+

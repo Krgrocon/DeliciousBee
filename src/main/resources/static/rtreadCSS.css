@@ -1,0 +1,81 @@
+body {
+	font-family: 'Noto Sans KR', sans-serif;
+	background-color: #f8f8f8;
+	color: #333;
+}
+
+.container {
+	margin-top: 20px;
+}
+
+.detail-card {
+	margin-bottom: 20px;
+}
+
+.detail-card .card-header {
+	font-weight: bold;
+	background-color: #fff;
+	border-bottom: 2px solid #e0e0e0;
+}
+
+.detail-card .card-body {
+	font-size: 1.1rem;
+	background-color: #fff;
+	border-radius: 10px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	padding: 1.5rem;
+}
+
+.detail-card .card-body p {
+	margin-bottom: 0.5rem;
+}
+
+.detail-label {
+	font-weight: bold;
+	color: #333;
+}
+
+.detail-value {
+	margin-bottom: 10px;
+}
+
+/* 버튼 스타일 정의 */
+.btn-custom {
+	background-color: #ffc107;
+	color: white;
+	padding: 0.8rem 1.5rem;
+	border-radius: 5px;
+	font-weight: bold;
+	text-align: center;
+	transition: background-color 0.3s;
+	border: none; /* 버튼 테두리 제거 */
+}
+
+.btn-custom:hover {
+	background-color: #e0a800;
+}
+
+.btn-danger-custom {
+	background-color: #dc3545;
+	color: white;
+	padding: 0.8rem 1.5rem;
+	border-radius: 5px;
+	font-weight: bold;
+	text-align: center;
+	transition: background-color 0.3s;
+	border: none; /* 버튼 테두리 제거 */
+}
+
+.btn-danger-custom:hover {
+	background-color: #c82333;
+}
+
+.button-group {
+	display: flex;
+	gap: 1rem; /* 버튼 간격 조정 */
+	margin-top: 1rem; /* 버튼 상단 여백 조정 */
+}
+
+.button-group a, .button-group button {
+	margin: 0; /* 여백 제거 */
+}

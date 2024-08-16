@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/delete.css">
+<title>회원탈퇴하기</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+function deleteConfirm() {
+		
+	    return confirm("정말로 삭제하시겠습니까?");
+	
+}
+</script>
+</head>
+<body>
+    <div class="header">
+        <a href="/" class="bee-image">
+            <img src="/image/bee.jpg" class="home-image" alt="메인 페이지로 이동">
+        </a>
+    </div>
+    <div class="contents">
+        <form action="/member/deleteMember" method="POST" onsubmit="return deleteConfirm()">
+            <h1 class="title">회원 탈퇴 확인</h1>
+            <div class="info">
+                <input type="password" name="password" placeholder="비밀번호를 입력하세요" required>
+                <div th:if="${errorMessage}" style="color: red;">
+        			<p th:text="${errorMessage}"></p>
+    			</div>
+            </div>
+            <div class="buttons">
+           		<button type="submit" class="delete-button">탈퇴하기</button>
+            	<a href="/member/myPage" class="back-button">돌아가기</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

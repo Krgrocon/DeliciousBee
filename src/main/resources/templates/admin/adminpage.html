@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delicious Bee - 관리자 페이지</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-buttons button {
+            background-color: #ffc107;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+
+        .tab-buttons button:hover,
+        .tab-buttons button.active {
+            background-color: #e0a800;
+        }
+
+        .content-section {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f5f5f5;
+        }
+
+        .action-buttons button {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+
+        .action-buttons button:hover {
+            background-color: #c82339;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>관리자 페이지</h1>
+
+    <div class="tab-buttons">
+        <button onclick="loadContent('pendingRestaurants')">등록된 점포</button>
+        <button onclick="loadContent('reportedReviews')">신고된 리뷰</button>
+        <button onclick="loadContent('reportedRestaurants')">신고된 레스토랑</button>
+    </div>
+
+    <div class="content-section" id="content">
+        <!-- 콘텐츠가 여기에 로드됩니다. -->
+    </div>
+</div>
+
+<script>
+    function loadContent(contentType) {
+
+        // 활성화된 탭 버튼 스타일 변경
+        document.querySelectorAll('.tab-buttons button').forEach(button => button.classList.remove('active'));
+        document.querySelector(`.tab-buttons button[onclick="loadContent('${contentType}')"]`).classList.add('active');
+
+        // AJAX 요청을 사용하여 콘텐츠 로드
+        let content = '';
+        switch (contentType) {
+            case 'pendingRestaurants':
+                content = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>점포 ID</th>
+                                <th>점포명</th>
+                                <th>등록일</th>
+                                <th>승인</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 여기에 등록된 점포 목록이 표시됩니다. -->
+                        </tbody>
+                    </table>
+                `;
+                break;
+            case 'reportedReviews':
+                // AJAX 요청
+                fetch('/admin/reports/all')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('신고된 리뷰 목록:', data);
+                        if (data.success) {
+                            let rows = '';
+                            data.reports.forEach(report => {
+                                rows += `
+                        <tr>
+                            <td>${report.reviewId}</td>
+                            <td>${report.reviewContents}</td>
+                            <td>${report.reportDate}</td>
+                            <td><button onclick="deleteReport(${report.id})">삭제</button></td>
+                        </tr>
+                                `;
+                            });
+                            content = `
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>리뷰 ID</th>
+                                            <th>내용</th>
+                                            <th>신고일</th>
+                                            <th>삭제</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${rows}
+                                    </tbody>
+                                </table>
+                            `;
+                            document.getElementById('content').innerHTML = content;
+                        } else {
+                            // 오류 처리
+                        }
+                    });
+                break;
+            case 'reportedRestaurants':
+                content = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>레스토랑 ID</th>
+                                <th>레스토랑명</th>
+                                <th>신고일</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 여기에 신고된 레스토랑 목록이 표시됩니다. -->
+                        </tbody>
+                    </table>
+                `;
+                break;
+        }
+        document.getElementById('content').innerHTML = content;
+    }
+
+    function deleteReport(reportId) {
+        // AJAX 요청으로 신고 삭제
+        fetch(`/admin/report/${reportId}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 삭제 성공 시 처리
+                    loadContent('reportedReviews');
+                } else {
+                    // 삭제 실패 시 처리
+                }
+            });
+    }
+
+    // 페이지 로드 시 기본 콘텐츠 로드
+    loadContent('pendingRestaurants');
+</script>
+</body>
+</html>

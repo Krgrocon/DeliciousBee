@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판</title>
+  <!-- 부트스트랩 CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div id="container">
+  <h1 class = "mt-4">게시글 작성</h1>
+  <input type="button" onclick="location.href='/'" value="메인으로">
+  <p>
+  <form action="write" method="post">
+    <table>
+      <tr>
+        <th>제목</th>
+        <td><input type="text" name="title"></td>
+      </tr>
+      <tr>
+        <th>내용</th>
+        <td><textarea rows="10" cols="30" name="contents" ></textarea></td>
+      </tr>
+      <tr>
+        <th>작성자</th>
+        <td><input type="text" name="username"></td>
+      </tr>
+      <tr>
+        <th>패스워드</th>
+        <td><input type="password" name="password"></td>
+      </tr>
+    </table>
+    <p>
+    <div class="center">
+      <input type="submit" value="등록하기">
+      <input type="reset" value="초기화">
+      <input type="submit" th:onclick="location.href='/board/list'" value="취소">
+    </div>
+  </form>
+</div>
+</body>
+</html>
+
+

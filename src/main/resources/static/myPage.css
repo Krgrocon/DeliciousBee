@@ -1,0 +1,189 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+.header {
+    background-color: #fff;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.home-image {
+    width: 100px;
+    height: auto;
+}
+
+.container {
+    display: flex;
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.sidebar {
+    flex: 1;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-right: 1px solid #ddd;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 10px;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.sidebar a:hover {
+    color: #0056b3;
+}
+
+.sidebar a.active {
+    color: #0056b3;
+    font-weight: bold;
+}
+
+.main-content {
+    flex: 3;
+    padding: 20px;
+}
+
+.info-section {
+    margin-bottom: 20px;
+    background: #f9f9f9;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.info-section h4 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: #444;
+}
+
+.info-text {
+    font-size: 16px;
+    color: #666;
+}
+
+/* 프로필 사진 스타일 */
+.profile-photo {
+    width: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-photo img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
+
+/* 마이페이지 수정 폼 스타일 */
+.update-form {
+    flex: 3;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    gap: 20px; 
+}
+
+.update-form h1 {
+    font-size: 30px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center; 
+}
+
+.update-form form {
+    width: 100%;
+    max-width: 500px; 
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.info {
+    margin-bottom: 20px;
+}
+
+.info h4 {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.info textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.update-form input[type="file"] {
+    display: none; /* 파일 입력 필드 숨기기 */
+}
+
+.update-form label[for="file"] {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 10px;
+}
+
+.update-form label[for="file"]:hover {
+    background-color: #0056b3;
+}
+
+.update-form button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.update-form button:hover {
+    background-color: #0056b3;
+}
+
+.update-form button[type="button"] { /* 사진 등록 버튼 스타일 */
+    background-color: #4CAF50; /* 녹색 */
+}
+
+.update-form button[type="button"]:hover {
+    background-color: #45a049; /* 짙은 녹색 */
+}

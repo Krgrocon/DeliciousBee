@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/updateMyPage.css">
+<title>마이페이지 수정하기</title>
+</head>
+<body>
+<div class="header">
+    <a href="/" class="bee-image">
+        <img src="/image/bee.jpg" class="home-image" alt="메인 페이지로 이동">
+    </a>
+</div>
+<div class="container">
+    <nav class="sidebar">
+        <ul>
+            <li><a href="/member/myPage" class="active">마이 페이지</a></li>
+            <li><a href="/member/myInfo">내 정보</a></li>
+            <li><a href="/member/myList">내가 쓴글</a></li>
+            <li><a href="/member/myReply">내가 쓴 댓글</a></li>
+            <li><a href="/member/deleteMember">회원탈퇴</a></li>
+        </ul>
+    </nav>
+    <div class="update-form">
+        <h1>마이페이지 수정하기</h1>
+        <form action="/member/updateMyPage" method="POST"  th:object="${myPageUpdateForm}" enctype="multipart/form-data" onsubmit="return formCheck();">
+            <div class="info">
+                <h4>소개글</h4>
+                <textarea id="introduce" name="introduce" placeholder="소개글"></textarea>
+            </div>
+            <div class="info">
+                <h4>프로필 사진</h4>
+                <label for="attachedFiles">첨부파일</label>
+                <input type="file" id="file" name="file" accept="image/*" onchange="previewImage();">
+                <img id="profilePreview" src="#" alt="미리보기" style="display:none; width: 100px; height: auto;">
+            </div>
+            <div class="info">
+                <button type="submit">저장하기</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    // 이미지 미리보기 기능
+    function previewImage() {
+        const file = document.getElementById('file').files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const preview = document.getElementById('profilePreview');
+                preview.src = e.target.result;
+                preview.style.display = 'block'; // 미리보기 이미지를 표시합니다.
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // 폼 유효성 검사 기능 (예시)
+    function formCheck() {
+        // 필수 입력 항목 검사 등의 로직 추가
+        return true; // 유효성 검사 통과 시 true 반환
+    }
+</script>
+</body>
+</html>

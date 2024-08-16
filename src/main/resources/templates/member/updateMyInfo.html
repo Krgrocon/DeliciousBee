@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/updateMyInfo.css">
+    <title>회원 정보 수정</title>
+</head>
+<body>
+<div class="header">
+        <a href="/" class="bee-image">
+            <img src="/image/bee.jpg" class="home-image" alt="메인 페이지로 이동">
+        </a>
+ </div>
+ <div class="container">
+ 		<nav class="sidebar">
+            <ul>
+ 				<li><a href="/member/myPage">마이 페이지</a></li>
+                <li><a href="/member/myInfo" class="active">내 정보</a></li>
+                <li><a href="/member/myList">내가 쓴글</a></li>
+                <li><a href="/member/myReply">내가 쓴 댓글</a></li>
+                <li><a href="/member/deleteMember">회원탈퇴</a></li>
+ 			</ul>
+        </nav>
+    <div class="update-form">
+    <h1>내 정보 수정</h1>
+    <form action="/member/updateMyInfo" method="POST" onsubmit="return formCheck()">
+   			<div class="info">
+                <h4>프로필 사진</h4>
+                <div class="profile-photo">
+                    <img id="profilePreview" src="/image/profile.jpg" alt="프로필 사진" style="width: 100px; height: 100px;">
+                    <input type="file" name="profilePhoto" id="profilePhoto" style="display: none;" accept="image/*" onchange="previewImage()">
+                </div>
+            </div>
+            <button type="button" onclick="document.getElementById('profilePhoto').click();">사진 등록하기</button>
+            <div class="info">
+                <h4>닉네임</h4> 
+                <input type="text" name="name" th:value="${loginMember.name}" required>
+            </div>
+            <div class="info">
+                <span>아이디</span> <span class="infoWarninng">변경불가</span>
+                <div class="id" th:text="${loginMember.member_id}"></div>
+            </div>
+
+        <div class="info">
+            <span>비밀번호 변경</span>
+            <span th:if="${errorSamePassword}" style="color: red;">
+        			<p th:text="${errorSamePassword}"></p>
+        	</span>
+            <input type="password" name="password" placeholder="비밀번호 (4~20자)" required>
+        </div>
+        <div class="info">
+                <h4>비밀번호 변경 확인</h4>
+                <input type="password" name="confirmPassword" placeholder="비밀번호 확인" required>
+        </div>
+
+        <div class="info">
+            <h4>이메일</h4>
+            <input type="email" name="email" th:value="${loginMember.email}" required>
+        </div>
+
+        <div class="info">
+                <span>생년월일</span> <span class="infoWarninng">변경불가</span>
+                <div class="birth" th:text="${loginMember.birth}"></div>
+        </div>
+            
+        <div class="info">
+                <span>성별</span> <span class="infoWarninng">변경불가</span>
+                <div class="gender" th:text="${loginMember.gender}"></div>
+         </div>
+
+        <div class="info">
+            <h4>내/외국인</h4>
+             <select name="national" th:field="${loginMember.national}" required>
+                    <option value="KOREA">KOREA</option>
+                    <option value="FOREIGNER">FOREIGNER</option>
+             </select>
+        </div>
+
+        <button type="submit">저장하기</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+	function previewImage() {
+   	 	const file = document.getElementById('profilePhoto').files[0];
+   	 	if (file) {
+       		 const reader = new FileReader();
+      	 	 reader.onload = function (e) {
+       	     document.getElementById('profilePreview').src = e.target.result;
+       	 }
+      	  reader.readAsDataURL(file);
+   	 	}
+	}
+    function formCheck() {
+    	
+        let updatePassword = $("input[name='password']").val();
+        let confirmPassword  = $("input[name='confirmPassword']").val();
+        
+        if (updatePassword.length < 4 || updatePassword.length > 20) {
+            alert("비밀번호는 4~20자여야 합니다.");
+            updatePassword.focus();
+            return false;
+        }
+        
+    	 // 비밀번호 확인 검증
+        if (updatePassword !== confirmPassword) {
+            alert("비밀번호가 서로 다릅니다");
+            updatePassword.focus();
+            return false;
+        }
+    	 
+
+
+        let email = $("input[name='email']").val().trim();
+        if (email === "") {
+            alert("이메일을 입력해주세요.");
+            email.focus();
+            return false;
+        }
+
+        if (confirm("정보를 수정하시겠습니까?")) {
+        	
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    
+</script>
+</body>
+</html>
