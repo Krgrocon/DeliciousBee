@@ -1,5 +1,6 @@
 package com.example.deliciousBee.service.review;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.*;
@@ -23,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Transactional
 public class ReviewService {
-
 	private String uploadPath = "C:\\upload\\";
 
 	private final ReviewRepository reviewRepository;
@@ -31,39 +31,40 @@ public class ReviewService {
 	private final FileService fileService;
 	private final ReportRepository reportRepository;
 
-	public void saveReview(Review review, AttachedFile attachedFile) {
+	public void saveReview(Review review, List<AttachedFile> attachedFile) {
 		if (attachedFile != null) {
 			reviewRepository.save(review);
-			fileRepository.save(attachedFile);
+			fileRepository.saveAll(attachedFile);
 		} else {
 			reviewRepository.save(review);
 		}
 	}
 
 	public List<Review> getReviewsByRestaurantIdWithFiles(Long restaurantId, String memberId) {
-		
+
 		List<Review> reviews = reviewRepository.findByRestaurantId(restaurantId);
 		List<Long> reportedReviewIds = reportRepository.findReportedReviewId(memberId);
-		
+
 		// 신고된 리뷰를 제외한 리뷰를 필터링합니다.
 		List<Review> filteredReviews = reviews.stream()
 				.filter(review -> !reportedReviewIds.contains(review.getId()))
 				.collect(Collectors.toList());
-		
+
 		for (Review review : filteredReviews) {
-			List<AttachedFile> files = fileRepository.findByReviewId(review.getId());
+			List<AttachedFile> files = fileRepository.findFilesByReviewId(review.getId());
 			review.setAttachedFile(files);
 		}
 		return filteredReviews;
 	}
 
+	// 좋아요 로직
 	public int likeReview(Long reviewId) {
 		Review review = reviewRepository.findById(reviewId).get();
 		review.setLikeCount(review.getLikeCount() + 1);
 		reviewRepository.save(review);
 		return review.getLikeCount();
 	}
-	
+
 	@Transactional
 	public boolean deleteReview(Long reviewId) {
 		try {
@@ -75,7 +76,7 @@ public class ReviewService {
 			return false;
 		}
 	}
-	
+
 	// 리뷰아이디 -> 리뷰
 	@Transactional
 	public Review findReview(Long reviewId) {
@@ -83,46 +84,80 @@ public class ReviewService {
 		return review.orElse(null);
 	}
 
-	public AttachedFile findFileByReviewId(Review review) {
-		AttachedFile attachedFile = fileRepository.findByReview(review);
-		return attachedFile;
+	public List<AttachedFile> findFilesByReviewId(Long reviewId) {
+		return fileRepository.findFilesByReviewId(reviewId);
 	}
-	
+
 	// 리뷰 업데이트
-	public void updateReview(Review updateReview, boolean fileRemoved, MultipartFile file) {
-		
+	public void updateReview(Review updateReview, boolean fileRemoved, MultipartFile[] files) {
+
 		Review findReview = findReview(updateReview.getId());
 		findReview.setReviewContents(updateReview.getReviewContents());
 		findReview.setRating(updateReview.getRating());
 		findReview.setRecommendItems(updateReview.getRecommendItems());
-		AttachedFile attachedFile = findFileByReviewId(findReview);
-		
-	    if (attachedFile != null && fileRemoved) {
-	        removeFile(attachedFile);
-	        attachedFile = null;
-	    }
-		
-		if(file != null && file.getSize() > 0) {
-			AttachedFile savedFile = fileService.saveFile(file);
-			savedFile.setReview(findReview);
-			attachedFile = savedFile;
+
+		//기존 파일 가져오기
+		List<AttachedFile> attachedFiles = findFilesByReviewId(findReview.getId());
+
+		if (attachedFiles != null && fileRemoved) {
+			removeFiles(attachedFiles);
+			attachedFiles = null;
 		}
-		
-		if (attachedFile != null) {
-	        saveReview(findReview, attachedFile);
-	    }
-		
+
+		// 새로운 파일처리
+		if(files != null && files.length > 0) {
+			attachedFiles = new ArrayList<>();
+			for(MultipartFile file : files) {
+				if(file.isEmpty()) {
+					continue;
+				}
+				AttachedFile savedFile = fileService.saveFile(file);
+				if (savedFile != null) {
+					savedFile.setReview(findReview);
+					attachedFiles.add(savedFile);
+				}
+			}
+		}
+
+		if (attachedFiles != null && !attachedFiles.isEmpty()) {
+			saveReview(findReview, attachedFiles);
+		}
+
 		reviewRepository.save(findReview);
-		
+
 	}
-	
+
 	// 첨부파일 삭제
-	private void removeFile(AttachedFile attachedFile) {
-		fileRepository.deleteById(attachedFile.getAttachedFile_id());
-		String fullPath = uploadPath + "/" + attachedFile.getSaved_filename();
-		fileService.deleteFile(fullPath);
+	public void removeFiles(List<AttachedFile> attachedFiles) {
+		for (AttachedFile attachedFile : attachedFiles) {
+			fileRepository.deleteById(attachedFile.getAttachedFile_id());
+			String fullPath = uploadPath + "/" + attachedFile.getSaved_filename();
+			fileService.deleteFile(fullPath);
+		}
 	}
-	
+
+	// 수정시 첨부파일 삭제
+	public boolean deleteAttachedFile(Long attachedFileId) {
+		try {
+			fileRepository.deleteById(attachedFileId);
+			return true;
+		} catch (Exception e) {
+			log.error("Error deleting File with id: " + attachedFileId, e);
+			return false;
+		}
+	}
+
+	// 리뷰 정렬 로직
+	public List<Review> sortReview(String sort,Long restaurantId, String memberId){
+		log.info("*** sort:{}", sort);
+		log.info("*** restaurantId:{}", restaurantId);
+		log.info("*** memberId:{}", memberId);
+		return switch (sort) {
+			case "rating" -> reviewRepository.findAllByOrderByRatingDesc();
+			case "date" -> reviewRepository.findAllByOrderByCreateDateDesc();
+			default -> getReviewsByRestaurantIdWithFiles(restaurantId, memberId);
+		};
+	}
 
 
 	
