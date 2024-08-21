@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Maps API Example</title>
+    <style>
+        /* 지도와 입력 폼의 스타일을 설정합니다. */
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+        #form {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="form">
+    <input id="address" type="text" placeholder="Enter address">
+    <button onclick="geocodeAddress()">Find Address</button>
+</div>
+<div id="map"></div>
+
+<!-- 구글 맵 API를 로드합니다. -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap" async defer></script>
+<script>
+    let map;
+    let geocoder;
+
+    function initMap() {
+        // 맵을 초기화합니다.
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: -34.397, lng: 150.644 },
+            zoom: 8
+        });
+        geocoder = new google.maps.Geocoder();
+    }
+
+    function geocodeAddress() {
+        const address = document.getElementById('address').value;
+        geocoder.geocode({ 'address': address }, function(results, status) {
+            if (status === 'OK') {
+                map.setCenter(results[0].geometry.location);
+                const marker = new google.maps.Marker({
+                    map: map,
+                    position: results[0].geometry.location
+                });
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
+</script>
+</body>
+</html>
