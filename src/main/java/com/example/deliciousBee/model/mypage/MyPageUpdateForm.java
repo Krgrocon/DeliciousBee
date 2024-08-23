@@ -19,7 +19,7 @@ public class MyPageUpdateForm {
 	public static  MyPage toMyPage(MyPageUpdateForm myPageUpdateForm) {
 		MyPage myPage = new MyPage();
 		myPage.setIntroduce(myPageUpdateForm.getIntroduce());
-        myPage.setAttachedFiles(myPageUpdateForm.getAttachedFiles());
+//        myPage.setAttachedFiles(myPageUpdateForm.getAttachedFiles());
 		
 		return myPage;
 	}

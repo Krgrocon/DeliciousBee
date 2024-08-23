@@ -36,9 +36,9 @@ public class MyPage {
 	
 	
 	
-	@OneToMany
-	@JoinColumn(name = "AttachedFile_id")
-	private List<AttachedFile> attachedFiles;
+//	@OneToMany
+//	@JoinColumn(name = "AttachedFile_id")
+//	private List<AttachedFile> attachedFiles;
 	
 	
 }

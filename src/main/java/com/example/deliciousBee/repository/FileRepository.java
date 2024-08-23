@@ -15,8 +15,6 @@ public interface FileRepository extends JpaRepository<AttachedFile, Long>{
 	@Query("SELECT f FROM AttachedFile f WHERE f.review.id = :reviewId")
 	List<AttachedFile> findFilesByReviewId(@Param("reviewId") Long reviewId);
 
-
-
 	// 리뷰 아이디로 첨부파일 삭제
 	void deleteByReviewId(Long reviewId);
 
@@ -24,5 +22,8 @@ public interface FileRepository extends JpaRepository<AttachedFile, Long>{
 
 	// 파일 아이디로 첨부파일삭제
 	void deleteById(Long attachedFileId);
+	
+	// 리뷰로 첨부파일 찾기
+	List<AttachedFile> findAllByReview(Review review);
 
 }

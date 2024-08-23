@@ -89,21 +89,21 @@ public class BeeMemberService implements UserDetailsService {
 	}
 
 	//*****************마이페이지 꾸미기***************************
-	@Transactional
-	public void saveMyPage(MyPage myPage , AttachedFile attachedFile) {
-
-		myPage = myPageRepository.save(myPage); //myPage 먼저저장
-		// 첨부파일이 있는 경우 처리
-		if (attachedFile != null) {
-			attachedFile.setMyPage(myPage); // 첨부파일에 MyPage를 설정
-			fileRepository.save(attachedFile); // 첨부파일 저장
-		}
-		else {
-			myPageRepository.save(myPage);
-		}
-
-
-	}
+//	@Transactional
+//	public void saveMyPage(MyPage myPage , AttachedFile attachedFile) {
+//
+//		myPage = myPageRepository.save(myPage); //myPage 먼저저장
+//		// 첨부파일이 있는 경우 처리
+//		if (attachedFile != null) {
+//			attachedFile.setMyPage(myPage); // 첨부파일에 MyPage를 설정
+//			fileRepository.save(attachedFile); // 첨부파일 저장
+//		}
+//		else {
+//			myPageRepository.save(myPage);
+//		}
+//
+//
+//	}
 
 
 	@Override

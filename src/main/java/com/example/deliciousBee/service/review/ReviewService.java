@@ -31,10 +31,13 @@ public class ReviewService {
 	private final FileService fileService;
 	private final ReportRepository reportRepository;
 
-	public void saveReview(Review review, List<AttachedFile> attachedFile) {
-		if (attachedFile != null) {
+	public void saveReview(Review review, List<AttachedFile> attachedFiles) {
+		if (attachedFiles != null) {
+			for (AttachedFile attachedFile : attachedFiles) {
+				attachedFile.setReview(review);
+			}
 			reviewRepository.save(review);
-			fileRepository.saveAll(attachedFile);
+			fileRepository.saveAll(attachedFiles);
 		} else {
 			reviewRepository.save(review);
 		}
@@ -46,8 +49,7 @@ public class ReviewService {
 		List<Long> reportedReviewIds = reportRepository.findReportedReviewId(memberId);
 
 		// 신고된 리뷰를 제외한 리뷰를 필터링합니다.
-		List<Review> filteredReviews = reviews.stream()
-				.filter(review -> !reportedReviewIds.contains(review.getId()))
+		List<Review> filteredReviews = reviews.stream().filter(review -> !reportedReviewIds.contains(review.getId()))
 				.collect(Collectors.toList());
 
 		for (Review review : filteredReviews) {
@@ -96,7 +98,7 @@ public class ReviewService {
 		findReview.setRating(updateReview.getRating());
 		findReview.setRecommendItems(updateReview.getRecommendItems());
 
-		//기존 파일 가져오기
+		// 기존 파일 가져오기
 		List<AttachedFile> attachedFiles = findFilesByReviewId(findReview.getId());
 
 		if (attachedFiles != null && fileRemoved) {
@@ -105,10 +107,10 @@ public class ReviewService {
 		}
 
 		// 새로운 파일처리
-		if(files != null && files.length > 0) {
+		if (files != null && files.length > 0) {
 			attachedFiles = new ArrayList<>();
-			for(MultipartFile file : files) {
-				if(file.isEmpty()) {
+			for (MultipartFile file : files) {
+				if (file.isEmpty()) {
 					continue;
 				}
 				AttachedFile savedFile = fileService.saveFile(file);
@@ -148,17 +150,19 @@ public class ReviewService {
 	}
 
 	// 리뷰 정렬 로직
-	public List<Review> sortReview(String sort,Long restaurantId, String memberId){
-		log.info("*** sort:{}", sort);
-		log.info("*** restaurantId:{}", restaurantId);
-		log.info("*** memberId:{}", memberId);
-		return switch (sort) {
-			case "rating" -> reviewRepository.findAllByOrderByRatingDesc();
-			case "date" -> reviewRepository.findAllByOrderByCreateDateDesc();
-			default -> getReviewsByRestaurantIdWithFiles(restaurantId, memberId);
+	public List<Review> sortReview(String sort, Long restaurantId, String memberId) {
+		List<Review> reviews = switch (sort) {
+		case "rating" -> reviewRepository.findAllByRestaurant_IdOrderByRatingDesc(restaurantId); // 특정 식당 ID로 필터링
+		case "visitDate" -> reviewRepository.findAllByRestaurant_IdOrderByVisitDateDesc(restaurantId);
+		case "likeCount" -> reviewRepository.findAllByRestaurant_IdOrderByLikeCountDesc(restaurantId);
+		default -> getReviewsByRestaurantIdWithFiles(restaurantId, memberId);
 		};
+		
+		for (Review review : reviews) {
+			review.setAttachedFile(fileRepository.findAllByReview(review));
+			review.setCanEdit(memberId.equals(review.getBeeMember().getMember_id()));
+		}
+		return reviews;
 	}
 
-
-	
 }

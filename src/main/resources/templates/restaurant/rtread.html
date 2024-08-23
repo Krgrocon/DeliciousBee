@@ -169,6 +169,9 @@
                 <p><span class="detail-label">수정일:</span> <span class="detail-value" th:text="${#temporals.format(restaurant.updated_at, 'yyyy-MM-dd HH:mm:ss')}">수정일</span></p>
                 <p><span class="detail-label">평균 평점:</span> <span class="detail-value" th:text="*{average_rating}">평균 평점</span></p>
                 <p><span class="detail-label">리뷰 수:</span> <span class="detail-value" th:text="*{review_count}">리뷰 수</span></p>
+                <div class="btn-group">
+                  <button type="button" th:onclick="'location.href=\'/review/allreview/' + ${restaurant.id} + '\' '" class="btn btn-sm btn-outline-secondary">리뷰 보기</button>
+           	    </div>
             </div>
         </div>
 

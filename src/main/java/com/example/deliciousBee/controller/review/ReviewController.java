@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -24,12 +28,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.model.board.Restaurant;
-import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.file.AttachedFile;
+import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.model.review.ReviewConverter;
 import com.example.deliciousBee.model.review.ReviewLikeForm;
@@ -57,29 +60,24 @@ public class ReviewController {
 
 	@GetMapping("allreview/{restaurant_id}")
 	public String allReview(@PathVariable("restaurant_id") Long restaurant_id, Model model,
-							@SessionAttribute(name = "loginMember") BeeMember loginMember) {
+			@AuthenticationPrincipal BeeMember loginMember) {
 
 		String MemberId = loginMember.getMember_id();
 		List<Review> allReview = reviewService.getReviewsByRestaurantIdWithFiles(restaurant_id, MemberId);
+		log.info("******* allReview:{}", allReview);
 		Restaurant restaurant = restaurantService.findRestaurant(restaurant_id);
+		
+		
 		model.addAttribute("restaurant", restaurant);
 		model.addAttribute("allReview", allReview);
 		model.addAttribute("uploadPath", uploadPath);
 		return "review/allreview";
 	}
 
-	@GetMapping("write/{restaurant_id}")
-	public String writeReview(@PathVariable("restaurant_id") Long restaurant_id, Model model) {
-		model.addAttribute("writeform", new ReviewWriteForm());
-		model.addAttribute("restaurant_id", restaurant_id);
-		return "review/write";
-	}
-
 	@PostMapping("write/{restaurant_id}")
 	public String postWriteReview(@Validated @ModelAttribute("writeForm") ReviewWriteForm reviewWriteForm,
-								  BindingResult result, @RequestParam(name = "file", required = false) MultipartFile[] files,
-								  @SessionAttribute(name = "loginMember") BeeMember loginMember,
-								  @PathVariable(name = "restaurant_id") Long restaurant_id) {
+			BindingResult result, @RequestParam(name = "file", required = false) MultipartFile[] files,
+			@AuthenticationPrincipal BeeMember loginMember, @PathVariable(name = "restaurant_id") Long restaurant_id) {
 
 		if (result.hasErrors()) {
 			return "redirect:/";
@@ -155,8 +153,8 @@ public class ReviewController {
 	}
 
 	@GetMapping("/update/{reviewId}")
-	public String getUpdateReview(@SessionAttribute(name = "loginMember", required = false) BeeMember loginMember,
-								  @PathVariable("reviewId") Long reviewId, Model model) {
+	public String getUpdateReview(@AuthenticationPrincipal BeeMember loginMember,
+			@PathVariable("reviewId") Long reviewId, Model model) {
 		Review findReview = reviewService.findReview(reviewId);
 		if (findReview == null || !findReview.getBeeMember().getMember_id().equals(loginMember.getMember_id())) {
 			log.info("허용 되지 않는 접근 방식입니다");
@@ -177,7 +175,7 @@ public class ReviewController {
 	// 리뷰 수정
 	@PostMapping("/update")
 	public String postUpdateReview(@Validated @ModelAttribute ReviewUpdateForm reviewUpdateForm, BindingResult result,
-								   @RequestParam(name = "file", required = false) MultipartFile[] file) {
+			@RequestParam(name = "file", required = false) MultipartFile[] file) {
 		Review updateReview = ReviewConverter.reviewUpdateFormToReview(reviewUpdateForm);
 		log.info("**** updateReview:{}", updateReview);
 		reviewService.updateReview(updateReview, reviewUpdateForm.isFileRemoved(), file);
@@ -185,9 +183,10 @@ public class ReviewController {
 	}
 
 	// 수정시 첨부파일 삭제
+	// 수정시 첨부파일 삭제
 	@PostMapping("/update/remove/{attachedFileId}")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> deleteAttachedFile(@PathVariable("attachedFileId") Long attachedFileId){
+	public ResponseEntity<Map<String, Object>> deleteAttachedFile(@PathVariable("attachedFileId") Long attachedFileId) {
 		Map<String, Object> response = new HashMap<>();
 		boolean success = reviewService.deleteAttachedFile(attachedFileId);
 		response.put("success", success);
@@ -196,9 +195,9 @@ public class ReviewController {
 
 	@GetMapping("/allreview/{restaurant_id}/sort/")
 	@ResponseBody
-	public List<Review> getSortAllReview(@RequestParam(required = false, defaultValue = "modifiedAt", value = "sortBy") String sortBy
-			,@PathVariable("restaurant_id") Long restaurant_id
-			,@SessionAttribute(name = "loginMember") BeeMember loginMember){
+	public List<Review> getSortAllReview(
+			@RequestParam(required = false, defaultValue = "modifiedAt", value = "sortBy") String sortBy,
+			@PathVariable("restaurant_id") Long restaurant_id, @AuthenticationPrincipal BeeMember loginMember) {
 		try {
 			String memberId = loginMember.getMember_id();
 			log.info("정상적으로 처리가 되었습니다.");

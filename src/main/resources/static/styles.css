@@ -41,3 +41,11 @@
     height: 150px;
     object-fit: cover; /* 이미지가 비율에 맞게 잘리도록 설정 */
 }
+
+.modal-body {
+  text-align: left; /* 기본적으로 왼쪽 정렬 */
+}
+
+.button-container {
+  display: flex;
+}

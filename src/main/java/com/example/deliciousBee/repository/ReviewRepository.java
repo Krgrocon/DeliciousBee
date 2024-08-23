@@ -11,11 +11,14 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
 	// 레스토랑 ID를 통해서 review 가져오기
 	List<Review> findByRestaurantId(Long restaurantId);
 
-	// 추천순으로 정렬
-	List<Review> findAllByOrderByRatingDesc();
-
+	// 평점순으로 정렬
+	List<Review> findAllByRestaurant_IdOrderByRatingDesc(Long restaurantId);
 	// 등록순으로 정렬
-	List<Review> findAllByOrderByCreateDateDesc();
+	List<Review>  findAllByRestaurant_IdOrderByVisitDateDesc(Long restaurantId);
+	// 좋아요순으로 정렬
+	List<Review> findAllByRestaurant_IdOrderByLikeCountDesc(Long restaurantId);
+
+
 
 
 }

@@ -7,13 +7,30 @@
   <!-- 부트스트랩 CSS -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/reviewUpdate.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script>
-    function removeFile() {
-      document.getElementById("fileRemoved").value="true";
-      document.getElementById("attachedFile").style.display = "none";
+    function removeFile(attachedFileId) {
+      const fileElement = document.getElementById("attachedFile-" + attachedFileId);
+      fileElement.style.display = "none";
       
+      $.ajax({
+    	  url: "/review/update/remove/" + attachedFileId,
+    	  type: "POST",
+    	  contentType: "application/json",
+    	  data: JSON.stringify({
+    		  "attachedFileId": attachedFileId
+    	  }),
+    	  success: function(response){
+    		  if(response.success){
+    			  console.log("서버응답", response);
+    			  fileElement.remove();
+    		  }
+    	  },
+          error: function(xhr){
+        	  console.log("AJAX 요청 실패 :", xhr)
+          }
+      })
     }
-  
   </script>
 </head>
 <body>
@@ -43,15 +60,15 @@
                 <div class="form-group">
                   <label for="file" class="detail-label">리뷰 사진 업로드</label>
                   <th:block th:if="${file}">
-                    <div class="file-info">
-                      <span id="attachedFile" class="file-name" th:text="${file.original_filename}"></span>
+                    <div class="file-info" th:each="f : ${file}">
+                      <span th:id="'attachedFile-' + ${f.attachedFile_id}" class="file-name" th:text="${f.original_filename}" ></span>
                       <div class="button-group">
-                        <a class="btn btn-danger-custom" onclick="removeFile()">삭제</a>
-                        <input type="file" class="form-control-file" id="file" name="file">
+                        <a class="btn btn-danger-custom" href="javascript:void(0)" th:onclick="'removeFile(' + ${f.attachedFile_id} + ')'">삭제</a>
+                        <input type="file" class="form-control-file" id="file" name="file" multiple="multiple">
                       </div>
                     </div>
                   </th:block>
-                  <th:block th:if="${file == null}">
+                  <th:block th:if="${file == null or file.isEmpty()}">
                     <input type="file" class="form-control-file" id="file" name="file">
                   </th:block>
                 </div>
@@ -65,13 +82,12 @@
             <button type="button" class="btn-danger-custom">삭제</button>
             <a class="btn-custom" onclick="history.back()">전체 리뷰로</a>
           </div>
-        <input type="hidden" th:field="*{fileRemoved}">
+          <input type="hidden" th:field="*{fileRemoved}">
         </form>
       </div>
     </div>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
