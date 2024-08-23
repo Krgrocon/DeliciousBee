@@ -36,7 +36,7 @@ public class BeeUpdateForm {
 	public static BeeMember toBeeMember(BeeUpdateForm beeUpdateForm) {
 		BeeMember member = new BeeMember();
 
-		member.setName(beeUpdateForm.getName());
+		member.setNickname(beeUpdateForm.getName());
 		member.setPassword(beeUpdateForm.getPassword());
 		member.setNational(beeUpdateForm.getNational());
 		member.setEmail(beeUpdateForm.getEmail());

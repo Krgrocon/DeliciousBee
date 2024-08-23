@@ -33,6 +33,8 @@ public class MyPage {
 	private Long myPage_id;
 	
 	private String introduce;
+
+
 	
 	
 	

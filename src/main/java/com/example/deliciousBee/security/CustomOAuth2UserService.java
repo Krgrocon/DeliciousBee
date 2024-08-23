@@ -52,40 +52,33 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             // 사용자 저장 또는 업데이트
             SocialLogin socialLogin = saveOrUpdate(attributes);
             // Beemember 저장 또는 업데이트
-            BeeMember beeMember = findOrCreateBeeMember(socialLogin);
+            BeeMember beeMember = findOrCreateBeeMember(attributes);
             // 세션에 사용자 정보 저장
             httpSession.setAttribute("loginMember", new SessionUser(beeMember));
             System.out.println("CustomOAuth2UserService.loadUser");
 
-            return new DefaultOAuth2User(
-                    Collections.singleton(new SimpleGrantedAuthority(socialLogin.getRoleKey())),
-                    attributes.getAttributes(),
-                    attributes.getNameAttributeKey());
+            return beeMember;
         } catch (Exception e) {
             e.printStackTrace();
             throw e;  // 예외가 발생했을 경우 다시 던집니다.
         }
     }
-
-    private BeeMember findOrCreateBeeMember(SocialLogin socialLogin) {
-        return beeMemberRepository.findByEmail(socialLogin.getEmail())
+    private BeeMember findOrCreateBeeMember(OAuthAttributes attributes) {
+        return beeMemberRepository.findByEmail(attributes.getEmail())
                 .orElseGet(() -> {
                     BeeMember newBeeMember = BeeMember.builder()
                             .member_id(UUID.randomUUID().toString())
-                            .password(UUID.randomUUID().toString())
-                            .email(socialLogin.getEmail())
-                            .name(socialLogin.getName())
+                            .password(UUID.randomUUID().toString()) // 비밀번호는 필요 없을 경우 null로 설정
+                            .email(attributes.getEmail())
+                            .nickname(attributes.getName())
                             .isSocialUser(true)
                             .role(Role.USER)
                             .build();
 
-                    // BeeMember와 SocialLogin 간의 연관관계 설정
-                    newBeeMember.setSocialLogin(socialLogin);
-                    socialLogin.setBeeMember(newBeeMember);
-
                     return beeMemberRepository.save(newBeeMember);
                 });
     }
+
 
     private SocialLogin saveOrUpdate(OAuthAttributes attributes) {
         SocialLogin user = socialLoginRepository.findByEmail(attributes.getEmail())
