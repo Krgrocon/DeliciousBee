@@ -3,21 +3,39 @@ package com.example.deliciousBee.controller.restaurant;
 import com.example.deliciousBee.dto.member.SessionUser;
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.board.RestaurantWriteForm;
+import com.example.deliciousBee.model.file.AttachedFile;
+import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
+import com.example.deliciousBee.util.RestaurantFileService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Controller
@@ -25,15 +43,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("restaurant")
 public class RestaurantController {
 
+	private String uploadPath = "C:\\upload\\";
+
 	private final RestaurantService restaurantService;
 	private final BeeMemberService beeMemberService;
+	private final RestaurantFileService fileService;
 
+	@GetMapping("newfile")
+	public String newfile(@AuthenticationPrincipal BeeMember loginMember
+			, Model model) {
+		
+		
+		return "restaurant/newfile";
+	}
 	@GetMapping("rtwrite")
 	public String rtwriteForm(@AuthenticationPrincipal BeeMember loginMember
 			, Model model) {
 
 		if(loginMember == null) {
-			return "redirect:/member/LoginForm";
+			return "redirect:/member/login";
 		}
 
 		model.addAttribute("restaurantForm", new Restaurant());
@@ -42,7 +70,8 @@ public class RestaurantController {
 	@PostMapping("restaurants")
 	public String write(@Validated @ModelAttribute("restaurantForm") Restaurant restaurantWriteForm
 			,BindingResult result
-			,@AuthenticationPrincipal BeeMember loginMember) {
+			,@AuthenticationPrincipal BeeMember loginMember
+			,@RequestPart(name="file", required=false) MultipartFile[] files) {
 
 		if(result.hasErrors()) {
 			return "redirect:/";
@@ -51,7 +80,23 @@ public class RestaurantController {
 		BeeMember findMember = beeMemberService.findMemberById(loginMember.getMember_id());
 
 		restaurantWriteForm.setMember(findMember);
-		restaurantService.saveRestaurant(restaurantWriteForm);
+		
+		List<RestaurantAttachedFile> attachedFiles = new ArrayList<>();
+		if (files != null && files.length > 0) { 
+			System.out.println("gd");
+			for (MultipartFile file : files) {
+				if (!file.isEmpty()) {
+					log.info("file 들왓니>?..{}", file);
+					RestaurantAttachedFile attachedFile = fileService.saveFile(file);
+					attachedFile.setRestaurant(restaurantWriteForm);
+					log.info("writefomr 들왓니>?..{}", restaurantWriteForm);
+					attachedFiles.add(attachedFile);
+					log.info("attachedFile 들왓니>?..{}", attachedFile);
+				}
+				System.out.println("gd");
+			}
+		}
+		restaurantService.saveRestaurant(restaurantWriteForm, attachedFiles);
 		return "redirect:/";
 	}
 
@@ -60,7 +105,7 @@ public class RestaurantController {
 					   @RequestParam(name = "id") Long id, Model model) {
 
 		if(loginMember == null) {
-			return "redirect:/member/BeeLoginForm";
+			return "redirect:/member/login";
 		}
 
 		Restaurant restaurant = restaurantService.findRestaurant(id);
@@ -93,7 +138,7 @@ public class RestaurantController {
 						   @RequestParam(name = "id") Long id, Model model) {
 		log.info("{}", loginMember);
 		if(loginMember == null) {
-			return "redirect:/member/loginForm";
+			return "redirect:/member/login";
 		}
 		Restaurant findRestaurant = restaurantService.findRestaurant(id);
 		if(findRestaurant == null || !findRestaurant.getMember().getMember_id().equals(loginMember.getMember_id())) {
@@ -122,7 +167,29 @@ public class RestaurantController {
 		//수정되면
 		return "redirect:/";
 	}
-
+	
+	@GetMapping("/display")
+	public ResponseEntity<Resource> display(@RequestParam("filename") String filename) {
+		String folder = "";
+		Resource resource = new FileSystemResource(uploadPath + folder + filename);
+		if (!resource.exists()) {
+			return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
+		}
+		HttpHeaders header = new HttpHeaders();
+		Path filePath = null;
+		try {
+			filePath = Paths.get(uploadPath + folder + filename);
+			header.add("Content-type", Files.probeContentType(filePath));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
+	}
+	
+//	@GetMapping("/restaurants")
+//	public String getRestaurants(Pageable pageable) { 
+//	    Page<Restaurant> restaurants = restaurantService.findByNameContaining(keyword, pageable); 
+	    
 //	@GetMapping("rtlist")
 //	public String restdList(Model model,
 //							@PageableDefault(page = 0, size = 10)
@@ -136,7 +203,7 @@ public class RestaurantController {
 //		if(keyword == null){
 //			list = restaurantService.restaurnatList(pageable); //기존의 리스트보여줌
 //		}else{
-//			list = restaurantService.restaurantSearchList(keyword, pageable); //검색리스트반환
+////			list = restaurantService.restaurantSearchList(keyword, pageable); //검색리스트반환
 //		}
 //
 //		int nowPage = list.getPageable().getPageNumber() + 1; //pageable에서 넘어온 현재페이지를 가지고올수있다 * 0부터시작하니까 +1

@@ -2,27 +2,44 @@ package com.example.deliciousBee.service.restaurant;
 
 
 import com.example.deliciousBee.model.board.Restaurant;
+import com.example.deliciousBee.model.file.AttachedFile;
+import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.repository.RestaurantRepository;
+import com.example.deliciousBee.repository.RtFileRepository;
+import com.example.deliciousBee.util.RestaurantFileService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RestaurantService {
 
 
     private final RestaurantRepository restaurantRepository;
+	private final RtFileRepository fileRepository;
+	private final RestaurantFileService fileService;
 
-    public void saveRestaurant(Restaurant restaurant) {
-        restaurantRepository.save(restaurant);
+    public void saveRestaurant(Restaurant restaurant, List<RestaurantAttachedFile> attachedFile) {
+    	if(attachedFile != null) {
+    		restaurantRepository.save(restaurant);
+    		fileRepository.saveAll(attachedFile);
+    	}
+    	else {
+    		log.info("else filev파파파ㅏㅍ {}", attachedFile);
+    		restaurantRepository.save(restaurant);
+    	}
     }
+    
     public List<Restaurant> findAll() {
         return restaurantRepository.findAll();
     }
@@ -66,10 +83,26 @@ public class RestaurantService {
         return restaurantRepository.findByCategory(category);
     }
 
-    //페이지
-    public Page<Restaurant> restaurnatList(Pageable pageable) {
-        return restaurantRepository.findAll(pageable);
+    public RestaurantAttachedFile findFileByRestaurantId(Restaurant restaurant) {
+    	RestaurantAttachedFile attachedFile = fileRepository.findByRestaurant(restaurant);
+    	return attachedFile;
     }
+    
+    public RestaurantAttachedFile findFileByRestaurantAttachedFileId(Long id) {
+    	Optional<RestaurantAttachedFile> attachedFile = fileRepository.findById(id);
+    	return attachedFile.orElse(null);
+    }
+    
+    @Transactional
+    public Page<Restaurant> findByNameContaining(String keyword, Pageable pageable) {
+    	return restaurantRepository.findByNameContaining(keyword, pageable);
+    }
+    
+	
+    //페이지
+//    public Page<Restaurant> restaurnatList(Pageable pageable) {
+//        return restaurantRepository.findAll(pageable);
+//    }
 
 //    public Page<Restaurant> restaurantSearchList(String keyword, Pageable pageable) {
 //        return restaurantRepository.findByNameContaining(

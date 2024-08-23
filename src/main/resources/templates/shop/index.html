@@ -250,6 +250,7 @@
             <div class="restaurant-card" th:each="restaurant : ${restaurantlist}">
                 <img th:src="@{/images/restaurant1.jpg}" class="card-img-top" alt="Restaurant Image">
                 <div class="restaurant-info">
+                <p th:text="'# ' + ${restaurant.category}" class="text">키워드</p>
                     <h3><a th:href="@{/restaurant/rtread(id=${restaurant.id})}" th:text="${restaurant.name}">맛집이름</a></h3>
                     <p th:text="${restaurant.description}">맛집 설명</p>
                     <div class="d-flex justify-content-between align-items-center">

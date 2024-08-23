@@ -108,6 +108,11 @@
 <div class="container">
     <h1 class="header">레스토랑 상세보기</h1>
     <div class="text-center">
+      <div th:each="file : ${restaurant.attachedFile}">
+          <div th:if="${file.saved_filename}">
+            <img th:src="@{'/restaurant/display?filename='+${file.saved_filename}}" alt="Restaurant Image" class="img-fluid mb-2 img-thumbnail">
+          </div>
+      </div>
         <a class="btn btn-primary mt-2" href="/">목록으로 돌아가기</a>
     </div>
 	 <p th:text="'# ' + ${restaurant.category}" class="large-bold-text">키워드</p>    <br><br>
@@ -177,8 +182,8 @@
 
         <!-- 삭제 및 수정 버튼 -->
         <div class="text-center">
-          <th:block th:if="${session.loginMember != null and session.loginMember.member_id == restaurant.member.member_id}">
-		  	<input type="button" class="btn btn-primary" th:onclick="|location.href='@{/restaurant/rtdelete(id=${restaurant.id})}'|" value="삭제하기">
+          <th:block th:if="${#authentication.principal != null and #authentication.principal.member_id == #authentication.principal.member_id}">
+		  	<input type="button" name ="member" id = "member" class="btn btn-primary" th:onclick="|location.href='@{/restaurant/rtdelete(id=${restaurant.id})}'|" value="삭제하기">
           	<input type="button" class="btn btn-danger" th:onclick="|location.href='@{/restaurant/rtupdate(id=${restaurant.id})}'|" value="수정하기">
           </th:block>
         </div>

@@ -5,6 +5,8 @@ package com.example.deliciousBee.model.board;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.example.deliciousBee.model.file.AttachedFile;
+import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.review.Review;
 import jakarta.persistence.*;
@@ -15,6 +17,7 @@ import net.minidev.json.annotate.JsonIgnore;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @Entity
 public class Restaurant {
 
@@ -57,6 +60,9 @@ public class Restaurant {
     private Double average_rating;
     private Long review_count;
 
+	@OneToMany(mappedBy = "restaurant")
+	private List<RestaurantAttachedFile> attachedFile;
+    
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
