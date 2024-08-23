@@ -65,7 +65,7 @@ public class BeeMemberService implements UserDetailsService {
 
 
 
-		findMember.setName(updateMember.getName());
+		findMember.setNickname(updateMember.getName());
 		findMember.setNational(updateMember.getNational());
 		findMember.setPassword(updateMember.getPassword());
 		findMember.setEmail(updateMember.getEmail());

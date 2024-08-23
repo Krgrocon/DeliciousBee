@@ -1,10 +1,10 @@
 package com.example.deliciousBee.model.member;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.example.deliciousBee.model.review.Review;
 
@@ -12,7 +12,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,12 +20,14 @@ import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Entity // JPA가 관리
 @Getter @Setter @ToString
 @Builder
 @AllArgsConstructor
-public class BeeMember implements UserDetails {
+@NoArgsConstructor
+public class BeeMember implements UserDetails, OAuth2User {
 
 	@Id
 	@Column(length = 60)
@@ -35,11 +36,10 @@ public class BeeMember implements UserDetails {
 	@Column(length = 60, nullable = false)
 	private String password;
 
-
 	private NationalType national;
 
 	@Column(length = 50, nullable = false)
-	private String name;
+	private String nickname;
 
 	@Column(length = 10)
 	@Enumerated(EnumType.STRING)
@@ -64,10 +64,8 @@ public class BeeMember implements UserDetails {
 	@NotNull
 	private Role role;
 
-
-
-	public BeeMember() {
-	}
+	@Transient
+	private Map<String, Object> attributes;  // OAuth2User의 속성을 저장할 필드
 
 	// 연관관계 메서드
 	public void setSocialLogin(SocialLogin socialLogin) {
@@ -86,7 +84,7 @@ public class BeeMember implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return email;
+		return nickname;
 	}
 
 	@Override
@@ -109,4 +107,21 @@ public class BeeMember implements UserDetails {
 		return true;
 	}
 
+	// OAuth2User 인터페이스 구현
+	@Override
+	public Map<String, Object> getAttributes() {
+		return attributes;
+	}
+
+	@Override
+	public String getName() {
+		return this.email; // OAuth2User의 getName() 메서드를 통해 반환할 사용자 식별자
+	}
+
+
+
+	// attributes를 설정하는 메서드
+	public void setAttributes(Map<String, Object> attributes) {
+		this.attributes = attributes;
+	}
 }

@@ -42,7 +42,7 @@ public class BeeJoinForm {
 		BeeMember member = new BeeMember();
 		member.setMember_id(BeeJoinForm.getMember_id());
 		member.setPassword(BeeJoinForm.getPassword());
-		member.setName(BeeJoinForm.getName());
+		member.setNickname(BeeJoinForm.getName());
 		member.setGender(BeeJoinForm.getGender());
 		member.setBirth(BeeJoinForm.getBirth());
 		member.setEmail(BeeJoinForm.getEmail());
