@@ -34,6 +34,7 @@ public class Restaurant {
     private String address;
     private Long phone_number;
     private String opening_hours;
+    private String menu_name;
     private String price_range;
     private String homepage_url;
 
@@ -90,6 +91,7 @@ public class Restaurant {
         restaurant.setAddress(restaurantUpdateForm.getAddress());
         restaurant.setPhone_number(restaurantUpdateForm.getPhone_number());
         restaurant.setOpening_hours(restaurantUpdateForm.getOpening_hours());
+        restaurant.setMenu_name(restaurantUpdateForm.getMenu_name());
         restaurant.setPrice_range(restaurantUpdateForm.getPrice_range());
         restaurant.setHomepage_url(restaurantUpdateForm.getHomepage_url());
         restaurant.setDescription(restaurantUpdateForm.getDescription());

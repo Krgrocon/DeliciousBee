@@ -190,11 +190,12 @@ public class RestaurantController {
 //	public String getRestaurants(Pageable pageable) { 
 //	    Page<Restaurant> restaurants = restaurantService.findByNameContaining(keyword, pageable); 
 	    
-//	@GetMapping("rtlist")
-//	public String restdList(Model model,
-//							@PageableDefault(page = 0, size = 10)
-//							Pageable pageable,
-//							String keyword){
+	@GetMapping("rtlist")
+	public String restdList(//@RequestParam(name="id") Model model  
+							//@PageableDefault(page = 0, size = 10)
+							//Pageable pageable,
+							//String keyword
+			){
 //
 //		/*검색기능-3*/
 //		Page<Restaurant> list = null;
@@ -216,8 +217,8 @@ public class RestaurantController {
 //		model.addAttribute("startPage", startPage);
 //		model.addAttribute("endPage", endPage);
 //
-//		return "redirect:/";
-//	}
+		return "restaurant/rtlist";
+	}
 
 
 //		@GetMapping("/category")

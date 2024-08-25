@@ -245,18 +245,24 @@
     </div>
 
     <div class="content-wrapper">
-        <div class="restaurant-grid">
+        <div class="restaurant-grid" >
             <!-- 레스토랑 카드 반복문 -->
             <div class="restaurant-card" th:each="restaurant : ${restaurantlist}">
-                <img th:src="@{/images/restaurant1.jpg}" class="card-img-top" alt="Restaurant Image">
+            <a th:href="@{/restaurant/rtread(id=${restaurant.id})}" class="card-link">
+              <div th:each="file : ${restaurant.attachedFile}">
+          		<div th:if="${file.saved_filename}">
+            	  <img th:src="@{'/restaurant/display?filename='+${file.saved_filename}}" alt="Restaurant Image" class="img-fluid mb-2 img-thumbnail">
+          		</div>
+     		  </div>
                 <div class="restaurant-info">
                 <p th:text="'# ' + ${restaurant.category}" class="text">키워드</p>
-                    <h3><a th:href="@{/restaurant/rtread(id=${restaurant.id})}" th:text="${restaurant.name}">맛집이름</a></h3>
-                    <p th:text="${restaurant.description}">맛집 설명</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted" th:text="${#temporals.format(restaurant.create_at, 'yyyy-MM-dd')}">등록 시간</small>
-                    </div>
-                </div>
+                  <h3><a th:href="@{/restaurant/rtread(id=${restaurant.id})}" th:text="${restaurant.name}">맛집이름</a></h3>
+                  <p th:text="${restaurant.description}">맛집 설명</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted" th:text="${#temporals.format(restaurant.create_at, 'yyyy-MM-dd')}">등록 시간</small>
+                  </div>
+             	</div>
+            </a>
             </div>
             <!-- /레스토랑 카드 반복문 -->
         </div>
