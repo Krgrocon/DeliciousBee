@@ -53,12 +53,13 @@
                 <li class="img-content" th:each="restaurant : ${restaurantlist}">
                     <div class="content-wrapper">
                         <div class="image-wrapper">
-                            <img th:src="@{${restaurant.imageUrl}}" alt="레스토랑 이미지"/>
+                            <img th:if="${#lists.size(restaurant.attachedFile) > 0}" th:src="@{${restaurant.attachedFile.get(0).saved_filename}}" alt="레스토랑 이미지"/>
+                            <p th:if="${#lists.size(restaurant.attachedFile) == 0}">이미지가 없습니다</p>
                         </div>
                         <div class="intro-content">
                             <p class="heading" th:text="${restaurant.name}"></p>
                             <p th:text="${restaurant.description}"></p>
-                            <p th:text="|별점: ${restaurant.averageRating}|"></p>
+                            <p th:text="|별점: ${restaurant.average_rating}|"></p>
                         </div>
                     </div>
                     <h2 class="star-rating" th:text="${restaurant.name}"></h2>
