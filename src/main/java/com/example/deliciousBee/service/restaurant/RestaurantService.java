@@ -27,6 +27,10 @@ public class RestaurantService {
         return restaurantRepository.findAll();
     }
 
+    public List<Restaurant> findRandom5Restaurants() {
+        return restaurantRepository.findRandom5Restaurants();
+    }
+
     public Restaurant findRestaurant(Long id) {
         Restaurant restaurant = restaurantRepository.findById(id).get();
         return restaurant;

@@ -50,7 +50,7 @@
     object-fit: cover; /* 비율을 유지하면서 컨테이너를 꽉 채움 */
     transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
   }
-  .card .content {
+  .card .intro-content {
     position: absolute;
     top: 0;
     left: 0;
@@ -70,12 +70,12 @@
     transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
   }
 
-  .card .content .heading {
+  .card .intro-content .heading {
     font-size: 32px;
     font-weight: 700;
   }
 
-  .card:hover .content {
+  .card:hover .intro-content {
     opacity: 1;
     transform: translateY(0);
   }
@@ -98,10 +98,10 @@
   </p>
   <div class="card">
     <div class="img-content">
-      <img src="123.jpg" alt="코드잇 이미지"/>
+      <img src="../../static/image/123.jpg" alt="코드잇 이미지"/>
       <p class="star">dd</p>
     </div>
-    <div class="content">
+    <div class="intro-content">
       <p class="heading">제목</p>
       <p>
         설명

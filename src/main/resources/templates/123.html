@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>지원 페이지</title>
+    <title>DeliciousBee - 맛집 찾기</title>
     <link rel="stylesheet" href="/index.css">
     <style>
         body, html {
@@ -53,9 +53,32 @@
             align-items: center;
             height: 100vh;
             background-color: #fff;
-            background-image: url("../test/mainimage.jpeg");
+            background-image: url("/image/123.jpg");
             background-size: cover;
             background-position: center;
+        }
+
+        @keyframes tracking-in-expand-fwd {
+            0% {
+                letter-spacing: -0.5em;
+                opacity: 0;
+            }
+            40% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 1;
+                letter-spacing: normal;
+            }
+        }
+
+        .main-title {
+            animation: tracking-in-expand-fwd 1s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+            margin-left: 10%;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #f0f0f0;
+            margin-bottom: 1rem;
         }
 
         .intro-content {
@@ -64,18 +87,25 @@
             align-items: center;
             width: 100%;
             padding: 20px;
+            height: 40%;
             transform: translateY(-10%);
+        }
+
+        .search-section {
+            height: 85%;
+            text-align: center;
+            width: 40%;
         }
 
         .search-container {
             width: 40%;
             max-width: 540px;
             transform: scale(1.30);
-            position: relative; /* 검색 버튼 위치 조정을 위해 추가 */
+            position: relative;
         }
 
         .search-input {
-            width: 60%; /* 좌우 크기 조정 */
+            width: 80%;
             line-height: 28px;
             padding: 0 1rem;
             padding-left: 2.5rem;
@@ -85,7 +115,7 @@
             background-color: #f3f3f4;
             color: #0d0c22;
             transition: .3s ease;
-            margin-left: 30%;
+            margin-left: 65%;
         }
 
         .search-input::placeholder {
@@ -99,52 +129,115 @@
             box-shadow: 0 0 0 4px rgb(234 76 137 / 10%);
         }
 
-        .icon {
+        .search-intro {
+            font-size: 1.5rem;
+            color: #9e9ea7;
+            margin-top: 1rem;
+            margin-left: 5%;
+        }
+
+        .search-icon {
             position: absolute;
-            left: 33%; /* 왼쪽 마진 조정 */
+            left: 70%;
             top: 50%;
-            transform: translateY(-50%); /* 수직 중앙 정렬 */
+            transform: translateY(-50%);
             fill: #9e9ea7;
             width: 1rem;
             height: 1rem;
         }
 
-
-
-        .restaurant-box {
-            background-color: #F8F8FF;
-            width: 40%;
-            max-width: 800px;
-            height: 300px;
+        .restaurant-card {
+            width: 35%;
+            position: relative;
             border-radius: 10px;
+            margin-right: 14%;
+        }
+
+        .restaurant-card::before {
+            content: "";
+            z-index: -1;
+            position: absolute;
+            inset: 0;
+            transform: translate3d(0, 0, 0) scale(0.95);
+            filter: blur(20px);
+        }
+
+        .star-rating {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
             overflow: hidden;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card .img-content {
+            width: 100%;
+            height: 100%;
             display: flex;
-            flex-direction: column; /* 세로 배치 */
+            align-items: center;
+            justify-content: center;
+            transition: scale 0.6s, rotate 0.6s, filter 1s;
         }
 
-        .restaurant-content {
+        .card .img-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+        }
+
+        .card .intro-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
-            height: 100%; /* 상단 70% */
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+            color: #e8e8e8;
+            padding: 20px 24px;
+            line-height: 1.5;
+            border-radius: 5px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(50px);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
         }
 
-        .restaurant-image {
-            width: 50%;
-            background-image: url("../test/pepe.jpg"); /* 이미지 URL 추가 */
-            background-size: cover; /* 이미지 크기 조정 */
+        .card .intro-content .heading {
+            font-size: 32px;
+            font-weight: 700;
         }
 
-        .restaurant-description {
-            width: 50%;
-            padding: 10px;
+        .card:hover .intro-content {
+            opacity: 1;
+            transform: translateY(0);
         }
 
+        .card:hover .img-content {
+            filter: blur(7px);
+        }
 
+        .card:hover .img-content img { /* img에 scale 적용 */
+            transform: scale(2.5);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+        }
+
+        .card:hover .img-content svg {
+            fill: transparent;
+        }
 
         .navbar {
             background-color: #343a40;
             color: white;
-            padding: 15px; /* 기존 패딩 유지 */
+            padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -154,13 +247,13 @@
             display: flex;
             align-items: center;
             width: 100%;
-            padding-left: 15%; /* 왼쪽 패딩 20% */
+            padding-left: 15%;
         }
 
         .navbar-brand-group {
             display: flex;
             align-items: center;
-            margin-right: 65%;
+            margin-right: 56.5%;
         }
 
         .navbar-brand {
@@ -210,11 +303,6 @@
             margin: 5px 0;
         }
 
-
-
-
-        /* 모달 스타일 */
-        /* 모달 스타일 */
         .modal {
             display: none;
             position: fixed;
@@ -227,7 +315,6 @@
             background-color: rgba(0, 0, 0, 0.4);
         }
 
-        /* From Uiverse.io by akshat-patel28 */
         .form-container {
             width: 350px;
             height: 400px;
@@ -236,7 +323,7 @@
             border-radius: 10px;
             box-sizing: border-box;
             padding: 20px 30px;
-            margin: 15% auto; /* 가운데 정렬 */
+            margin: 15% auto;
         }
 
         .title {
@@ -247,7 +334,6 @@
             font-size: 28px;
             font-weight: 800;
         }
-
 
         .form {
             width: 100%;
@@ -308,7 +394,7 @@
             color: #747474;
             font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
             "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
-            text-align: center; /* 가운데 정렬 추가 */
+            text-align: center;
             margin-top: 5%;
         }
 
@@ -333,7 +419,6 @@
             gap: 15px;
         }
 
-
         .google-login-button {
             border-radius: 20px;
             box-sizing: border-box;
@@ -348,12 +433,8 @@
             "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
             font-size: 11px;
             gap: 5px;
-        }
-
-        .google-login-button {
             border: 2px solid #747474;
         }
-
 
         .google-icon {
             font-size: 18px;
@@ -378,8 +459,8 @@
         /* 반응형 - 작은 화면에서 메뉴는 이전과 동일하게 동작 */
         @media (max-width: 768px) {
             .navbar .container {
-                padding-left: 10px; /* 작은 화면에서 왼쪽 패딩 조정 */
-                padding-right: 10px; /* 작은 화면에서 오른쪽 패딩 조정 */
+                padding-left: 10px;
+                padding-right: 10px;
             }
 
             .navbar-toggler {
@@ -400,23 +481,18 @@
             .navbar-nav.show {
                 display: flex;
             }
-        }
 
-
-
-        /* 반응형 디자인 추가 */
-        @media (max-width: 768px) {
             .intro-content {
-                flex-direction: column; /* 세로 배치 */
+                flex-direction: column;
                 align-items: center;
-                transform: translateY(0); /* translateY 제거 */
+                transform: translateY(0);
             }
 
-            .search-container, .chat-window {
-                width: 90%; /* 너비 조정 */
-                max-width: 100%; /* 최대 너비 제거 */
-                margin: 10px 0; /* 위아래 여백 추가 */
-                transform: scale(1); /* scale 제거 */
+            .search-container, .restaurant-card {
+                width: 90%;
+                max-width: 100%;
+                margin: 10px 0;
+                transform: scale(1);
             }
         }
     </style>
@@ -426,30 +502,52 @@
     <div class="container">
         <div class="navbar-brand-group">
             <a class="navbar-brand" href="#!">Delicious Bee</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="#!">맛집등록</a></li>
+                <li class="nav-item">
+                    <a href="#" th:onclick="|location.href='@{/restaurant/rtwrite}'|" class="nav-link">맛집등록</a>
+                </li>
                 <li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
-                <li class="nav-item"><a class="nav-link" id="loginButton" href="#">로그인</a></li> <!-- 로그인 버튼에 ID 추가 -->            </ul>
+                <li class="nav-item"><a class="nav-link" id="loginButton" href="#">로그인</a></li>
+            </ul>
         </div>
     </div>
 </nav>
 
 <main>
     <div class="intro-content">
-        <div class="search-container">
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>
-            <input type="text" placeholder="Search" class="search-input">
+        <div class="search-section">
+            <p class="main-title">DeliciousBee</p>
+            <div class="search-container">
+                <svg class="search-icon" aria-hidden="true" viewBox="0 0 24 24">
+                    <g>
+                        <path
+                                d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                    </g>
+                </svg>
+                <input type="text" placeholder="Search" class="search-input">
+            </div>
+            <p class="search-intro">아래쪽 텍스트</p>
         </div>
-
-        <div class="restaurant-box">
-            <div class="restaurant-content">
-                <div class="restaurant-image"></div>
-                <div class="restaurant-description">
-                    <h3>음식점 이름</h3>
-                    <p>음식점 설명</p>
+        <div class="restaurant-card">
+            <div class="card">
+                <div class="img-content">
+                    <img src="/image/qwer.jpeg" alt="레스토랑 이미지"/>
+                    <p class="star-rating">★ 4.5</p> <!-- 예시 별점 -->
+                </div>
+                <div class="intro-content">
+                    <p class="heading">레스토랑 이름</p>
+                    <p>
+                        레스토랑 설명
+                    </p>
+                    <p>
+                        별점: 4.5
+                    </p>
                 </div>
             </div>
         </div>
@@ -460,7 +558,7 @@
         <div class="form-container">
             <span class="close" onclick="closeModal()">×</span>
             <p class="title">DeliciousBee</p>
-            <form action="/login/" method="post" class="form">
+            <form action="/member/login" method="post" class="form">
                 <input type="text" name="member_id" class="input" placeholder="아이디">
                 <input type="password" name="password" class="input" placeholder="비밀번호">
                 <p class="page-link">
@@ -470,16 +568,16 @@
             </form>
             <div class="buttons-container">
                 <div class="google-login-button">
-                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1.1" x="0px" y="0px" class="google-icon" viewBox="0 0 48 48" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12
-	c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24
-	c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
-                        <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657
-	C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
-                        <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36
-	c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
-                        <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571
-	c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1.1" x="0px" y="0px"
+                         class="google-icon" viewBox="0 0 48 48" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#FFC107"
+                              d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12 c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24 c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                        <path fill="#FF3D00"
+                              d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657 C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
+                        <path fill="#4CAF50"
+                              d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36 c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
+                        <path fill="#1976D2"
+                              d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571 c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
                     </svg>
                     <span>Log in with Google</span>
                 </div>
@@ -510,7 +608,6 @@
             modal.style.display = 'none';
         }
     }
-
 </script>
 </body>
 </html>

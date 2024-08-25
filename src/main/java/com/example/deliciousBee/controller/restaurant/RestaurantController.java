@@ -154,7 +154,7 @@ public class RestaurantController {
 
 
 //		@GetMapping("/category")
-//		public String filterByCategory(@RequestParam("category") String category, Model model) {
+//		public String filterByCategory(@RequestParam("category"ㅋ) String category, Model model) {
 //		    List<Restaurant> restaurants = restaurantService.findByCategory(category);
 //		    model.addAttribute("restaurants", restaurants);
 //		    model.addAttribute("selectedCategory", category);
