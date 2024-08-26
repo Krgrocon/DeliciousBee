@@ -1,3 +1,4 @@
+/* Basic Styles - Reset and Typography */
 body, html {
     margin: 0;
     padding: 0;
@@ -6,6 +7,7 @@ body, html {
     height: 100%;
 }
 
+/* Header Styles */
 header {
     display: flex;
     justify-content: space-between;
@@ -38,6 +40,7 @@ header {
     cursor: pointer;
 }
 
+/* Main Content Styles */
 main {
     flex-grow: 1;
     display: flex;
@@ -50,6 +53,7 @@ main {
     background-position: center;
 }
 
+/* Main Title Animation */
 @keyframes tracking-in-expand-fwd {
     0% {
         letter-spacing: -0.5em;
@@ -73,16 +77,8 @@ main {
     margin-bottom: 1rem;
 }
 
-.content {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 100%;
-    padding: 20px;
-    height: 40%;
-    transform: translateY(-10%);
-}
-
+/* Content and Intro Content Styles */
+.content,
 .intro-content {
     display: flex;
     justify-content: space-around;
@@ -91,6 +87,12 @@ main {
     transform: translateY(-10%);
 }
 
+.content {
+    padding: 20px;
+    height: 40%;
+}
+
+/* Search Section Styles */
 .search-section {
     height: 85%;
     text-align: center;
@@ -122,7 +124,8 @@ main {
     color: #9e9ea7;
 }
 
-.search-input:focus, input:hover {
+.search-input:focus,
+input:hover {
     outline: none;
     border-color: rgba(234,76,137,0.4);
     background-color: #fff;
@@ -146,40 +149,70 @@ main {
     height: 1rem;
 }
 
-.card{
-    padding: 0;
-}
+/* Restaurant Card Styles */
 
 .restaurant-card {
-    width: 30%;
+    width: 30%; /* 원하는 카드 너비 설정 */
     position: relative;
     border-radius: 30px;
-    margin-right: 14%;
+    margin-right: 14%; /* 카드 간의 간격 조정 */
     background-color: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 0;
+    flex-shrink: 0; /* 카드가 수축하지 않도록 설정 */
+}
+
+.card {
+    top: 0;
+    padding: 0; /* 상단 여백 제거 */
+    height: 330px;
+    display: flex;
+    flex-direction: row; /* 가로 방향 정렬 유지 */
+    overflow-x: hidden; /* 수평 스크롤 숨김 */
+    overflow-y: hidden; /* 수직 스크롤 숨김 */
+    scroll-behavior: smooth;
+    white-space: nowrap; /* 줄 바꿈 방지 */
+    justify-content: flex-start; /* 요소들이 왼쪽부터 시작하도록 정렬 */
+    align-items: flex-start; /* 모든 자식 요소를 상단에 정렬 */
+    margin: 15px;
 }
 
 
 
-.img-content {
-    width: 60%;
-    height: 60%;
+
+.card .img-content {
+    border-radius: 17px;
+    flex: 0 0 auto; /* 요소가 고정된 크기를 가지도록 설정 */
+    max-height: 100%; /* 최대 높이를 부모의 100%로 설정 */
+    width: 100%; /* 부모 컨테이너의 100% 너비를 차지 */
+    height: 300px; /* 고정된 높이 설정 */
     position: relative;
-    margin: 10px;
+    margin: 0; /* 여백 제거 */
+    box-sizing: border-box; /* 패딩과 보더를 포함한 크기 계산 */
 }
-.content-wrapper {
+.img-content img {
+    border-radius: 17px;
+    width: 100%; /* 이미지가 부모 컨테이너의 100% 너비를 차지 */
+    height: 100%; /* 이미지 비율 유지 */
+    object-fit: contain; /* 중요: 넘치지 않고 가로 세로 비율 유지 */
+    max-width: 100%; /* 최대 너비를 부모의 100%로 제한 */
+}
+
+.img-content .content-wrapper {
     width: 100%;
     height: 100%;
     position: relative;
     overflow: hidden;
 }
-.image-wrapper {
+
+.content-wrapper .image-wrapper {
     width: 100%;
     height: 100%;
     transition: filter 0.6s, transform 0.6s;
 }
+
 .intro-content {
+    border-radius: 17px;
     position: absolute;
     top: 0;
     left: 0;
@@ -194,37 +227,26 @@ main {
     transition: opacity 0.3s ease;
 }
 
-
-.img-content img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+.star-rating{
+    margin: 0;
+    padding: 0;
+    height: 30px;
+    text-align: center;
 }
 
 .img-content .intro-content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    color: #e8e8e8;
-    line-height: 1.5;
-    /*border-radius: 5px;*/
     opacity: 0;
     pointer-events: none;
-    /*transform: translateY(50px);*/
-    transition: opacity 0.3s ease; /* opacity transition 추가 */}
+    transition: opacity 0.3s ease;
+}
 
 .card .intro-content .heading {
     font-size: 32px;
     font-weight: 700;
 }
 
-.rest-title{
+
+.rest-title {
     font-size: 1rem;
     background-color: #cccccc;
     height: 2%;
@@ -237,10 +259,9 @@ main {
     display: flex;
 }
 
-.rest-title-1{
+.rest-title-1 {
     margin-left: 5%;
 }
-
 
 .content-wrapper:hover .image-wrapper {
     filter: blur(7px);
@@ -253,6 +274,7 @@ main {
 .content-wrapper:hover .intro-content {
     opacity: 1;
 }
+
 
 
 
@@ -324,6 +346,396 @@ main {
     background-color: white;
     margin: 5px 0;
 }
+
+/* Container Styles */
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+    font-family: "Arial", sans-serif;
+    overflow: visible;
+
+    /* 네비게이션 바 스타일 적용 */
+    background-color: #343a40; /* 네비게이션 바 배경색 */
+    color: white; /* 네비게이션 바 텍스트 색상 */
+    margin-left: 20px; /* .nav-item과 동일한 왼쪽 마진 */
+
+
+}
+
+
+.tooltip-container .button-content {
+    /* 버튼 스타일 초기화 (필요에 따라 조정) */
+    background: none;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.tooltip-container .text {
+    /* 텍스트 스타일 초기화 (필요에 따라 조정) */
+    font-size: inherit;
+    font-weight: inherit;
+    margin-right: 0;
+    text-shadow: none;
+}
+/* Button Styles */
+.button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    position: relative;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.button-content::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+            135deg,
+            rgba(110, 142, 251, 0.4),
+            rgba(167, 119, 227, 0.4)
+    );
+    filter: blur(15px);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: -1;
+}
+
+.button-content::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    /*background: radial-gradient(*/
+    /*        circle,*/
+    /*        rgba(255, 255, 255, 0.3) 0%,*/
+    /*        rgba(255, 255, 255, 0) 70%*/
+    /*);*/
+    transform: scale(0);
+    transition: transform 0.6s ease-out;
+    z-index: -1;
+}
+
+.button-content:hover::before {
+    opacity: 1;
+}
+
+.button-content:hover::after {
+    transform: scale(1);
+}
+
+.button-content:hover {
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    transform: translateY(-4px) scale(1.03);
+}
+
+.button-content:active {
+    transform: translateY(-2px) scale(0.98);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+}
+
+.text {
+    font-size: 18px;
+    font-weight: 600;
+    margin-right: 12px;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: letter-spacing 0.3s ease;
+}
+
+.button-content:hover .text {
+    letter-spacing: 1px;
+}
+
+.share-icon {
+    fill: white;
+    transition:
+            transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+            fill 0.3s ease;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.button-content:hover .share-icon {
+    transform: rotate(180deg) scale(1.1);
+    fill: #ffffff;
+}
+
+/* Tooltip Styles */
+.tooltip-content {
+    position: absolute;
+    top: 102%;
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    background: white;
+    border-radius: 15px;
+    padding: 22px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+            opacity 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+            transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+            visibility 0.5s ease;
+    z-index: 100;
+    pointer-events: none;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.tooltip-container:hover .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) scale(1);
+    pointer-events: auto;
+}
+
+/* Social Icons Styles */
+.infos {
+    display: flex;
+    flex-direction: column; /* 세로 정렬 */
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 45px;
+    border-radius: 7%;
+    background: #f0f0f0;
+    transition:
+            transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+            background 0.3s ease,
+            box-shadow 0.4s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+
+    /* 밑줄 제거 */
+    color: black;
+    text-decoration: none;
+}
+
+.info::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+            circle at center,
+            rgba(255, 255, 255, 0.8) 0%,
+            rgba(255, 255, 255, 0) 70%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/*.info:hover::before {*/
+/*  opacity: 1;*/
+/*}*/
+
+/*.info svg {*/
+/*  width: 24px;*/
+/*  height: 24px;*/
+/*  fill: #333;*/
+/*  transition:*/
+/*          transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),*/
+/*          fill 0.3s ease;*/
+/*  z-index: 1;*/
+/*}*/
+
+.info:hover {
+    transform: translateY(-5px) scale(1.1);
+}
+
+.info:active {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+/*.info:hover svg {*/
+/*  transform: scale(1.2);*/
+/*  fill: white;*/
+/*}*/
+
+
+
+
+
+/* Hover Ripple Effect */
+@keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.button-content::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: inherit;
+    transform: scale(0);
+    opacity: 0;
+}
+
+.button-content:active::before {
+    animation: ripple 0.6s linear;
+}
+
+/* Tooltip Arrow */
+.tooltip-content::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 0 10px 10px 10px;
+    border-style: solid;
+    border-color: transparent transparent rgba(255, 255, 255, 0.9) transparent;
+    filter: drop-shadow(0 -3px 3px rgba(0, 0, 0, 0.1));
+}
+
+/* Accessibility */
+.button-content:focus {
+    outline: none;
+    box-shadow:
+            0 0 0 3px rgba(110, 142, 251, 0.5),
+            0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.button-content:focus:not(:focus-visible) {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .button-content {
+        padding: 12px 24px;
+        border-radius: 40px;
+    }
+
+    .text {
+        font-size: 16px;
+    }
+
+    .tooltip-content {
+        width: 240px;
+        padding: 18px;
+    }
+
+    .info {
+        width: 44px;
+        height: 44px;
+    }
+
+    .info svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .button-content {
+        padding: 10px 20px;
+    }
+
+    .text {
+        font-size: 14px;
+    }
+
+    .tooltip-content {
+        width: 200px;
+        padding: 15px;
+    }
+
+    .info {
+        width: 40px;
+        height: 40px;
+    }
+
+    .info svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .tooltip-content {
+        background: rgba(30, 30, 30, 0.9);
+        color: white;
+    }
+
+    .tooltip-content::before {
+        border-color: transparent transparent rgba(30, 30, 30, 0.9) transparent;
+    }
+
+    .info {
+        background: #2a2a2a;
+    }
+
+    .info svg {
+        fill: #e0e0e0;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .tooltip-container {
+        display: none;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .button-content,
+    .share-icon,
+    .info,
+    .tooltip-content {
+        transition: none;
+    }
+
+    .button-content {
+        animation: none;
+    }
+}
+
+/* Custom Scrollbar for Tooltip Content */
+.tooltip-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tooltip-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.tooltip-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.tooltip-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+
 
 .modal {
     display: none;
