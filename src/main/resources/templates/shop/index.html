@@ -67,22 +67,27 @@
                 <h3 class="rest-title-1">
                     #오늘의 추천 맛집
                 </h3>
+                <div class="slider-buttons">
+                    <button class="slide-left">&lt;</button>
+                    <button class="slide-right">&gt;</button>
+                </div>
             </div>
             <ul class="card">
-                <li class="img-content" th:each="restaurant : ${restaurantlist}">
-                    <div class="content-wrapper">
-                        <div class="image-wrapper">
-                            <img th:if="${#lists.size(restaurant.attachedFile) > 0}" th:src="@{${restaurant.attachedFile.get(0).saved_filename}}" alt="레스토랑 이미지"/>
-                            <p th:if="${#lists.size(restaurant.attachedFile) == 0}">이미지가 없습니다</p>
+                    <li class="img-content" th:each="restaurant : ${restaurantlist}"
+                        th:onclick="|window.location.href='@{/restaurant/rtread(id=${restaurant.id})}'|">
+                        <div class="content-wrapper">
+                            <div class="image-wrapper">
+                                <img th:if="${#lists.size(restaurant.attachedFile) > 0}" th:src="@{${restaurant.attachedFile.get(0).saved_filename}}" alt="레스토랑 이미지"/>
+                                <p th:if="${#lists.size(restaurant.attachedFile) == 0}">이미지가 없습니다</p>
+                            </div>
+                            <div class="intro-content">
+                                <p class="heading" th:text="${restaurant.name}"></p>
+                                <p th:text="${restaurant.description}"></p>
+                                <p th:text="|별점: ${restaurant.average_rating}|"></p>
+                            </div>
                         </div>
-                        <div class="intro-content">
-                            <p class="heading" th:text="${restaurant.name}"></p>
-                            <p th:text="${restaurant.description}"></p>
-                            <p th:text="|별점: ${restaurant.average_rating}|"></p>
-                        </div>
-                    </div>
-                    <h2 class="star-rating" th:text="${restaurant.name}"></h2>
-                </li>
+                        <h2 class="star-rating" th:text="${restaurant.name}"></h2>
+                    </li>
             </ul>
         </section>
     </div>
@@ -113,7 +118,7 @@
                         <path fill="#1976D2"
                               d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571 c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
                     </svg>
-                    <a href="/oauth2/authorization/google">Login with google</a>
+                    <a href="/oauth2/authorization/google" class="google-text">Login with google</a>
                 </div>
             </div>
             <p class="sign-up-label">
@@ -126,9 +131,21 @@
 
 <script>
     // 로그인 모달 제어
-    document.getElementById('loginButton').addEventListener('click', function(event) {
-        event.preventDefault(); // 링크 기본 동작 방지
-        document.getElementById('loginModal').style.display = 'block';
+    document.addEventListener('DOMContentLoaded', function() {
+        var loginButton = document.getElementById('loginButton');
+        if (loginButton) {
+            loginButton.addEventListener('click', function(event) {
+                event.preventDefault(); // 링크 기본 동작 방지
+                var loginModal = document.getElementById('loginModal');
+                if (loginModal) {
+                    loginModal.style.display = 'block';
+                } else {
+                    console.error('loginModal 요소를 찾을 수 없습니다.');
+                }
+            });
+        } else {
+            console.error('loginButton 요소를 찾을 수 없습니다.');
+        }
     });
 
     // 닫기 버튼 클릭 시 모달 닫기
@@ -143,6 +160,21 @@
             modal.style.display = 'none';
         }
     }
+    document.querySelector('.slide-left').addEventListener('click', function() {
+        document.querySelector('.card').scrollBy({
+            left: -472, // 왼쪽으로 300px 스크롤
+            behavior: 'smooth'
+        });
+    });
+
+    document.querySelector('.slide-right').addEventListener('click', function() {
+        document.querySelector('.card').scrollBy({
+            left: 472, // 오른쪽으로 300px 스크롤
+            behavior: 'smooth'
+        });
+    });
+
+
 </script>
 </body>
 </html>
