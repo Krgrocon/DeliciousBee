@@ -8,6 +8,7 @@ import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
+import com.example.deliciousBee.util.PageNavigator;
 import com.example.deliciousBee.util.RestaurantFileService;
 
 import lombok.RequiredArgsConstructor;
@@ -99,6 +100,56 @@ public class RestaurantController {
 		restaurantService.saveRestaurant(restaurantWriteForm, attachedFiles);
 		return "redirect:/";
 	}
+
+
+	//검색
+	@GetMapping("/search")
+	public String searchRestaurants(@RequestParam(value = "keyword", required = false) String keyword,
+									@PageableDefault(page = 0, size = 10) Pageable pageable,
+									Model model) {
+
+		Page<Restaurant> restaurants;
+		if (keyword == null || keyword.isEmpty()) {
+			// 검색어가 없는 경우 전체 레스토랑 목록 조회
+			restaurants = restaurantService.findAll(pageable);
+		} else {
+			restaurants = restaurantService.searchByNameOrMenuName(keyword, pageable);
+		}
+
+		// PageNavigator 객체 생성 및 설정
+		int countPerPage = pageable.getPageSize(); // 페이지당 글 목록 수
+		int pagePerGroup = 5; // 그룹당 페이지 수
+		int currentPage = pageable.getPageNumber() + 1; // 현재 페이지 (Pageable은 0부터 시작)
+		int totalRecordsCount = (int) restaurants.getTotalElements(); // 전체 글 수
+		int totalPageCount = restaurants.getTotalPages(); // 전체 페이지 수
+
+		PageNavigator navi = new PageNavigator(countPerPage, pagePerGroup, currentPage, totalRecordsCount, totalPageCount);
+
+		model.addAttribute("restaurants", restaurants);
+		model.addAttribute("keyword", keyword);
+		model.addAttribute("navi", navi); // navi 객체를 모델에 추가
+
+		return "restaurant/rtlist";
+	}
+//	@GetMapping("/search")
+//	public String searchRestaurants(@RequestParam(value = "keyword", required = false) String keyword,
+//									@PageableDefault(page = 0, size = 10) Pageable pageable,
+//									Model model) {
+//
+//		Page<Restaurant> restaurants;
+//		if (keyword == null || keyword.isEmpty()) {
+//			// 검색어가 없는 경우 전체 레스토랑 목록 조회
+//			restaurants = restaurantService.findAll(pageable);restaurants = restaurantService.findAll(pageable);
+//		} else {
+//
+//			restaurants = restaurantService.searchByNameOrMenuName(keyword, pageable); // 2번 방법
+//		}
+//
+//		model.addAttribute("restaurants", restaurants);
+//		model.addAttribute("keyword", keyword);
+//		return "restaurant/rtlist"; // 검색 결과를 보여줄 뷰 이름
+//	}
+
 
 	@GetMapping("rtread")
 	public String read(@AuthenticationPrincipal BeeMember loginMember,

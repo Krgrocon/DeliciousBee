@@ -19,4 +19,9 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     //검색결과
     Page<Restaurant> findByNameContaining(
             String keyword, Pageable pageable);
+
+
+    @Query("SELECT r FROM Restaurant r WHERE r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%")
+    Page<Restaurant> searchByNameOrMenuName(String keyword, Pageable pageable);
+
 }

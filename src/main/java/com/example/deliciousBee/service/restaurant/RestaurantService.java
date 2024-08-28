@@ -39,10 +39,17 @@ public class RestaurantService {
     		restaurantRepository.save(restaurant);
     	}
     }
-    
-    public List<Restaurant> findAll() {
-        return restaurantRepository.findAll();
+
+//    //수정함
+//    public List<Restaurant> findAll() {
+//        return restaurantRepository.findAll();
+//    }
+
+    //내가 수정함
+    public Page<Restaurant> findAll(Pageable pageable) {
+        return restaurantRepository.findAll(pageable);
     }
+
 
     public List<Restaurant> findRandom5Restaurants() {
         return restaurantRepository.findRandom5Restaurants();
@@ -101,8 +108,10 @@ public class RestaurantService {
     public Page<Restaurant> findByNameContaining(String keyword, Pageable pageable) {
     	return restaurantRepository.findByNameContaining(keyword, pageable);
     }
-    
-	
+
+    public Page<Restaurant> searchByNameOrMenuName(String keyword, Pageable pageable) {
+        return restaurantRepository.searchByNameOrMenuName(keyword, pageable);
+    }
     //페이지
 //    public Page<Restaurant> restaurnatList(Pageable pageable) {
 //        return restaurantRepository.findAll(pageable);
