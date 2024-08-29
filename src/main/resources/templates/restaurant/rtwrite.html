@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         newMenuItem.classList.add('form-group', 'menu-item', 'd-flex', 'align-items-center');
         newMenuItem.innerHTML = `
             <input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" id="menu_name_${menuIndex}" style="margin-right: 10px;" />
-            <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격대" id="price_range_${menuIndex}" />
+            <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" id="price_range_${menuIndex}" />
         `;
         document.querySelector('#menu-container').appendChild(newMenuItem);
     });
@@ -33,7 +33,46 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+let map;
+let geocoder;
+
+document.addEventListener('DOMContentLoaded', function() {
+	initMap();
+});
+
+function initMap() {
+	// 맵을 초기화합니다. 부산을 중심으로 설정합니다.
+	map = new google.maps.Map(document.getElementById('map'), {
+		center: { lat: 35.1796, lng: 129.0756 }, // 부산의 위도와 경도
+		zoom: 11 // 초기 줌 레벨을 12로 설정 (부산이 보이도록)
+	});
+	geocoder = new google.maps.Geocoder();
+}
+
+function geocodeAddress() {
+	const address = document.getElementById('address').value;
+	geocoder.geocode({ 'address': address }, function(results, status) {
+		if (status === 'OK') {
+			const location = results[0].geometry.location;
+			map.setCenter(location);
+			map.setZoom(18); // 검색 후 줌을 18로 설정합니다.
+			const marker = new google.maps.Marker({
+				map: map,
+				position: location
+			});
+
+			// 경도와 위도 필드에 값 설정
+			document.getElementById('latitude').value = location.lat();
+			document.getElementById('longitude').value = location.lng();
+		} else {
+			alert('Geocode was not successful for the following reason: ' + status);
+		}
+	});
+}
+
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap" async defer></script>
 <style>
 body {
 	background: linear-gradient(135deg, #f5f5f5 0%, #d9d9d9 100%);
@@ -41,7 +80,7 @@ body {
 }
 
 .container {
-	margin-top: 30px;
+	margin-top: 10px;
 	background-color: #fff;
 	padding: 40px;
 	border-radius: 15px;
@@ -50,7 +89,7 @@ body {
 
 header {
 	color: #333;
-	margin-bottom: 40px;
+	margin-bottom: 10px;
 }
 
 h1 {
@@ -66,7 +105,7 @@ h1 {
 
 .form-group label {
 	font-weight: bold;
-	color: #ffa500;
+	color: #000; /* 라벨 텍스트 색상 검정 */
 	margin-bottom: 0.5rem;
 }
 
@@ -93,9 +132,9 @@ h1 {
 }
 
 .btn-primary {
-	background-color: #ffa500;
+	background-color: #61686c;
 	border: none;
-	color: #000;
+	color: #fff; /* 텍스트 색상 흰색 */
 	font-weight: bold;
 	padding: 10px 20px;
 	border-radius: 10px;
@@ -103,13 +142,13 @@ h1 {
 }
 
 .btn-primary:hover {
-	background-color: #ff8c00;
+	background-color: #4e5458;
 	color: #fff;
 	transform: scale(1.05);
 }
 
 .btn-primary:active {
-	background-color: #e07b00;
+	background-color: #3d4144;
 	transform: scale(1.00);
 }
 
@@ -120,17 +159,57 @@ h1 {
 .form-control::placeholder {
 	color: #aaa;
 }
+
+#map
+{
+	height: 300px;
+	width: 400px;
+}
+
+#mapget
+{
+	display: flex;
+	flex-direction: row;
+}
+
+
+#address
+{
+	margin-top: 10%;
+	height: 30px;
+	width: 50%;
+	margin-right: 5px;
+	border-radius: 10px;
+	border: 1px solid #ddd;
+}
+#adrbutton
+{
+	margin-top: 10%;
+	margin-right: 5px;
+	height: 30px;
+	width: 100px;
+	background-color: #61686c; /* 버튼 배경색 */
+	border: none;
+	color: #fff; /* 텍스트 색상 흰색 */
+	font-weight: bold;
+	border-radius: 10px;
+	transition: background-color 0.3s, transform 0.3s;
+	font-size: 15px;
+}
+
+.hidden-field {
+	display: none;
+}
 </style>
 <!-- Google Fonts -->
-<link
-	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap"
-	rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
 	<div class="container mt-5">
 		<!-- 헤더 -->
 		<header class="text-center">
-			<h1>맛집 등록</h1>
+			<h2>맛집 등록</h2>
 			<p class="lead">맛집 정보를 입력해주세요</p>
 		</header>
 		<div class="text-center">
@@ -139,49 +218,49 @@ h1 {
 		<!-- 맛집 등록 폼 -->
 		<form action="#" th:action="@{/restaurant/restaurants}" method="post"
 			enctype="multipart/form-data" th:object="${restaurantForm}">
+
+			<input type="text" id="latitude" name="latitude" class="hidden-field">
+			<input type="text" id="longitude" name="longitude" class="hidden-field">
+
+
+
 			<div class="form-group">
-				<label for="name">이름</label> <input type="text" class="form-control"
+				<label for="name">맛집 이름</label> <input type="text" class="form-control"
 					id="name" th:field="*{name}" required>
 			</div>
+<!--			<div class="form-group">-->
+<!--				<label for="address">주소</label> <input type="text"-->
+<!--					class="form-control" id="address" th:field="*{address}">-->
+<!--			</div>-->
 			<div class="form-group">
-				<label for="address">주소</label> <input type="text"
-					class="form-control" id="address" th:field="*{address}">
+				<label for="address">주소</label>
+				<div id="mapget">
+				<input id="address" type="text" placeholder="주소를 입력해주세요" th:field="*{address}">
+				<button id="adrbutton" type="button" onclick="geocodeAddress()">주소 확인</button>
+				<div id="map"></div>
+				</div>
 			</div>
+
 			<div class="form-group">
 				<label for="phone_number">전화번호</label> <input type="text"
 					class="form-control" id="phone_number" th:field="*{phone_number}">
 			</div>
-			<div class="form-group">
-				<label for="opening_hours">영업 시간</label> <input type="text"
-					class="form-control" id="opening_hours" th:field="*{opening_hours}">
-			</div>
+
 <div id="menu-container">
     <div class="form-group menu-item d-flex align-items-center">
         <input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" id="menu_name_1" style="margin-right: 10px;" />
-        <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격대" id="price_range_1" />
+        <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" id="price_range_1" />
         <button type="button" class="btn btn-primary add-menu" style="margin-left: 10px;">+</button>
         <button type="button" class="btn btn-primary remove-menu" style="margin-left: 5px;">-</button>
     </div>
 </div>
-			<div class="form-group">
-				<label for="homepage_url">홈페이지 URL</label> <input type="url"
-					class="form-control" id="homepage_url" th:field="*{homepage_url}">
-			</div>
+
 			<div class="form-group">
 				<label for="description">설명</label>
 				<textarea class="form-control" id="description"
-					th:field="*{description}" rows="5" required></textarea>
+					th:field="*{description}" rows="3" required></textarea>
 			</div>
-			<div class="form-group">
-				<label for="longitude">경도</label> <input type="number"
-					step="0.000001" class="form-control" id="longitude"
-					th:field="*{longitude}" required>
-			</div>
-			<div class="form-group">
-				<label for="latitude">위도</label> <input type="number"
-					step="0.000001" class="form-control" id="latitude"
-					th:field="*{latitude}" required>
-			</div>
+
 			<div class="form-group">
 				<label for="category">카테고리</label> <select class="form-control"
 					id="category" th:field="*{category}" required>
