@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>마이페이지 리스트</title>
+<link rel="stylesheet" href="/myPageList.css">
+<script>
+	function serach() {
+		let searchText = document.getElementById("searchText").value; /*document:전체에서, 속성을 get해와라 Id로 */
+		location.href = "/member/myPageList?searchText=" + searchText; /* 요청한페이지로 쿼리파라미터 데리고감 */
+	}
+</script>
+</head>
+<body>
+	<!-- Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container">
+			<div class="navbar-brand-group">
+				<a class="navbar-brand" href="/">Delicious Bee</a>
+				<button class="navbar-toggler" type="button"
+					data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+					aria-controls="navbarSupportedContent" aria-expanded="false"
+					aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+			</div>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+					<li class="nav-item"><a href="#"
+						th:onclick="|location.href='@{/restaurant/rtwrite}'|"
+						class="nav-link">맛집등록</a></li>
+					<li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
+					<li class="nav-item" sec:authorize="isAnonymous()"><a
+						class="nav-link" id="loginButton" href="#">로그인</a></li>
+					<li class="nav-item" sec:authorize="isAuthenticated()"><a
+						class="nav-link" th:href="@{/member/myPage}"
+						th:text="${#authentication.principal.nickname}"></a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<!-- 로그인 모달 -->
+	<div id="loginModal" class="modal">
+		<div class="form-container">
+			<span class="close" onclick="closeModal()">×</span>
+			<p class="title">DeliciousBee</p>
+			<form action="/member/login" method="post" class="form">
+				<input type="text" name="member_id" class="input" placeholder="아이디">
+				<input type="password" name="password" class="input"
+					placeholder="비밀번호">
+				<p class="page-link">
+					<span class="page-link-label">Forgot Password?</span>
+				</p>
+				<button class="form-btn" type="submit">Log in</button>
+			</form>
+			<div class="buttons-container">
+				<a th:href="@{/oauth2/authorization/google}"
+					class="google-login-button"> <svg stroke="currentColor"
+						fill="currentColor" stroke-width="0" version="1.1" x="0px" y="0px"
+						class="google-icon" viewBox="0 0 48 48" height="1em" width="1em"
+						xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#FFC107"
+							d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12 c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24 c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                        <path fill="#FF3D00"
+							d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657 C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
+                        <path fill="#4CAF50"
+							d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36 c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
+                        <path fill="#1976D2"
+							d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571 c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                    </svg> <span>Log in with Google</span>
+				</a>
+			</div>
+			<p class="sign-up-label">
+				Don't have an account?<span class="sign-up-link">Sign up</span>
+			</p>
+		</div>
+	</div>
+	<div id="container">
+		<h1>델리비 리뷰</h1>
+		<p>
+		<table>
+
+			<div th:each="entry : ${randomReviewsByCategory}">
+				<h2>
+					<span th:text="${entry.key.description}"></span>
+				</h2>
+				<div class="reviews" th:each="review : ${entry.value}">
+					<a th:href="@{/member/myPage(id=${review.beeMember.myPage.id})}">
+						<div th:text="${review.beeMember.nickname}" class="nickname"></div>
+					</a>
+					<h4 th:text="${review.restaurant.name}"></h4>
+					<div th:each="file : ${review.attachedFile}">
+						<div th:if="${file.saved_filename}">
+							<img
+								th:src="@{'/review/display?filename='+${file.saved_filename}}"
+								alt="Review Image"
+								style="width: 300px; height: 300px; object-fit: cover;">
+						</div>
+					</div>
+					<div class="content">
+						<div th:text="${review.reviewContents}"></div>
+					</div>
+					<span>추천메뉴: </span> <span th:text="${review.recommendItems}"></span>
+				</div>
+			</div>
+			<div th:if="${randomReview != null}">
+				<div class="reviews">
+					<h2>양식</h2>
+					<a
+						th:href="@{/member/myPage(id=${randomReview.beeMember.myPage.id})}">
+						<span th:text="${randomReview.beeMember.nickname}"></span>
+					</a>님의 리뷰
+					<div th:each="file : ${randomReview.attachedFile}">
+						<div th:if="${file.saved_filename}">
+							<img
+								th:src="@{'/review/display?filename='+${file.saved_filename}}"
+								alt="Review Image"
+								style="width: 300px; height: 300px; object-fit: cover;">
+						</div>
+					</div>
+					<div class="content">
+						<div th:text="${randomReview.reviewContents}"></div>
+					</div>
+					<span>추천메뉴: </span> <span th:text="${randomReview.recommendItems}"></span>
+
+					</p>
+				</div>
+			</div>
+
+
+
+			<h5>리뷰 순위</h5>
+			<tr th:each="myPage, status : ${reviewCount}">
+				<td class="center" th:text="${status.index + 1}"></td>
+				<!-- 순위 -->
+				<td class="center"><a
+					th:href="@{/member/myPage(id=${myPage.id})}"> <span
+						th:text="${myPage.beeMember.nickname}"></span></a></td>
+				<td class="center" th:text="${myPage.beeMember.review.size()}"></td>
+				<!-- 리뷰 개수 -->
+			</tr>
+		</table>
+
+		<div class="center">
+			<input type="button" onclick="location.href='/'" value="메인으로">
+		</div>
+	</div>
+</body>
+</html>
