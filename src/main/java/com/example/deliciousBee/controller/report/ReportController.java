@@ -12,6 +12,7 @@ import com.example.deliciousBee.model.report.Report;
 import com.example.deliciousBee.repository.ReportRepository;
 import com.example.deliciousBee.service.report.ReportService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,12 +35,13 @@ public class ReportController {
 	}
 
 	// 리뷰 신고
-	@PostMapping("/review/allreview/report/submit/{reviewId}")
+	@PostMapping("restaurant/rtread/report/submit/{reviewId}")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> submitReport(@RequestBody Report report
 			,@PathVariable("reviewId") Long reviewId
-			,@SessionAttribute(name="loginMember", required=false) BeeMember loginMember) {
+			,@AuthenticationPrincipal BeeMember loginMember) {
 		
+		log.info("*********************hero coming");
 		Map<String, Object> response = new HashMap<>();
 		try {
 			report.setBeeMember(loginMember);
