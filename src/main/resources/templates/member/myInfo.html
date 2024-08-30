@@ -23,16 +23,10 @@
         </nav>
         <div class="main">
         	<h1>내 정보</h1>
-        	<div class="info">
-                <h4>프로필 사진</h4>
-                <div class="profile-photo">
-                	
-                    <img src="/image/profile.jpg" alt="프로필 사진">
-                </div>
-            </div>
+        	
             <div class="info">
                 <h4>닉네임</h4>
-                <div class="name" th:text="${loginMember.name}"></div>
+                <div class="name" th:text="${loginMember.nickname}"></div>
             </div>
             <div class="info">
                 <h4>아이디</h4>

@@ -1,58 +1,180 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/myPage.css">
-    <title>마이페이지</title>
-</head>
-<body>
-    <header class="header">
-        <a href="/" class="home-link">
-            <img src="/image/bee.jpg" alt="메인 페이지로 이동" class="home-image">
-        </a>
-    </header>
-    <div class="container">
-        <nav class="sidebar">
-            <ul>
-                <li><a href="/member/myPage">마이 페이지</a></li>
-                <li><a href="/member/myInfo">내 정보</a></li>
-                <li><a href="/member/myList">내가 쓴글</a></li>
-                <li><a href="/member/myReply">내가 쓴 댓글</a></li>
-                <li><a href="/member/deleteMember">회원탈퇴</a></li>
-            </ul>
-        </nav>
-        <div class="update-form">
-            <h1>마이페이지</h1>
-            <form action="/member/updateMyPage" method="POST"  th:object="${myPageUpdateForm}" enctype="multipart/form-data" onsubmit="return formCheck();">
-                <div class="info">
-                    <h4>소개글</h4>
-                </div>
-				
-				<button onclick="location.href='/member/updateMyPage'" >수정하기</button>
-            </form>
-        </div>
-    </div>
-    <script>
-        // 이미지 미리보기 기능
-        function previewImage() {
-            const file = document.getElementById('file').files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const preview = document.getElementById('profilePreview');
-                    preview.src = e.target.result;
-                    preview.style.display = 'block'; // 미리보기 이미지를 표시합니다.
-                }
-                reader.readAsDataURL(file);
-            }
-        }
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-        // 폼 유효성 검사 기능 (예시)
-        function formCheck() {
-            // 필수 입력 항목 검사 등의 로직 추가
-            return true; // 유효성 검사 통과 시 true 반환
-        }
-    </script>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/myPage.css">
+<title>마이페이지</title>
+</head>
+
+<body>
+	<!-- Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container">
+			<div class="navbar-brand-group">
+				<a class="navbar-brand" href="/">Delicious Bee</a>
+				<button class="navbar-toggler" type="button"
+					data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+					aria-controls="navbarSupportedContent" aria-expanded="false"
+					aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+			</div>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+					<li class="nav-item"><a href="#"
+						th:onclick="|location.href='@{/restaurant/rtwrite}'|"
+						class="nav-link">맛집등록</a></li>
+					<li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
+					<li class="nav-item" sec:authorize="isAnonymous()"><a
+						class="nav-link" id="loginButton" href="#">로그인</a></li>
+					<li class="nav-item" sec:authorize="isAuthenticated()"><a
+						class="nav-link" th:href="@{/member/myPage}"
+						th:text="${#authentication.principal.nickname}"></a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<!-- 로그인 모달 -->
+	<div id="loginModal" class="modal">
+		<div class="form-container">
+			<span class="close" onclick="closeModal()">×</span>
+			<p class="title">DeliciousBee</p>
+			<form action="/member/login" method="post" class="form">
+				<input type="text" name="member_id" class="input" placeholder="아이디">
+				<input type="password" name="password" class="input"
+					placeholder="비밀번호">
+				<p class="page-link">
+					<span class="page-link-label">Forgot Password?</span>
+				</p>
+				<button class="form-btn" type="submit">Log in</button>
+			</form>
+			<div class="buttons-container">
+				<a th:href="@{/oauth2/authorization/google}"
+					class="google-login-button"> <svg stroke="currentColor"
+						fill="currentColor" stroke-width="0" version="1.1" x="0px" y="0px"
+						class="google-icon" viewBox="0 0 48 48" height="1em" width="1em"
+						xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#FFC107"
+							d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12 c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24 c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                        <path fill="#FF3D00"
+							d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657 C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
+                        <path fill="#4CAF50"
+							d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36 c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
+                        <path fill="#1976D2"
+							d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571 c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                    </svg> <span>Log in with Google</span>
+				</a>
+			</div>
+			<p class="sign-up-label">
+				Don't have an account?<span class="sign-up-link">Sign up</span>
+			</p>
+		</div>
+	</div>
+
+	<div class="main-info">
+		<img th:if="${myPage.mainImage != null}"
+			th:src="'/myPageImage/' +  ${myPage.mainImage.savedFilename}"
+			alt="메인 이미지" class="main-image"> <img
+			th:unless="${myPage.mainImage != null}" src="/image/bee.jpg"
+			alt="기본 이미지" class="default-main-image">
+		<div class="profile-image">
+			<img th:if="${myPage.profileImage != null}"
+				th:src="'/myPageImage/' + ${myPage.profileImage.savedFilename}"
+				alt="프로필 이미지" class="profile-icon"> <img
+				th:unless="${myPage.profileImage != null}" src="/image/bee.jpg"
+				alt="기본 이미지" class="default-profile-image">
+		</div>
+	</div>
+	<div class="myPageOwner">
+		<div class="owner-profile">
+			<div class="nickname"
+				th:text="${myPage.beeMember.nickname} + ' 님의 마이페이지' "></div>
+		</div>
+		<div class="owner-intro">
+			<p class="intro-title">소개글</p>
+			<div class="introduce" th:text="${myPage.introduce}"></div>
+		</div>
+		<div class="owner-stats">
+			<div th:text="'리뷰한수 : ' + ${myPage.beeMember.review.size()}"></div>
+		</div>
+	</div>
+	<div class="myPageMain">
+		<div th:if="${!myPage.beeMember.review.isEmpty()}"
+			class="myPageReview">
+			<div th:each="review : ${myPage.beeMember.review}" class="review-box">
+
+				<div class="restaurant_name_head">
+					<span><img src="/image/bee.jpg" alt="벌 이미지"
+						style="width: 35px; height: 35px; object-fit: cover;"></span> <a
+						th:href="@{/restaurant/rtread(id=${review.restaurant.id})}"
+						title="식당 정보로 이동"> <span th:text="${review.restaurant.name}"
+						class="restaurant_name"></span>
+					</a>
+					<div class="rating-stars">
+						<span th:each="i : ${#numbers.sequence(1, 5)}"> <img
+							th:if="${review.rating >= i}" src="/image/full_star.png"
+							alt="꽉 찬 별"> <img th:unless="${review.rating >= i}"
+							src="/image/empty_star.png" alt="빈 별">
+						</span>
+					</div>
+					<span><a
+						th:href="@{/review/allreview/{restaurantId}(restaurantId=${review.restaurant.id})}">리뷰보기</a></span>
+				</div>
+				<div th:each="file : ${review.attachedFile}">
+					<div th:if="${file.saved_filename}">
+						<img
+							th:src="@{'/review/display?filename='+${file.saved_filename}}"
+							alt="Review Image"
+							style="width: 300px; height: 300px; object-fit: cover;">
+					</div>
+				</div>
+				<div th:text="'추천 메뉴 : ' + ${review.recommendItems}"
+					class="recommendItems"></div>
+				<div th:text="'리뷰 : ' + ${review.reviewContents}"
+					class="review_content"></div>
+
+			</div>
+		</div>
+		<p th:unless="${!myPage.beeMember.review.isEmpty()}">작성된 리뷰가 없습니다.</p>
+
+	</div>
+	
+	  <div class="button" th:if="${#authentication.principal != null and #authentication.principal.member_id == myPage.beeMember.member_id}">
+		  <button onclick="location.href='/member/updateMyPage'">수정하기</button>
+	  </div>
+	<!-- 다른 사람 or 로그인 안 한 사람 -->
+
+
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		// 로그인 모달 제어
+		document
+				.getElementById('loginButton')
+				.addEventListener(
+						'click',
+						function(event) {
+							event.preventDefault();
+							document.getElementById('loginModal').style.display = 'block';
+						});
+
+		// 닫기 버튼 클릭 시 모달 닫기
+		function closeModal() {
+			document.getElementById('loginModal').style.display = 'none';
+		}
+
+		// 모달 외부 영역 클릭 시 모달 닫기
+		window.onclick = function(event) {
+			let modal = document.getElementById('loginModal');
+			if (event.target == modal) {
+				modal.style.display = 'none';
+			}
+		}
+	</script>
 </body>
+
 </html>

@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.deliciousBee.repository.BeeMemberRepository;
@@ -24,8 +26,8 @@ import jakarta.transaction.Transactional;
 public class BeeMemberService implements UserDetailsService {
 
 
-	@Value("${file.upload.path}")
-	private String uploadPath;
+	
+
 
 	private final BeeMemberRepository beeMemberRepository;
 	private final FileRepository fileRepository;
@@ -44,66 +46,53 @@ public class BeeMemberService implements UserDetailsService {
 		return member.orElse(null); //찾았는데 없으면 null 찾았는데 있으면 그 id값 리턴
 	}
 
-
-	@Transactional
-	public void saveProfile(BeeMember beeMember, AttachedFile attachedFile) {
-		// 첨부 파일이 있을 경우
-		if (attachedFile != null) {
-			beeMemberRepository.save(beeMember);
-			fileRepository.save(attachedFile);
-		}
-		else {
-			beeMemberRepository.save(beeMember);
-		}
+	//*********************세션 업데이트*******************
+	public BeeMember updateSessionMember(String member_id) {
+	    return findMemberById(member_id); // 이 메서드는 DB에서 최신 BeeMember 정보를 가져오는 메서드
 	}
-
+	
+	
+	
 	//**********************멤버 수정***************
 	@Transactional
 	public void updateMember(BeeMember updateMember) {
 
 		BeeMember findMember = findMemberById(updateMember.getMember_id());
 
-
-
-		findMember.setNickname(updateMember.getName());
+		
+		findMember.setNickname(updateMember.getNickname());
 		findMember.setNational(updateMember.getNational());
-		findMember.setPassword(updateMember.getPassword());
 		findMember.setEmail(updateMember.getEmail());
+		
+		
 		beeMemberRepository.save(findMember);
+		
 
 	}
 
-	public boolean isPasswordSame(String member_id, String password) {
-		BeeMember member = findMemberById(member_id);
-		return member != null && member.getPassword().equals(password);
-	}
+	
+	
 
-	public boolean isPasswordMatching(String password, String confirmPassword) {
-		return password != null && password.equals(confirmPassword);
+	
+	//****************비밀번호 변경
+	@Transactional
+	public void updatePassword(BeeMember updatePassword) {
+		BeeMember findMember = findMemberById(updatePassword.getMember_id());
+		findMember.setPassword(updatePassword.getPassword());
+		
+		
+		beeMemberRepository.save(findMember);
 	}
-
+	
+	
 	//******************회원탈퇴*******************
+	@Transactional
 	public void deleteMember(String member_id) {
 		beeMemberRepository.deleteById(member_id);
 
 	}
 
-	//*****************마이페이지 꾸미기***************************
-//	@Transactional
-//	public void saveMyPage(MyPage myPage , AttachedFile attachedFile) {
-//
-//		myPage = myPageRepository.save(myPage); //myPage 먼저저장
-//		// 첨부파일이 있는 경우 처리
-//		if (attachedFile != null) {
-//			attachedFile.setMyPage(myPage); // 첨부파일에 MyPage를 설정
-//			fileRepository.save(attachedFile); // 첨부파일 저장
-//		}
-//		else {
-//			myPageRepository.save(myPage);
-//		}
-//
-//
-//	}
+	
 
 
 	@Override
