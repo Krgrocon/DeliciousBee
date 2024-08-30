@@ -1,8 +1,8 @@
 package com.example.deliciousBee.service.restaurant;
 
 
+import com.example.deliciousBee.dto.restaurant.RestaurantDto;
 import com.example.deliciousBee.model.board.Restaurant;
-import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.repository.RestaurantRepository;
 import com.example.deliciousBee.repository.RtFileRepository;
@@ -112,14 +112,48 @@ public class RestaurantService {
     public Page<Restaurant> searchByNameOrMenuName(String keyword, Pageable pageable) {
         return restaurantRepository.searchByNameOrMenuName(keyword, pageable);
     }
-    //페이지
-//    public Page<Restaurant> restaurnatList(Pageable pageable) {
-//        return restaurantRepository.findAll(pageable);
-//    }
 
-//    public Page<Restaurant> restaurantSearchList(String keyword, Pageable pageable) {
-//        return restaurantRepository.findByNameContaining(
-//                keyword, pageable);
-//    }
+    public Page<RestaurantDto> searchRestaurants(String keyword, Pageable pageable, String sortBy, Double userLatitude, Double userLongitude) {
+        Page<Restaurant> restaurants;
+
+        if (keyword == null || keyword.isEmpty()) {
+            // 검색어가 없는 경우 전체 레스토랑 목록 조회
+            if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null) {
+                restaurants = restaurantRepository.findAllSortedByDistance(userLatitude, userLongitude, pageable);
+            } else {
+                restaurants = restaurantRepository.findAll(pageable);
+            }
+        } else {
+            if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null) {
+                restaurants = restaurantRepository.searchByNameOrMenuNameSortedByDistance(keyword, userLatitude, userLongitude, pageable);
+            } else {
+                restaurants = restaurantRepository.searchByNameOrMenuName(keyword, pageable);
+            }
+        }
+
+        // DTO로 변환
+        return restaurants.map(restaurant -> {
+            RestaurantDto dto = new RestaurantDto(restaurant); // RestaurantDto가 이미지 리스트를 처리
+            if (userLatitude != null && userLongitude != null) {
+                double distance = calculateDistance(userLatitude, userLongitude, restaurant.getLatitude(), restaurant.getLongitude());
+                dto.setDistance(distance);
+            }
+            return dto;
+        });
+    }
+
+
+    private Double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        double R = 6371; // 지구의 반지름 (단위: km)
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distanceKm = R * c; // 거리 (단위: km)
+
+        return distanceKm * 1000; // 거리 (단위: m)
+    }
 
 }

@@ -24,4 +24,13 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query("SELECT r FROM Restaurant r WHERE r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%")
     Page<Restaurant> searchByNameOrMenuName(String keyword, Pageable pageable);
 
+    @Query("SELECT r FROM Restaurant r ORDER BY " +
+            "6371 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * sin(radians(r.latitude))) ASC")
+    Page<Restaurant> findAllSortedByDistance(Double userLatitude, Double userLongitude, Pageable pageable);
+
+    @Query("SELECT r FROM Restaurant r WHERE r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword% ORDER BY " +
+            "6371 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * sin(radians(r.latitude))) ASC")
+    Page<Restaurant> searchByNameOrMenuNameSortedByDistance(String keyword, Double userLatitude, Double userLongitude, Pageable pageable);
+
+
 }

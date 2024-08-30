@@ -3,14 +3,17 @@ package com.example.deliciousBee.service.review;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.*;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.model.file.AttachedFile;
+import com.example.deliciousBee.model.like.Like;
+import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.repository.FileRepository;
+import com.example.deliciousBee.repository.LikeRepository;
 import com.example.deliciousBee.repository.ReportRepository;
 import com.example.deliciousBee.repository.ReviewRepository;
 import com.example.deliciousBee.util.FileService;
@@ -30,6 +33,7 @@ public class ReviewService {
 	private final FileRepository fileRepository;
 	private final FileService fileService;
 	private final ReportRepository reportRepository;
+	private final LikeRepository likeRepository;
 
 	public void saveReview(Review review, List<AttachedFile> attachedFiles) {
 		if (attachedFiles != null) {
@@ -48,7 +52,6 @@ public class ReviewService {
 		List<Review> reviews = reviewRepository.findByRestaurantId(restaurantId);
 		List<Long> reportedReviewIds = reportRepository.findReportedReviewId(memberId);
 
-		// 신고된 리뷰를 제외한 리뷰를 필터링합니다.
 		List<Review> filteredReviews = reviews.stream().filter(review -> !reportedReviewIds.contains(review.getId()))
 				.collect(Collectors.toList());
 
@@ -60,16 +63,35 @@ public class ReviewService {
 	}
 
 	// 좋아요 로직
-	public int likeReview(Long reviewId) {
-		Review review = reviewRepository.findById(reviewId).get();
-		review.setLikeCount(review.getLikeCount() + 1);
-		reviewRepository.save(review);
+	public int likeReview(BeeMember beeMember, Long reviewId) {
+		Review review = reviewRepository.findById(reviewId).orElseThrow();
+		if (!likeRepository.existsByBeeMemberAndReview(beeMember, review)) {
+			Like like = new Like(beeMember, review);
+			likeRepository.save(like);
+			review.setLikeCount(review.getLikeCount() + 1);
+			reviewRepository.save(review);
+		}
+		return review.getLikeCount();
+	}
+
+	// 좋아요 취소 로직
+	@Transactional
+	public int unlikeReview(BeeMember beeMember, Long reviewId) {
+		Review review = reviewRepository.findById(reviewId).orElseThrow();
+		if (likeRepository.existsByBeeMemberAndReview(beeMember, review)) {
+			likeRepository.deleteByBeeMemberAndReview(beeMember, review);
+			review.setLikeCount(review.getLikeCount() - 1);
+			reviewRepository.save(review);
+		}
 		return review.getLikeCount();
 	}
 
 	@Transactional
 	public boolean deleteReview(Long reviewId) {
 		try {
+			if (reportRepository.existsById(reviewId)) {
+				reportRepository.deleteById(reviewId);
+			}
 			fileRepository.deleteByReviewId(reviewId);
 			reviewRepository.deleteById(reviewId);
 			return true;
@@ -151,13 +173,18 @@ public class ReviewService {
 
 	// 리뷰 정렬 로직
 	public List<Review> sortReview(String sort, Long restaurantId, String memberId) {
+		List<Long> reportedReviewIds = reportRepository.findReportedReviewId(memberId);
 		List<Review> reviews = switch (sort) {
-		case "rating" -> reviewRepository.findAllByRestaurant_IdOrderByRatingDesc(restaurantId); // 특정 식당 ID로 필터링
-		case "visitDate" -> reviewRepository.findAllByRestaurant_IdOrderByVisitDateDesc(restaurantId);
-		case "likeCount" -> reviewRepository.findAllByRestaurant_IdOrderByLikeCountDesc(restaurantId);
-		default -> getReviewsByRestaurantIdWithFiles(restaurantId, memberId);
+			case "rating" -> reviewRepository.findAllByRestaurant_IdOrderByRatingDesc(restaurantId); // 특정 식당 ID로 필터링
+			case "visitDate" -> reviewRepository.findAllByRestaurant_IdOrderByVisitDateDesc(restaurantId);
+			case "likeCount" -> reviewRepository.findAllByRestaurant_IdOrderByLikeCountDesc(restaurantId);
+			default -> getReviewsByRestaurantIdWithFiles(restaurantId, memberId);
 		};
-		
+
+		// 모든 경우에 신고된 리뷰를 필터링
+		reviews = reviews.stream().filter(review -> !reportedReviewIds.contains(review.getId()))
+				.collect(Collectors.toList());
+
 		for (Review review : reviews) {
 			review.setAttachedFile(fileRepository.findAllByReview(review));
 			review.setCanEdit(memberId.equals(review.getBeeMember().getMember_id()));

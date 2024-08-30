@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>검색 결과</title>
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
-    <style>
+    <link rel="stylesheet"><style>
         body {
             margin: 0;
             padding: 0;
@@ -295,7 +293,7 @@
                                 d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
                     </g>
                 </svg>
-                <input type="text" placeholder="검색어를 입력해주세요" class="search-input">
+                <input type="text" placeholder="검색어를 입력해주세요" class="search-input" id="searchText" name="keyword" th:value="${keyword}">
             </div>
         </div>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -317,78 +315,14 @@
                     <!-- 카테고리 필터 -->
                     <div class="filter-category">
                         <h5>카테고리</h5>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value=""
-                                   id="category1"> <label class="form-check-label"
-                                                          for="category1">카테고리 1</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value=""
-                                   id="category2"> <label class="form-check-label"
-                                                          for="category2">카테고리 2</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value=""
-                                   id="category3"> <label class="form-check-label"
-                                                          for="category3">카테고리 3</label>
-                        </div>
-                        <!-- 추가 카테고리 항목 -->
-                        <div class="additional-content" id="additionalCategory">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value=""
-                                       id="category4"> <label class="form-check-label"
-                                                              for="category4">카테고리 4</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value=""
-                                       id="category5"> <label class="form-check-label"
-                                                              for="category5">카테고리 5</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value=""
-                                       id="category6"> <label class="form-check-label"
-                                                              for="category6">카테고리 6</label>
-                            </div>
-                        </div>
+                        <div id="categoryFilters"></div>
                         <button class="btn-toggle" id="toggleCategory">펼쳐보기</button>
                     </div>
-                    <br> <br>
+                    <br><br>
                     <!-- 분위기 필터 -->
                     <div class="filter-ambiance mt-3">
                         <h5>분위기</h5>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value=""
-                                   id="ambiance1"> <label class="form-check-label"
-                                                          for="ambiance1">분위기 1</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value=""
-                                   id="ambiance2"> <label class="form-check-label"
-                                                          for="ambiance2">분위기 2</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value=""
-                                   id="ambiance3"> <label class="form-check-label"
-                                                          for="ambiance3">분위기 3</label>
-                        </div>
-                        <!-- 추가 분위기 항목 -->
-                        <div class="additional-content" id="additionalAmbiance">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value=""
-                                       id="ambiance4"> <label class="form-check-label"
-                                                              for="ambiance4">분위기 4</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value=""
-                                       id="ambiance5"> <label class="form-check-label"
-                                                              for="ambiance5">분위기 5</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value=""
-                                       id="ambiance6"> <label class="form-check-label"
-                                                              for="ambiance6">분위기 6</label>
-                            </div>
-                        </div>
+                        <div id="ambianceFilters"></div>
                         <button class="btn-toggle" id="toggleAmbiance">펼쳐보기</button>
                     </div>
                 </div>
@@ -397,6 +331,7 @@
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
             <!-- 정렬 및 검색 결과 박스 -->
+            <div id="pagination"></div>
             <div class="results-container">
                 <!-- 정렬 박스 -->
                 <div class="sort-container">
@@ -406,118 +341,204 @@
                         <button class="btn btn-custom btn-sort" id="sort-rating">평점순</button>
                     </div>
                 </div>
-                <th:block th:each="restaurant : ${restaurants}">
-                    <div class="col-12 mb-4">
-                        <div class="card">
-                            <a th:href="@{/restaurant/rtread(id=${restaurant.id})}">
-                                <div th:each="file : ${restaurant.attachedFile}">
-                                    <div th:if="${file.saved_filename}">
-                                        <img th:src="@{'/restaurant/display?filename='+${file.saved_filename}}"
-                                             alt="Restaurant Image" class="card-img-left">
-                                    </div>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <h4 class="badge bg-primary"
-                                    th:text="|# ${restaurant.category}"></h4>
-                                <a th:href="@{/restaurant/rtread(id=${restaurant.id})}">
-                                    <h2 class="card-title" th:text="${restaurant.name}" ></h2>
-                                </a>
-                                <h4 class="text" th:text="${restaurant.address}"></h4>
-                                <small class="text-muted" th:text="${restaurant.description}|"></small>
-                                <div class="card-footer">
-                                    <h3 class="card-text"
-                                        th:text="|평점: ${restaurant.average_rating}★|"></h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </th:block>
+                <div id="restaurantList"></div>
             </div>
         </div>
     </div>
 </div>
-<p>
-<div id="navigator" class="center">
-    <!-- 이전 그룹이 없을 경우 보여주지 않음 -->
-    <th:block th:if="${navi.currentPage - navi.pagePerGroup > 0}">
-        <a
-                th:href="@{/restaurant/rtlist(page=${navi.currentPage - navi.pagePerGroup},searchText=${searchText})}">
-            :뒤쪽_화살표::뒤쪽_화살표: </a>&nbsp;&nbsp;
-    </th:block>
-    <!-- 이전 페이지가 없을 경우 보여주지 않음 -->
-    <th:block th:if="${navi.currentPage > 1}">
-        <a
-                th:href="@{/restaurant/rtlist(page=${navi.currentPage - 1},searchText=${searchText})}">
-            ◁ </a>&nbsp;&nbsp;
-    </th:block>
-    <th:block
-            th:each="counter : ${#numbers.sequence(navi.startPageGroup, navi.endPageGroup)}">
-        <a
-                th:href="@{/restaurant/rtlist(page=${counter},searchText=${searchText})}"
-                th:text="${counter}"></a>&nbsp;
-    </th:block>
-    &nbsp;
-    <!-- 다음 페이지가 없을 경우 보여주지 않음 -->
-    <th:block th:if="${navi.currentPage < navi.totalPageCount}">
-        <a
-                th:href="@{/restaurant/rtlist(page=${navi.currentPage + 1},searchText=${searchText})}">
-            ▷ </a>&nbsp;&nbsp;
-    </th:block>
-    <!-- 다음 그룹이 없을 경우 보여주지 않음 -->
-    <th:block th:if="${navi.currentGroup < navi.totalPageGroup}">
-        <th:block
-                th:if="${(navi.currentPage + navi.pagePerGroup) > navi.totalPageCount}">
-            <a
-                    th:href="@{/restaurant/rtlist(page=${navi.totalPageCount},searchText=${searchText})}">
-                :앞쪽_화살표::앞쪽_화살표: </a>
-        </th:block>
-        <th:block
-                th:if="${(navi.currentPage + navi.pagePerGroup) < navi.totalPageCount}">
-            <a
-                    th:href="@{/restaurant/rtlist(page=${navi.currentPage + navi.pagePerGroup},searchText=${searchText})}">
-                :앞쪽_화살표::앞쪽_화살표: </a>
-        </th:block>
-    </th:block>
-</div>
-</div>
+<div id="navigator" class="center"></div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script
-        src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
-    function search() {
-        let searchText = document.getElementById("searchText").value;
-        location.href = "/restaurant/rtlist?searchText=" + searchText;
-    }
     $(document).ready(function() {
-        // 정렬 버튼 클릭 이벤트 핸들러
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentKeyword = $('#searchText').val();
+        let currentSortBy = "default";
+        let userLatitude = null;
+        let userLongitude = null;
+
+        // 쿠키에서 위치 정보 가져오기
+        const userLocation = getCookie("userLocation");
+        if (userLocation) {
+            const location = JSON.parse(userLocation);
+            userLatitude = location.latitude;
+            userLongitude = location.longitude;
+        }
+
+        // 사용자의 위치 정보를 가져오는 함수
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        userLatitude = position.coords.latitude;
+                        userLongitude = position.coords.longitude;
+                        // 위치 정보를 쿠키에 저장
+                        document.cookie = `userLocation=${JSON.stringify({latitude: userLatitude, longitude: userLongitude})}; path=/`;
+
+                        // 위치 정보를 가져온 후 초기 데이터 로드
+                        loadRestaurants();
+                    },
+                    function(error) {
+                        console.error("Error getting location: ", error);
+                        // 위치 정보를 가져오지 못한 경우에도 초기 데이터 로드
+                        loadRestaurants();
+                    }
+                );
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+                // Geolocation을 사용할 수 없는 경우에도 초기 데이터 로드
+                loadRestaurants();
+            }
+        }
+
+        // 초기 위치 정보 가져오기 시도
+        getUserLocation();
+        loadFilters();
+
+        // 검색 입력 이벤트
+        $('#searchText').on('keyup', function(e) {
+            if (e.key === 'Enter') {
+                currentKeyword = $(this).val();
+                currentPage = 1;
+                loadRestaurants();
+            }
+        });
+
+        // 정렬 버튼 클릭 이벤트
         $('#sort-distance').click(function() {
-            alert('거리순 정렬 기능이 구현될 예정입니다.');
+            currentSortBy = "distance";
+            loadRestaurants();
         });
+
         $('#sort-rating').click(function() {
-            alert('평점순 정렬 기능이 구현될 예정입니다.');
+            currentSortBy = "rating";
+            loadRestaurants();
         });
-        // 카테고리 펼치기/접기
-        $('#toggleCategory').click(function() {
-            let $additionalCategory = $('#additionalCategory');
-            if ($additionalCategory.is(':visible')) {
-                $additionalCategory.slideUp();
-                $(this).text('펼쳐보기');
+
+        // 레스토랑 데이터 로드 함수
+        function loadRestaurants() {
+            $.ajax({
+                url: '/api/restaurants',
+                type: 'GET',
+                data: {
+                    keyword: currentKeyword,
+                    page: currentPage - 1,
+                    sortBy: currentSortBy,
+                    latitude: userLatitude,
+                    longitude: userLongitude
+                },
+                success: function(data) {
+                    console.log(data); // 응답 데이터 구조를 확인하기 위해 로그 출력
+
+                    if (data && data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
+                        renderRestaurants(data);
+                        renderPagination(data.page.totalPages, data.page.number + 1);
+                    } else {
+                        console.error("Invalid response data: ", data);
+                    }
+                },
+                error: function(error) {
+                    console.error("Error loading restaurants:", error);
+                }
+            });
+        }
+
+
+        // 레스토랑 렌더링 함수
+        function renderRestaurants(data) {
+            if (data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
+                let restaurants = data._embedded.restaurantDtoList;
+                let html = '';
+
+                restaurants.forEach(function(restaurant) {
+                    let imageUrl = restaurant.attachedFile && restaurant.attachedFile.length > 0
+                        ? `/restaurant/display?filename=${restaurant.attachedFile[0].saved_filename}`
+                        : 'default_image_url.jpg'; // 기본 이미지 URL을 설정할 수 있습니다.
+
+                    html += `
+            <div class="col-12 mb-4">
+                <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}">
+                    <a href="/restaurant/rtread?id=${restaurant.id}">
+                        <img src="${imageUrl}"
+                             alt="Restaurant Image" class="card-img-left">
+                    </a>
+                    <div class="card-body">
+                        <h4 class="badge bg-primary"># ${restaurant.category}</h4>
+                        <a href="/restaurant/rtread?id=${restaurant.id}">
+                            <h2 class="card-title">${restaurant.name}</h2>
+                        </a>
+                        <h4 class="text">${restaurant.address}</h4>
+                        <small class="text-muted">${restaurant.description}</small>
+                        <div class="card-footer">
+                            <h3 class="card-text">평점: ${restaurant.average_rating}★</h3>
+                           <h3 class="card-text">거리: ${restaurant.distance.toFixed(0)} m</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+                });
+
+                $('#restaurantList').html(html);
             } else {
-                $additionalCategory.slideDown();
-                $(this).text('접기');
+                console.error("Invalid data structure: ", data);
             }
+        }
+        // 쿠키에서 특정 값을 가져오는 함수
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // 페이지네이션 렌더링 함수
+        function renderPagination(totalPages, currentPage) {
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<a href="#" class="page-link" data-page="${i}">${i}</a>`;
+            }
+            $('#pagination').html(html);
+        }
+
+        // 페이지네이션 클릭 이벤트
+        $('#pagination').on('click', '.page-link', function(e) {
+            e.preventDefault();
+            currentPage = $(this).data('page');
+            loadRestaurants();
         });
-        // 분위기 펼치기/접기
-        $('#toggleAmbiance').click(function() {
-            let $additionalAmbiance = $('#additionalAmbiance');
-            if ($additionalAmbiance.is(':visible')) {
-                $additionalAmbiance.slideUp();
-                $(this).text('펼쳐보기');
-            } else {
-                $additionalAmbiance.slideDown();
-                $(this).text('접기');
-            }
+
+        // 필터 데이터 로드 함수
+        function loadFilters() {
+            // 실제로는 서버에서 필터 데이터를 가져와야 합니다.
+            // 여기서는 예시 데이터를 사용합니다.
+            const categories = ['한식', '중식', '일식', '양식'];
+            const ambiances = ['조용한', '활기찬', '로맨틱한', '가족적인'];
+
+            renderFilters('categoryFilters', categories);
+            renderFilters('ambianceFilters', ambiances);
+        }
+
+        // 필터 렌더링 함수
+        function renderFilters(elementId, filters) {
+            let html = '';
+            filters.forEach((filter, index) => {
+                html += `
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="${filter}" id="${elementId}-${index}">
+                    <label class="form-check-label" for="${elementId}-${index}">${filter}</label>
+                </div>
+            `;
+            });
+            $(`#${elementId}`).html(html);
+        }
+
+        // 필터 토글 기능
+        $('#toggleCategory, #toggleAmbiance').click(function() {
+            const $target = $(this).prev('div');
+            $target.slideToggle();
+            $(this).text($target.is(':visible') ? '접기' : '펼쳐보기');
         });
     });
 </script>

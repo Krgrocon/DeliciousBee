@@ -33,4 +33,8 @@ public class RestaurantAttachedFile {
 		this.saved_filename = saved_filename;
 		this.file_size = file_size;
 	}
+
+	public String getSavedFilename() {
+		return this.saved_filename;
+	}
 }

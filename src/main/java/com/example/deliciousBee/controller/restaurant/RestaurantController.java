@@ -1,19 +1,20 @@
 package com.example.deliciousBee.controller.restaurant;
 
-import com.example.deliciousBee.dto.member.SessionUser;
 import com.example.deliciousBee.model.board.Restaurant;
-import com.example.deliciousBee.model.board.RestaurantWriteForm;
-import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
 import com.example.deliciousBee.util.PageNavigator;
 import com.example.deliciousBee.util.RestaurantFileService;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,7 +22,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -104,30 +104,56 @@ public class RestaurantController {
 
 	//검색
 	@GetMapping("/search")
-	public String searchRestaurants(@RequestParam(value = "keyword", required = false) String keyword,
-									@PageableDefault(page = 0, size = 10) Pageable pageable,
-									Model model) {
-
-		Page<Restaurant> restaurants;
-		if (keyword == null || keyword.isEmpty()) {
-			// 검색어가 없는 경우 전체 레스토랑 목록 조회
-			restaurants = restaurantService.findAll(pageable);
-		} else {
-			restaurants = restaurantService.searchByNameOrMenuName(keyword, pageable);
+	public String searchRestaurants(
+			@RequestParam(value = "keyword", required = false) String keyword,
+			@PageableDefault(page = 0, size = 10) Pageable pageable,
+			@RequestParam(value = "sortBy", required = false, defaultValue = "default") String sortBy,
+			HttpServletRequest request, // 쿠키에서 사용자 위치 정보 가져오기 위해 추가
+			Model model
+	) {
+		// 쿠키에서 사용자 위치 정보 가져오기
+		Double userLatitude = null;
+		Double userLongitude = null;
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals("userLocation")) {
+					String locationJson = cookie.getValue();
+					try {
+						JSONObject location = new JSONObject(locationJson);
+						userLatitude = location.getDouble("latitude");
+						userLongitude = location.getDouble("longitude");
+					} catch (JSONException e) {
+						// 쿠키 파싱 오류 처리
+						e.printStackTrace();
+					}
+					break;
+				}
+			}
 		}
 
-		// PageNavigator 객체 생성 및 설정
-		int countPerPage = pageable.getPageSize(); // 페이지당 글 목록 수
-		int pagePerGroup = 5; // 그룹당 페이지 수
-		int currentPage = pageable.getPageNumber() + 1; // 현재 페이지 (Pageable은 0부터 시작)
-		int totalRecordsCount = (int) restaurants.getTotalElements(); // 전체 글 수
-		int totalPageCount = restaurants.getTotalPages(); // 전체 페이지 수
-
-		PageNavigator navi = new PageNavigator(countPerPage, pagePerGroup, currentPage, totalRecordsCount, totalPageCount);
-
-		model.addAttribute("restaurants", restaurants);
+//		// 서비스 호출 시 사용자 위치 정보 전달
+////		Page<Restaurant> restaurants = restaurantService.searchRestaurants(keyword, pageable, sortBy, userLatitude, userLongitude);
+//
+//		if (keyword == null || keyword.isEmpty()) {
+//			// 검색어가 없는 경우 전체 레스토랑 목록 조회
+//			restaurants = restaurantService.findAll(pageable);
+//		} else {
+//			restaurants = restaurantService.searchByNameOrMenuName(keyword, pageable);
+//		}
+//
+//		// PageNavigator 객체 생성 및 설정
+//		int countPerPage = pageable.getPageSize(); // 페이지당 글 목록 수
+//		int pagePerGroup = 5; // 그룹당 페이지 수
+//		int currentPage = pageable.getPageNumber() + 1; // 현재 페이지 (Pageable은 0부터 시작)
+//		int totalRecordsCount = (int) restaurants.getTotalElements(); // 전체 글 수
+//		int totalPageCount = restaurants.getTotalPages(); // 전체 페이지 수
+//
+//		PageNavigator navi = new PageNavigator(countPerPage, pagePerGroup, currentPage, totalRecordsCount, totalPageCount);
+//
+//		model.addAttribute("restaurants", restaurants);
 		model.addAttribute("keyword", keyword);
-		model.addAttribute("navi", navi); // navi 객체를 모델에 추가
+//		model.addAttribute("navi", navi); // navi 객체를 모델에 추가
 
 		return "restaurant/rtlist";
 	}
@@ -150,22 +176,26 @@ public class RestaurantController {
 //		return "restaurant/rtlist"; // 검색 결과를 보여줄 뷰 이름
 //	}
 
-
-	@GetMapping("rtread")
-	public String read(@AuthenticationPrincipal BeeMember loginMember,
-					   @RequestParam(name = "id") Long id, Model model) {
-
+	@GetMapping("rtread/{restaurant_id}")
+	public String read(@AuthenticationPrincipal BeeMember loginMember
+			,@PathVariable("restaurant_id") Long restaurant_id
+			,Model model) {
 		if(loginMember == null) {
 			return "redirect:/member/login";
 		}
 
-		Restaurant restaurant = restaurantService.findRestaurant(id);
-
+		// 레스토랑 정보 가져오기
+		Restaurant restaurant = restaurantService.findRestaurant(restaurant_id);
 		if(restaurant == null) {
 			return "redirect:/shop/index";
 		}
-
 		model.addAttribute("restaurant", restaurant);
+
+		// 리뷰 정보 가져오기
+		String memberId = loginMember.getMember_id();
+		List<Review> reviewsByRestaurant = reviewService.getReviewsByRestaurantIdWithFiles(restaurant_id, memberId);
+		log.info("************** allreview:{}", reviewsByRestaurant);
+		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant);
 		return "restaurant/rtread";
 	}
 
@@ -236,7 +266,10 @@ public class RestaurantController {
 		}
 		return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
 	}
-	
+
+
+
+
 //	@GetMapping("/restaurants")
 //	public String getRestaurants(Pageable pageable) { 
 //	    Page<Restaurant> restaurants = restaurantService.findByNameContaining(keyword, pageable); 
