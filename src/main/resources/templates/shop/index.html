@@ -74,10 +74,10 @@
             </div>
             <ul class="card">
                     <li class="img-content" th:each="restaurant : ${restaurantlist}"
-                        th:onclick="|window.location.href='@{/restaurant/rtread(id=${restaurant.id})}'|">
+                        th:onclick="|window.location.href='@{/restaurant/rtread/{restaurantId}(restaurantId=${restaurant.id})}'|">
                         <div class="content-wrapper">
-                            <div class="image-wrapper">
-                                <img th:if="${#lists.size(restaurant.attachedFile) > 0}" th:src="@{${restaurant.attachedFile.get(0).saved_filename}}" alt="레스토랑 이미지"/>
+                            <div class="image-wrapper" th:each="file : ${restaurant.attachedFile}">
+                                <img th:if="${#lists.size(restaurant.attachedFile) > 0}" th:src="@{'/restaurant/display?filename='+${file.saved_filename}}" alt="레스토랑 이미지"/>
                                 <p th:if="${#lists.size(restaurant.attachedFile) == 0}">이미지가 없습니다</p>
                             </div>
                             <div class="intro-content">

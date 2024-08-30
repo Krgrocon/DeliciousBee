@@ -60,11 +60,14 @@ public class ReviewController {
 
 	@GetMapping("allreview/{restaurant_id}")
 	public String allReview(@PathVariable("restaurant_id") Long restaurant_id, Model model,
-							@AuthenticationPrincipal BeeMember loginMember) {
+			@AuthenticationPrincipal BeeMember loginMember) {
 
 		String MemberId = loginMember.getMember_id();
 		List<Review> allReview = reviewService.getReviewsByRestaurantIdWithFiles(restaurant_id, MemberId);
+		log.info("******* allReview:{}", allReview);
 		Restaurant restaurant = restaurantService.findRestaurant(restaurant_id);
+		
+		
 		model.addAttribute("restaurant", restaurant);
 		model.addAttribute("allReview", allReview);
 		model.addAttribute("uploadPath", uploadPath);
@@ -73,8 +76,8 @@ public class ReviewController {
 
 	@PostMapping("write/{restaurant_id}")
 	public String postWriteReview(@Validated @ModelAttribute("writeForm") ReviewWriteForm reviewWriteForm,
-								  BindingResult result, @RequestParam(name = "file", required = false) MultipartFile[] files,
-								  @AuthenticationPrincipal BeeMember loginMember, @PathVariable(name = "restaurant_id") Long restaurant_id) {
+			BindingResult result, @RequestParam(name = "file", required = false) MultipartFile[] files,
+			@AuthenticationPrincipal BeeMember loginMember, @PathVariable(name = "restaurant_id") Long restaurant_id) {
 
 		if (result.hasErrors()) {
 			return "redirect:/";
@@ -102,7 +105,7 @@ public class ReviewController {
 			}
 		}
 		reviewService.saveReview(review, attachedFiles);
-		return "redirect:/restaurant/rtread/" + restaurant_id;
+		return "redirect:/review/allreview/" + restaurant_id;
 	}
 
 	// 이미지 출력을 위한 매서드
@@ -126,26 +129,17 @@ public class ReviewController {
 	}
 
 	// 리뷰 좋아요 처리
-	@PostMapping("/{reviewId}/like")
+	@PostMapping("/{reviewId}")
 	@ResponseBody
-	public ResponseEntity<Map<Object, Object>> likeReview(@PathVariable Long reviewId,
-														  @AuthenticationPrincipal BeeMember beeMember) {
-		log.info("여기까지는 오니?");
-		Map<Object, Object> response = new HashMap<>();
-		int likeCount = reviewService.likeReview(beeMember, reviewId);
-		response.put("success", true);
-		response.put("likeCount", likeCount);
-		return ResponseEntity.ok(response);
-	}
+	public ResponseEntity<Map<Object, Object>> likeReview(@RequestBody ReviewLikeForm reviewLikeForm) {
+		Review review = ReviewConverter.reviewLikeFormToReview(reviewLikeForm);
+		int likeCount = reviewService.likeReview(review.getId());
 
-	@PostMapping("/{reviewId}/unlike")
-	@ResponseBody
-	public ResponseEntity<Map<String, Object>> unlikeReview(@PathVariable Long reviewId, @AuthenticationPrincipal BeeMember beeMember) {
-		Map<String, Object> response = new HashMap<>();
-		int likeCount = reviewService.unlikeReview(beeMember, reviewId);
-		response.put("success", true);
-		response.put("likeCount", likeCount);
-		return ResponseEntity.ok(response);
+		Map<Object, Object> reponse = new HashMap<>();
+		boolean success = true;
+		reponse.put("success", success);
+		reponse.put("likeCount", likeCount);
+		return ResponseEntity.ok(reponse);
 	}
 
 	// 리뷰삭제
@@ -160,7 +154,7 @@ public class ReviewController {
 
 	@GetMapping("/update/{reviewId}")
 	public String getUpdateReview(@AuthenticationPrincipal BeeMember loginMember,
-								  @PathVariable("reviewId") Long reviewId, Model model) {
+			@PathVariable("reviewId") Long reviewId, Model model) {
 		Review findReview = reviewService.findReview(reviewId);
 		if (findReview == null || !findReview.getBeeMember().getMember_id().equals(loginMember.getMember_id())) {
 			log.info("허용 되지 않는 접근 방식입니다");
@@ -181,10 +175,11 @@ public class ReviewController {
 	// 리뷰 수정
 	@PostMapping("/update")
 	public String postUpdateReview(@Validated @ModelAttribute ReviewUpdateForm reviewUpdateForm, BindingResult result,
-								   @RequestParam(name = "file", required = false) MultipartFile[] file) {
+			@RequestParam(name = "file", required = false) MultipartFile[] file) {
 		Review updateReview = ReviewConverter.reviewUpdateFormToReview(reviewUpdateForm);
+		log.info("**** updateReview:{}", updateReview);
 		reviewService.updateReview(updateReview, reviewUpdateForm.isFileRemoved(), file);
-		return "redirect:/restaurant/rtread/";
+		return "redirect:/";
 	}
 
 	// 수정시 첨부파일 삭제

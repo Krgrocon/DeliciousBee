@@ -1,0 +1,140 @@
+/* 미슐랭 스타일 적용 */
+body {
+	font-family: 'Noto Sans KR', sans-serif;
+}
+
+.navbar {
+	background-color: #61686c !important;
+	color: white;
+	padding: 15px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.nav-link {
+	color: white !important;
+}
+
+/* 카드 이미지 스타일 */
+.card-img-top {
+	height: 300px;
+	object-fit: cover;
+	border-radius: 0;
+}
+
+/* 사이드바 카드 높이 */
+.sidebar-card {
+	height: 300px;
+}
+
+/* 카드 제목 스타일 */
+.card-title {
+	font-size: 1.5rem;
+	font-weight: bold;
+	margin-bottom: 0.5rem;
+}
+
+/* 카드 내용 스타일 */
+.card-text {
+	margin-bottom: 1rem;
+}
+
+/* 기본 버튼 스타일 */
+.btn-primary {
+	background-color: #dc3545;
+	border-color: #dc3545;
+}
+
+/* 페이지네이션 링크 스타일 */
+.pagination .page-link {
+	color: #dc3545;
+}
+
+/* 활성 페이지네이션 링크 스타일 */
+.pagination .page-item.active .page-link {
+	background-color: #dc3545;
+	border-color: #dc3545;
+}
+
+/* 카드 스타일 */
+.card {
+	width: 100%;
+}
+
+/* 카드 헤더 스타일 */
+.card-header {
+	background-color: #61686c !important;
+	color: white;
+}
+
+/* 스타일 없는 링크 */
+.no-style-link {
+	color: inherit;
+	text-decoration: none;
+	cursor: default;
+}
+
+/* 오른쪽 정렬 버튼 스타일 */
+.btn-custom {
+	margin-left: auto;
+}
+
+/* 별점 스타일 */
+.rating {
+	display: inline-block;
+	text-align: center;
+}
+
+.stars {
+	position: relative;
+	display: inline-block;
+	font-size: 20px;
+	color: #ddd;
+}
+
+.stars::before {
+	content: '★★★★★';
+	color: #ffd700;
+	position: absolute;
+	top: -30px;
+	left: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	width: var(--rating-width, 0);
+}
+
+.stars::after {
+	content: '★★★★★';
+	color: #ddd;
+	position: absolute;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	width: 100%;
+}
+
+.rating-text {
+	font-size: 1em;
+}
+
+/* 모달 본문 텍스트 정렬 */
+.modal-body {
+	text-align: left;
+}
+
+/* 버튼 컨테이너 - 버튼 가로 배치 */
+.button-container {
+	display: flex;
+	align-items: center;
+}
+
+.d-flex {
+	display: flex;
+	align-items: center;
+}
+
+.d-flex-magin {
+	margin-left: 30px
+}
