@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeliciousBee - 맛집 찾기</title>
+  <style>
+
+
+
+
+    .navbar {
+      background-color: #343a40;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding-left: 15%;
+    }
+
+    .navbar-brand-group {
+      display: flex;
+      align-items: center;
+      margin-right: 56.5%;
+    }
+
+    .navbar-brand {
+      font-size: 1.2rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .navbar-nav {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-item {
+      margin-left: 20px;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-link:hover {
+      color: #FF6347;
+    }
+
+    .nav-link.active {
+      color: #FF6347;
+    }
+
+    .navbar-toggler {
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      display: none;
+      margin-left: 10px;
+    }
+
+    .navbar-toggler span {
+      display: block;
+      width: 25px;
+      height: 3px;
+      background-color: white;
+      margin: 5px 0;
+    }
+
+    /* Container Styles */
+    .tooltip-container {
+      position: relative;
+      display: inline-block;
+      font-family: "Arial", sans-serif;
+      overflow: visible;
+
+      /* 네비게이션 바 스타일 적용 */
+      background-color: #343a40; /* 네비게이션 바 배경색 */
+      color: white; /* 네비게이션 바 텍스트 색상 */
+      margin-left: 20px; /* .nav-item과 동일한 왼쪽 마진 */
+
+
+    }
+
+
+    .tooltip-container .button-content {
+      /* 버튼 스타일 초기화 (필요에 따라 조정) */
+      background: none;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .tooltip-container .text {
+      /* 텍스트 스타일 초기화 (필요에 따라 조정) */
+      font-size: inherit;
+      font-weight: inherit;
+      margin-right: 0;
+      text-shadow: none;
+    }
+    /* Button Styles */
+    .button-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 28px;
+      border-radius: 50px;
+      cursor: pointer;
+      position: relative;
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    .button-content::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+              135deg,
+              rgba(110, 142, 251, 0.4),
+              rgba(167, 119, 227, 0.4)
+      );
+      filter: blur(15px);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: -1;
+    }
+
+    .button-content::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(
+              circle,
+              rgba(255, 255, 255, 0.3) 0%,
+              rgba(255, 255, 255, 0) 70%
+      );
+      transform: scale(0);
+      transition: transform 0.6s ease-out;
+      z-index: -1;
+    }
+
+    .button-content:hover::before {
+      opacity: 1;
+    }
+
+    .button-content:hover::after {
+      transform: scale(1);
+    }
+
+    .button-content:hover {
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+      transform: translateY(-4px) scale(1.03);
+    }
+
+    .button-content:active {
+      transform: translateY(-2px) scale(0.98);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .text {
+      font-size: 18px;
+      font-weight: 600;
+      margin-right: 12px;
+      white-space: nowrap;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      transition: letter-spacing 0.3s ease;
+    }
+
+    .button-content:hover .text {
+      letter-spacing: 1px;
+    }
+
+    .share-icon {
+      fill: white;
+      transition:
+              transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+              fill 0.3s ease;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    }
+
+    .button-content:hover .share-icon {
+      transform: rotate(180deg) scale(1.1);
+      fill: #ffffff;
+    }
+
+    /* Tooltip Styles */
+    .tooltip-content {
+      position: absolute;
+      top: 102%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.8);
+      background: white;
+      border-radius: 15px;
+      padding: 22px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      visibility: hidden;
+      transition:
+              opacity 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+              transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+              visibility 0.5s ease;
+      z-index: 100;
+      pointer-events: none;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .tooltip-container:hover .tooltip-content {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) scale(1);
+      pointer-events: auto;
+    }
+
+    /* Social Icons Styles */
+    .infos {
+      display: flex;
+      flex-direction: column; /* 세로 정렬 */
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 120px;
+      height: 45px;
+      border-radius: 7%;
+      background: #f0f0f0;
+      transition:
+              transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+              background 0.3s ease,
+              box-shadow 0.4s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+
+      /* 밑줄 제거 */
+      text-decoration: none;
+    }
+
+    .info::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+              circle at center,
+              rgba(255, 255, 255, 0.8) 0%,
+              rgba(255, 255, 255, 0) 70%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    /*.info:hover::before {*/
+    /*  opacity: 1;*/
+    /*}*/
+
+    /*.info svg {*/
+    /*  width: 24px;*/
+    /*  height: 24px;*/
+    /*  fill: #333;*/
+    /*  transition:*/
+    /*          transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),*/
+    /*          fill 0.3s ease;*/
+    /*  z-index: 1;*/
+    /*}*/
+
+    .info:hover {
+      transform: translateY(-5px) scale(1.1);
+   }
+
+    .info:active {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /*.info:hover svg {*/
+    /*  transform: scale(1.2);*/
+    /*  fill: white;*/
+    /*}*/
+
+
+
+
+
+    /* Hover Ripple Effect */
+    @keyframes ripple {
+      0% {
+        transform: scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    .button-content::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: inherit;
+      transform: scale(0);
+      opacity: 0;
+    }
+
+    .button-content:active::before {
+      animation: ripple 0.6s linear;
+    }
+
+    /* Tooltip Arrow */
+    .tooltip-content::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 10px 10px 10px;
+      border-style: solid;
+      border-color: transparent transparent rgba(255, 255, 255, 0.9) transparent;
+      filter: drop-shadow(0 -3px 3px rgba(0, 0, 0, 0.1));
+    }
+
+    /* Accessibility */
+    .button-content:focus {
+      outline: none;
+      box-shadow:
+              0 0 0 3px rgba(110, 142, 251, 0.5),
+              0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .button-content:focus:not(:focus-visible) {
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .button-content {
+        padding: 12px 24px;
+        border-radius: 40px;
+      }
+
+      .text {
+        font-size: 16px;
+      }
+
+      .tooltip-content {
+        width: 240px;
+        padding: 18px;
+      }
+
+      .info {
+        width: 44px;
+        height: 44px;
+      }
+
+      .info svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .button-content {
+        padding: 10px 20px;
+      }
+
+      .text {
+        font-size: 14px;
+      }
+
+      .tooltip-content {
+        width: 200px;
+        padding: 15px;
+      }
+
+      .info {
+        width: 40px;
+        height: 40px;
+      }
+
+      .info svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+      .tooltip-content {
+        background: rgba(30, 30, 30, 0.9);
+        color: white;
+      }
+
+      .tooltip-content::before {
+        border-color: transparent transparent rgba(30, 30, 30, 0.9) transparent;
+      }
+
+      .info {
+        background: #2a2a2a;
+      }
+
+      .info svg {
+        fill: #e0e0e0;
+      }
+    }
+
+    /* Print Styles */
+    @media print {
+      .tooltip-container {
+        display: none;
+      }
+    }
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      .button-content,
+      .share-icon,
+      .info,
+      .tooltip-content {
+        transition: none;
+      }
+
+      .button-content {
+        animation: none;
+      }
+    }
+
+    /* Custom Scrollbar for Tooltip Content */
+    .tooltip-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .tooltip-content::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    .tooltip-content::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+    }
+
+    .tooltip-content::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+  </style>
+    </head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <div class="navbar-brand-group">
+      <a class="navbar-brand" href="#!">Delicious Bee</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a href="#" th:onclick="|location.href='@{/restaurant/rtwrite}'|" class="nav-link">맛집등록</a>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
+        <li class="nav-item" th:if="${session.loginMember != null}">
+          <div class="tooltip-container">
+            <div class="button-content">
+              <span class="text">내 정보</span>
+            </div>
+            <div class="tooltip-content">
+              <div class="infos">
+                <a href="#" class="info">
+                  <p>마이페이지</p>
+                </a>
+                <a href="#" class="info" th:href="@{/logout}">
+                  <p>로그아웃</p>
+                </a>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <li class="nav-item" th:unless="${session.loginMember != null}">
+          <a class="nav-link" id="loginButton" href="#">로그인</a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+  <!-- 로그인 모달 -->
+  <div id="loginModal" class="modal">
+    <div class="form-container">
+      <span class="close" onclick="closeModal()">×</span>
+      <p class="title">DeliciousBee</p>
+      <form action="/member/login" method="post" class="form">
+        <input type="text" name="member_id" class="input" placeholder="아이디">
+        <input type="password" name="password" class="input" placeholder="비밀번호">
+        <p class="page-link">
+          <span class="page-link-label">Forgot Password?</span>
+        </p>
+        <button class="form-btn" type="submit">Log in</button>
+      </form>
+      <div class="buttons-container">
+        <div class="google-login-button">
+          <svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1.1" x="0px" y="0px"
+               class="google-icon" viewBox="0 0 48 48" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#FFC107"
+                  d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12 c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24 c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
+            <path fill="#FF3D00"
+                  d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657 C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
+            <path fill="#4CAF50"
+                  d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36 c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
+            <path fill="#1976D2"
+                  d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571 c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+          </svg>
+          <span>Log in with Google</span>
+        </div>
+      </div>
+      <p class="sign-up-label">
+        Don't have an account?<span class="sign-up-link">Sign up</span>
+      </p>
+    </div>
+  </div>
+</main>
+
+
+
+
+
+
+
+
+<script>
+  // 로그인 모달 제어
+  document.getElementById('loginButton').addEventListener('click', function(event) {
+    event.preventDefault(); // 링크 기본 동작 방지
+    document.getElementById('loginModal').style.display = 'block';
+  });
+
+  // 닫기 버튼 클릭 시 모달 닫기
+  function closeModal() {
+    document.getElementById('loginModal').style.display = 'none';
+  }
+
+  // 모달 외부 영역 클릭 시 모달 닫기
+  window.onclick = function(event) {
+    let modal = document.getElementById('loginModal');
+    if (event.target == modal) {
+      modal.style.display = 'none';
+    }
+  }
+</script>
+</body>
+</html>
