@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.model.board.CategoryType;
+import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.like.ReviewLike;
 import com.example.deliciousBee.model.member.BeeMember;
@@ -17,6 +18,7 @@ import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.repository.FileRepository;
 import com.example.deliciousBee.repository.ReviewLikeRepository;
 import com.example.deliciousBee.repository.ReportRepository;
+import com.example.deliciousBee.repository.RestaurantRepository;
 import com.example.deliciousBee.repository.ReviewRepository;
 import com.example.deliciousBee.util.FileService;
 
@@ -36,6 +38,7 @@ public class ReviewService {
 	private final FileService fileService;
 	private final ReportRepository reportRepository;
 	private final ReviewLikeRepository likeRepository;
+	private final RestaurantRepository restaurantRepository;
 
 	public void saveReview(Review review, List<AttachedFile> attachedFiles) {
 		if (attachedFiles != null) {
@@ -47,6 +50,29 @@ public class ReviewService {
 		} else {
 			reviewRepository.save(review);
 		}
+		updateRestaurantRatingAndReviewCount(review.getRestaurant());
+	}
+
+	private void updateRestaurantRatingAndReviewCount(Restaurant restaurant) {
+		// 해당 레스토랑의 모든 리뷰를 조회
+		List<Review> reviews = reviewRepository.findByRestaurant(restaurant);
+
+		if (reviews.isEmpty()) {
+			restaurant.setAverage_rating(0.0);
+			restaurant.setReview_count(0L);
+		} else {
+			// 평균 평점 계산
+			double averageRating = reviews.stream().mapToDouble(Review::getRating).average().orElse(0.0);
+
+			// 리뷰 수 계산
+			long reviewCount = reviews.size();
+
+			restaurant.setAverage_rating(averageRating);
+			restaurant.setReview_count(reviewCount);
+		}
+
+		// 레스토랑 정보를 저장하여 업데이트 적용
+		restaurantRepository.save(restaurant);
 	}
 
 	public List<Review> getReviewsByRestaurantIdWithFiles(Long restaurantId, String memberId) {
@@ -177,10 +203,10 @@ public class ReviewService {
 	public List<Review> sortReview(String sort, Long restaurantId, String memberId) {
 		List<Long> reportedReviewIds = reportRepository.findReportedReviewId(memberId);
 		List<Review> reviews = switch (sort) {
-			case "rating" -> reviewRepository.findAllByRestaurant_IdOrderByRatingDesc(restaurantId); // 특정 식당 ID로 필터링
-			case "visitDate" -> reviewRepository.findAllByRestaurant_IdOrderByVisitDateDesc(restaurantId);
-			case "likeCount" -> reviewRepository.findAllByRestaurant_IdOrderByLikeCountDesc(restaurantId);
-			default -> getReviewsByRestaurantIdWithFiles(restaurantId, memberId);
+		case "rating" -> reviewRepository.findAllByRestaurant_IdOrderByRatingDesc(restaurantId); // 특정 식당 ID로 필터링
+		case "visitDate" -> reviewRepository.findAllByRestaurant_IdOrderByVisitDateDesc(restaurantId);
+		case "likeCount" -> reviewRepository.findAllByRestaurant_IdOrderByLikeCountDesc(restaurantId);
+		default -> getReviewsByRestaurantIdWithFiles(restaurantId, memberId);
 		};
 
 		// 모든 경우에 신고된 리뷰를 필터링
@@ -198,7 +224,7 @@ public class ReviewService {
 		return reviewRepository.findAll();
 	}
 
-	// 랜덤 카테고리 
+	// 랜덤 카테고리
 	public List<Review> getRandomReviewsByCategory(CategoryType category) {
 		// 1. 해당 카테고리의 모든 리뷰를 가져옵니다.
 		List<Review> reviews = reviewRepository.findByRestaurant_Category(category);

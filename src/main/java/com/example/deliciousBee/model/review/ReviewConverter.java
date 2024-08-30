@@ -17,13 +17,6 @@ public class ReviewConverter {
 		return review;
 	}
 	
-	public static Review reviewLikeFormToReview(ReviewLikeForm reviewLikeForm) {
-		Review review = new Review();
-		review.setId(reviewLikeForm.getReviewId());
-		review.setLikeCount(reviewLikeForm.getLikeCount());
-		return review;
-	}
-	
 	// reviewUpdateForm -> review
 	public static Review reviewUpdateFormToReview(ReviewUpdateForm reviewUpdateForm) {
 		Review review = new Review();
