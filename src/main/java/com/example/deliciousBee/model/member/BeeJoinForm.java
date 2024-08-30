@@ -2,9 +2,6 @@ package com.example.deliciousBee.model.member;
 
 import java.time.LocalDate;
 
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -22,7 +19,7 @@ public class BeeJoinForm {
 	private String password;     //패스워드
 	
 	@NotBlank(message = "정확한 이름을 입력해주세요") //null, 빈값, 공백 허용 x
-	private String name;         //이름
+	private String nickname;         //이름
 	
 	@NotNull(message = "성별을 선택해주세요")  //null 불가 but 빈값, 공백 허용
 	private GenderType gender;       //성별
@@ -33,7 +30,7 @@ public class BeeJoinForm {
 	
 	private String email;        //이메일
 
-	private  NationalType national;
+	private NationalType national;
 
 	//유효성검사다하면 Member객체로 변환해서 리턴
 	public static BeeMember toMember(BeeJoinForm BeeJoinForm) {
@@ -42,8 +39,9 @@ public class BeeJoinForm {
 		BeeMember member = new BeeMember();
 		member.setMember_id(BeeJoinForm.getMember_id());
 		member.setPassword(BeeJoinForm.getPassword());
-		member.setNickname(BeeJoinForm.getName());
+		member.setNickname(BeeJoinForm.getNickname());
 		member.setGender(BeeJoinForm.getGender());
+		member.setNational(BeeJoinForm.getNational());
 		member.setBirth(BeeJoinForm.getBirth());
 		member.setEmail(BeeJoinForm.getEmail());
 		

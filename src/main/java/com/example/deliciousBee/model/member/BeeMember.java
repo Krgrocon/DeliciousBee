@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.model.review.Review;
 
 import jakarta.persistence.*;
@@ -36,6 +37,7 @@ public class BeeMember implements UserDetails, OAuth2User {
 	@Column(length = 60, nullable = false)
 	private String password;
 
+    @Enumerated(EnumType.STRING)
 	private NationalType national;
 
 	@Column(length = 50, nullable = false)
@@ -52,6 +54,10 @@ public class BeeMember implements UserDetails, OAuth2User {
 	private String email;
 
 	private boolean isSocialUser;  // 소셜 로그인 플래그
+	
+	@OneToOne(mappedBy = "beeMember", cascade = CascadeType.ALL)
+	@JsonIgnore
+    private MyPage myPage; 
 
 	@OneToMany(mappedBy = "beeMember", fetch = FetchType.EAGER)
 	private List<Review> review;
@@ -124,4 +130,19 @@ public class BeeMember implements UserDetails, OAuth2User {
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
+	
+	@Override
+    public String toString() {
+        return "BeeMember{" +
+                "member_id='" + member_id + '\'' +
+                ", password='" + password + '\'' +
+                ", national=" + national +
+                ", nickname='" + nickname + '\'' +
+                ", gender=" + gender +
+                ", birth=" + birth +
+                ", email='" + email + '\'' +
+                ", isSocialUser=" + isSocialUser +
+                ", role=" + role +
+                '}';
+    }
 }

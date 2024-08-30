@@ -77,8 +77,8 @@
 		<input type="password" th:field="*{password}" placeholder="비밀번호 (4~20자)">
 		<div th:errors="*{password}" class="error"></div>
 
-		<input type="text" th:field="*{name}" placeholder="이름">
-		<div th:errors="*{name}" class="error"></div>
+		<input type="text" th:field="*{nickname}" placeholder="이름">
+		<div th:errors="*{nickname}" class="error"></div>
 
 		<div class="radio-group">
 			<th:block th:each="gender : ${T(com.example.deliciousBee.model.member.GenderType).values()}">
@@ -90,6 +90,12 @@
 
 		<input type="date" th:field="*{birth}">
 		<div th:errors="*{birth}" class="error"></div>
+		<div>
+			<select th:field="*{national}">
+				<option value="KOREA">내국인</option>
+				<option value="FOREIGNER">외국인</option>
+			</select>
+		</div>
 
 		<!-- 인증 발송 버튼 -->
 		<div>
@@ -168,7 +174,7 @@
 			return false;
 		}
 
-		let name = $("#name");
+		let name = $("#nickname");
 		if (name.val().trim() == "") {
 			alert("이름을 입력해주세요.");
 			name.focus();
