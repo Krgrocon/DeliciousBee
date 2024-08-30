@@ -1,6 +1,7 @@
 package com.example.deliciousBee.service.review;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.*;
@@ -8,6 +9,7 @@ import java.util.stream.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.deliciousBee.model.board.CategoryType;
 import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.repository.FileRepository;
@@ -163,6 +165,29 @@ public class ReviewService {
 			review.setCanEdit(memberId.equals(review.getBeeMember().getMember_id()));
 		}
 		return reviews;
+	}
+
+	public List<Review> findAllReviews() {
+		return reviewRepository.findAll();
+	}
+
+	// 랜덤 카테고리 
+	public List<Review> getRandomReviewsByCategory(CategoryType category) {
+		// 1. 해당 카테고리의 모든 리뷰를 가져옵니다.
+		List<Review> reviews = reviewRepository.findByRestaurant_Category(category);
+
+	    // 2. 리뷰가 없는 경우 빈 리스트를 반환합니다.
+	    if (reviews.isEmpty()) {
+	        return Collections.emptyList();
+	    }
+
+	    // 3. 랜덤 리뷰를 여러 개 선택합니다. (예: 3개)
+	    Collections.shuffle(reviews); // 리스트를 랜덤하게 섞습니다.
+	    int numberOfReviews = Math.min(3, reviews.size()); // 최대 3개 또는 리뷰 개수만큼 선택합니다.
+	    List<Review> randomReviews = reviews.subList(0, numberOfReviews);
+
+	    // 4. 랜덤 리뷰를 반환합니다.
+	    return randomReviews;
 	}
 
 }

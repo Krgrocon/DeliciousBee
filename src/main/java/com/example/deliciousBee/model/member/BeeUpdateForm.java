@@ -18,12 +18,9 @@ public class BeeUpdateForm {
 
 	private String member_id;
 
-	private String name;     //닉네임
+	private String nickname;     //닉네임
 
-	@Column(length = 20, nullable = false) // 꼭 적어야된다
-	private String password;     //패스워드
-
-	private String confirmPassword; //패스워드 확인
+	
 
 	private LocalDate birth;        //생년월일
 	
@@ -35,9 +32,8 @@ public class BeeUpdateForm {
 
 	public static BeeMember toBeeMember(BeeUpdateForm beeUpdateForm) {
 		BeeMember member = new BeeMember();
-
-		member.setNickname(beeUpdateForm.getName());
-		member.setPassword(beeUpdateForm.getPassword());
+		member.setMember_id(beeUpdateForm.getMember_id()); 
+		member.setNickname(beeUpdateForm.getNickname());
 		member.setNational(beeUpdateForm.getNational());
 		member.setEmail(beeUpdateForm.getEmail());
 
