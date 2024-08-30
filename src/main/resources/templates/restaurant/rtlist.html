@@ -447,7 +447,7 @@
         }
 
 
-        // 레스토랑 렌더링 함수
+     // 레스토랑 렌더링 함수
         function renderRestaurants(data) {
             if (data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
                 let restaurants = data._embedded.restaurantDtoList;
@@ -461,7 +461,7 @@
                     html += `
             <div class="col-12 mb-4">
                 <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}">
-                    <a href="/restaurant/rtread?id=${restaurant.id}">
+                    <a href="/restaurant/rtread/${restaurant.id}">
                         <img src="${imageUrl}"
                              alt="Restaurant Image" class="card-img-left">
                     </a>
