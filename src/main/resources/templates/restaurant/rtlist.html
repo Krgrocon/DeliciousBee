@@ -282,7 +282,7 @@
 
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
+    <div class="nav-container">
         <div class="navbar-brand-group">
             <a class="navbar-brand" href="#!">Delicious Bee</a> <label
                 for="searchText"></label>
@@ -461,7 +461,7 @@
                     html += `
             <div class="col-12 mb-4">
                 <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}">
-                    <a href="/restaurant/rtread?id=${restaurant.id}">
+                    <a href="/restaurant/rtread/${restaurant.id}">
                         <img src="${imageUrl}"
                              alt="Restaurant Image" class="card-img-left">
                     </a>

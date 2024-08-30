@@ -322,7 +322,7 @@ input:hover {
     align-items: center;
 }
 
-.navbar .container {
+.navbar .nav-container {
     display: flex;
     align-items: center;
     width: 100%;

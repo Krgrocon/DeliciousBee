@@ -13,10 +13,12 @@
   <link rel="stylesheet" href="/rtread.css">
 </head>
 <body>
+<input type="hidden" id="restaurant-latitude" th:value="${restaurant.latitude}">
+<input type="hidden" id="restaurant-longitude" th:value="${restaurant.longitude}">
 
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
+    <div class="nav-container">
       <div class="navbar-brand-group">
         <a class="navbar-brand" href="/">Delicious Bee</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -213,7 +215,7 @@
       <div class="col-lg-4">
         <div class="card mb-4 sidebar-card">
           <div class="card-header">Map Contents</div>
-          <div class="card-body">여기에는 해당 지도를 넣어주시면됩니다</div>
+          <div class="card-body" id="map">여기에는 해당 지도를 넣어주시면됩니다</div>
         </div>
       </div>
     </div>
@@ -230,9 +232,31 @@
   
   <!-- JavaScript -->
   <script th:inline="javascript">
+
+
+    function initMap() {
+      // 타임리프가 렌더링한 숨겨진 필드에서 경도와 위도 값 가져오기
+      const latitude = parseFloat(document.getElementById('restaurant-latitude').value);
+      const longitude = parseFloat(document.getElementById('restaurant-longitude').value);
+
+      // 지도 초기화 및 중심 설정
+      const map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: latitude, lng: longitude },
+        zoom: 17 // 줌 레벨을 설정합니다.
+      });
+
+      // 마커 추가
+      const marker = new google.maps.Marker({
+        position: { lat: latitude, lng: longitude },
+        map: map,
+        title: 'Restaurant Location'
+      });
+    }
+
+
   document.addEventListener('DOMContentLoaded', function() {
 	  setStarRatings();
-	  
+      initMap();
 	  $('#reportModal').on('show.bs.modal', function (event) {
 	    const button = $(event.relatedTarget); 
 	    const reviewId = button.data('review-id');
@@ -240,6 +264,9 @@
 	  });
 	  
 	})
+
+
+
 
     function editReviewWithModal(button) {
       const reviewId = card.querySelector('.review-id').value;
@@ -397,5 +424,7 @@
       });
     }
   </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap" async defer></script>
+
 </body>
 </html>

@@ -2,9 +2,7 @@
 package com.example.deliciousBee.controller.restaurant;
 
 import com.example.deliciousBee.dto.restaurant.RestaurantDto;
-import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
