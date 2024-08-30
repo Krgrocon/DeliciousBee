@@ -286,7 +286,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <div class="navbar-brand-group">
-            <a class="navbar-brand" href="#!">Delicious Bee</a> <label
+            <a class="navbar-brand" href="/">Delicious Bee</a> <label
                 for="searchText"></label>
             <div class="search-container">
                 <svg class="search-icon" aria-hidden="true" viewBox="0 0 24 24">
@@ -409,7 +409,7 @@
                 <th:block th:each="restaurant : ${restaurants}">
                     <div class="col-12 mb-4">
                         <div class="card">
-                            <a th:href="@{/restaurant/rtread(id=${restaurant.id})}">
+                            <a th:href="@{/restaurant/rtread/{restaurantId}(restaurantId=${restaurant.id})}">
                                 <div th:each="file : ${restaurant.attachedFile}">
                                     <div th:if="${file.saved_filename}">
                                         <img th:src="@{'/restaurant/display?filename='+${file.saved_filename}}"

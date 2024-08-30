@@ -6,8 +6,10 @@ import com.example.deliciousBee.model.board.RestaurantWriteForm;
 import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
+import com.example.deliciousBee.service.review.ReviewService;
 import com.example.deliciousBee.util.PageNavigator;
 import com.example.deliciousBee.util.RestaurantFileService;
 
@@ -49,6 +51,7 @@ public class RestaurantController {
 	private final RestaurantService restaurantService;
 	private final BeeMemberService beeMemberService;
 	private final RestaurantFileService fileService;
+	private final ReviewService reviewService;
 
 	@GetMapping("newfile")
 	public String newfile(@AuthenticationPrincipal BeeMember loginMember
@@ -151,21 +154,26 @@ public class RestaurantController {
 //	}
 
 
-	@GetMapping("rtread")
-	public String read(@AuthenticationPrincipal BeeMember loginMember,
-					   @RequestParam(name = "id") Long id, Model model) {
-
+	@GetMapping("rtread/{restaurant_id}")
+	public String read(@AuthenticationPrincipal BeeMember loginMember
+			,@PathVariable("restaurant_id") Long restaurant_id		   
+			,Model model) {
 		if(loginMember == null) {
 			return "redirect:/member/login";
 		}
-
-		Restaurant restaurant = restaurantService.findRestaurant(id);
-
+		
+		// 레스토랑 정보 가져오기
+		Restaurant restaurant = restaurantService.findRestaurant(restaurant_id);
 		if(restaurant == null) {
 			return "redirect:/shop/index";
 		}
-
 		model.addAttribute("restaurant", restaurant);
+		
+		// 리뷰 정보 가져오기
+		String memberId = loginMember.getMember_id();
+		List<Review> reviewsByRestaurant = reviewService.getReviewsByRestaurantIdWithFiles(restaurant_id, memberId);
+		log.info("************** allreview:{}", reviewsByRestaurant);
+		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant);
 		return "restaurant/rtread";
 	}
 
