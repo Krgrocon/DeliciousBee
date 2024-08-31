@@ -33,7 +33,7 @@
             align-items: center;
             position: relative;
         }
-        .navbar .container {
+        .navbar .nav-container {
             display: flex;
             align-items: center;
             width: 100%;
@@ -454,8 +454,8 @@
                 let html = '';
 
                 restaurants.forEach(function(restaurant) {
-                    let imageUrl = restaurant.attachedFile && restaurant.attachedFile.length > 0
-                        ? `/restaurant/display?filename=${restaurant.attachedFile[0].saved_filename}`
+                    let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
+                        ? `/restaurant/display?filename=${restaurant.imageUrls[0].saved_filename}`
                         : 'default_image_url.jpg'; // 기본 이미지 URL을 설정할 수 있습니다.
 
                     html += `
