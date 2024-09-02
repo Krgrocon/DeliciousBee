@@ -76,10 +76,6 @@
 			// 페이지 로드 시 정보창 표시
 			infowindow.open(map, marker);
 
-			// 마커에 클릭 이벤트 추가 (선택 사항 - 클로저 사용)
-			marker.addListener("click", () => {
-				infowindow.close();
-			});
 		});
 	}
 </script>
