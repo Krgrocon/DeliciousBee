@@ -7,10 +7,12 @@ import java.util.Map;
 
 
 import com.example.deliciousBee.dto.report.ReportDto;
+import com.example.deliciousBee.dto.report.RestaurantVerificationDto;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.report.Report;
 import com.example.deliciousBee.repository.ReportRepository;
 import com.example.deliciousBee.service.report.ReportService;
+import com.example.deliciousBee.service.restaurant.RestaurantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -24,7 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ReportController {
-	
+
+
+	private final RestaurantService restaurantService;
 	private final ReportService reportService;
 	private final ReportRepository reportRepository;
 
@@ -41,7 +45,7 @@ public class ReportController {
 			,@PathVariable("reviewId") Long reviewId
 			,@AuthenticationPrincipal BeeMember loginMember) {
 		
-		log.info("*********************hero coming");
+
 		Map<String, Object> response = new HashMap<>();
 		try {
 			report.setBeeMember(loginMember);
@@ -98,6 +102,25 @@ public class ReportController {
 		}
 		return ResponseEntity.ok(response);
 	}
+
+
+
+	@GetMapping("/admin/restaurants/pending")
+	@ResponseBody
+	public ResponseEntity<Map<String,Object>> getPendingRestaurants() {
+		Map<String, Object> response = new HashMap<>();
+		try {
+			List<RestaurantVerificationDto> pendingRestaurantDtos = restaurantService.getPendingRestaurantDtos(); // RestaurantReportDto 리스트 가져오기
+			response.put("pending",pendingRestaurantDtos); // RestaurantReportDto 리스트를 "pending" 키에 담아 반환
+			response.put("success",true);
+		} catch (Exception e) {
+			response.put("success", false);
+			response.put("message", "서버 오류가 발생했습니다.");
+			log.error("Report getting error", e);
+		}
+		return ResponseEntity.ok(response);
+	}
+
 
 
 

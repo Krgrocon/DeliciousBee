@@ -61,6 +61,13 @@
         private Double average_rating;
         private Long review_count;
 
+
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false)
+        private VerificationStatus verificationStatus; // 인증 상태 추가
+
+
+
         @OneToMany(mappedBy = "restaurant")
         private List<RestaurantAttachedFile> attachedFile;
 
@@ -81,6 +88,7 @@
             this.description = description;
             this.longitude = longitude;
             this.latitude = latitude;
+            this.verificationStatus = VerificationStatus.PENDING; // 기본값 설정
         }
 
         public static Restaurant toRestaurant(Restaurant restaurantUpdateForm) {
@@ -99,6 +107,7 @@
             restaurant.setLatitude(restaurantUpdateForm.getLatitude());
             restaurant.setUpdated_at(restaurantUpdateForm.getUpdated_at());
             restaurant.setCategory(restaurantUpdateForm.getCategory());
+            restaurant.setVerificationStatus(restaurantUpdateForm.getVerificationStatus()); // 인증 상태 설정
 
             return restaurant;
         }

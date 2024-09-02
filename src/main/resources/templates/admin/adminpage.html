@@ -224,21 +224,45 @@
         let content = '';
         switch (contentType) {
             case 'pendingRestaurants':
-                content = `
+                // AJAX 요청
+                fetch('/admin/restaurants/pending')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('미승인 레스토랑 목록:', data);
+                        if (data.success) {
+                            let rows = '';
+                            data.pending.forEach(restaurant => { // data.pending으로 변경
+                                rows += `
+                        <tr>
+                            <td>${restaurant.id}</td>
+                            <td>${restaurant.name}</td>
+                            <td>${restaurant.address}</td>
+                            <td>${restaurant.description}</td>
+                            <td><button onclick="approveRestaurant(${restaurant.id})">승인</button></td>
+                        </tr>
+                    `;
+                            });
+                            content = `
                     <table>
                         <thead>
                             <tr>
                                 <th>점포 ID</th>
                                 <th>점포명</th>
-                                <th>등록일</th>
+                                <th>주소</th>
+                                <th>설명</th>
                                 <th>승인</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- 여기에 등록된 점포 목록이 표시됩니다. -->
+                            ${rows}
                         </tbody>
                     </table>
                 `;
+                            document.getElementById('content').innerHTML = content;
+                        } else {
+                            // 오류 처리
+                        }
+                    });
                 break;
             case 'reportedReviews':
                 // AJAX 요청

@@ -1,8 +1,10 @@
 package com.example.deliciousBee.service.restaurant;
 
 
+import com.example.deliciousBee.dto.report.RestaurantVerificationDto;
 import com.example.deliciousBee.dto.restaurant.RestaurantDto;
 import com.example.deliciousBee.model.board.Restaurant;
+import com.example.deliciousBee.model.board.VerificationStatus;
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.repository.RestaurantRepository;
 import com.example.deliciousBee.repository.RtFileRepository;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,13 +34,16 @@ public class RestaurantService {
 
     public void saveRestaurant(Restaurant restaurant, List<RestaurantAttachedFile> attachedFile) {
     	if(attachedFile != null) {
-    		restaurantRepository.save(restaurant);
+            restaurant.setVerificationStatus(VerificationStatus.PENDING);
+            restaurantRepository.save(restaurant);
+
     		fileRepository.saveAll(attachedFile);
     	}
     	else {
     		log.info("else filev파파파ㅏㅍ {}", attachedFile);
     		restaurantRepository.save(restaurant);
     	}
+
     }
 
 //    //수정함
@@ -48,6 +54,13 @@ public class RestaurantService {
     //내가 수정함
     public Page<Restaurant> findAll(Pageable pageable) {
         return restaurantRepository.findAll(pageable);
+    }
+
+    public List<RestaurantVerificationDto> getPendingRestaurantDtos() {
+        List<Restaurant> pendingRestaurants = restaurantRepository.findPendingRestaurants();
+        return pendingRestaurants.stream()
+                .map(RestaurantVerificationDto::new) // Restaurant -> RestaurantReportDto 변환
+                .collect(Collectors.toList());
     }
 
 

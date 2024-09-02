@@ -1,16 +1,12 @@
 package com.example.deliciousBee.controller.restaurant;
 
-import com.example.deliciousBee.dto.member.SessionUser;
 import com.example.deliciousBee.model.board.Restaurant;
-import com.example.deliciousBee.model.board.RestaurantWriteForm;
-import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
 import com.example.deliciousBee.service.review.ReviewService;
-import com.example.deliciousBee.util.PageNavigator;
 import com.example.deliciousBee.util.RestaurantFileService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,10 +19,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
@@ -72,7 +66,7 @@ public class RestaurantController {
 		return "restaurant/rtwrite";
 	}
 	@PostMapping("restaurants")
-	public String write(@Validated @ModelAttribute("restaurantForm") Restaurant restaurantWriteForm
+	public String write(@Validated @ModelAttribute("restaurantForm") Restaurant restaurantform
 			,BindingResult result
 			,@AuthenticationPrincipal BeeMember loginMember
 			,@RequestPart(name="file", required=false) MultipartFile[] files) {
@@ -83,7 +77,7 @@ public class RestaurantController {
 
 		BeeMember findMember = beeMemberService.findMemberById(loginMember.getMember_id());
 
-		restaurantWriteForm.setMember(findMember);
+		restaurantform.setMember(findMember);
 		
 		List<RestaurantAttachedFile> attachedFiles = new ArrayList<>();
 		if (files != null && files.length > 0) { 
@@ -92,15 +86,15 @@ public class RestaurantController {
 				if (!file.isEmpty()) {
 					log.info("file 들왓니>?..{}", file);
 					RestaurantAttachedFile attachedFile = fileService.saveFile(file);
-					attachedFile.setRestaurant(restaurantWriteForm);
-					log.info("writefomr 들왓니>?..{}", restaurantWriteForm);
+					attachedFile.setRestaurant(restaurantform);
+					log.info("writefomr 들왓니>?..{}", restaurantform);
 					attachedFiles.add(attachedFile);
 					log.info("attachedFile 들왓니>?..{}", attachedFile);
 				}
 				System.out.println("gd");
 			}
 		}
-		restaurantService.saveRestaurant(restaurantWriteForm, attachedFiles);
+		restaurantService.saveRestaurant(restaurantform, attachedFiles);
 		return "redirect:/";
 	}
 
