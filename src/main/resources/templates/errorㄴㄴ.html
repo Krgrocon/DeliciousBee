@@ -58,24 +58,31 @@
 
 			// 정보창 내용 생성
 			const infowindowContent = `
-                <h3>${restaurant.name}</h3>
-                <p>카테고리: ${restaurant.category}</p>
-                <p>주소: ${restaurant.address}</p>
-                <p>거리: ${restaurant.distance.toFixed(2)} km</p>
-                <p>평균 평점: ${restaurant.average_rating}</p>
-                <div>
-                    ${restaurant.imageUrls.map(imageUrl => `<img src="${imageUrl}" alt="${restaurant.name}" width="100">`).join('')}
-                </div>
-            `;
+            <h3>${restaurant.name}</h3>
+            <p>카테고리: ${restaurant.category}</p>
+            <p>주소: ${restaurant.address}</p>
+            <p>거리: ${restaurant.distance.toFixed(2)} km</p>
+            <p>평균 평점: ${restaurant.average_rating}</p>
+            <div>
+                ${restaurant.imageUrls.map(imageUrl => `<img src="${imageUrl}" alt="${restaurant.name}" width="100">`).join('')}
+            </div>
+        `;
 
 			// 정보창 생성 및 마커에 연결
-			const infowindow = new google.maps.InfoWindow({
-				content: infowindowContent
+			const infowindow = new google.maps.InfoWindow();
+			infowindow.setContent(infowindowContent);
+
+			// 마커에 클릭 이벤트 추가
+			marker.addListener("click", () => {
+				if (infowindow.getMap()) {
+					infowindow.close();
+				} else {
+					infowindow.open({
+						map: map,
+						anchor: marker
+					});
+				}
 			});
-
-			// 페이지 로드 시 정보창 표시
-			infowindow.open(map, marker);
-
 		});
 	}
 </script>

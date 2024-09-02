@@ -522,19 +522,19 @@
 
   <!-- 로그인 모달 -->
   <div id="loginModal" class="modal">
-    <div class="form-container">
+    <div class="review-modal-container">
       <span class="close" onclick="closeModal()">×</span>
-      <p class="title">DeliciousBee</p>
-      <form action="/member/login" method="post" class="form">
-        <input type="text" name="member_id" class="input" placeholder="아이디">
-        <input type="password" name="password" class="input" placeholder="비밀번호">
+      <p class="reviewUp-title">DeliciousBee</p>
+      <form action="/member/login" method="post" class="review-modal-inner-form">
+        <input type="text" name="member_id" class="modal-input" placeholder="아이디">
+        <input type="password" name="password" class="modal-input" placeholder="비밀번호">
         <p class="page-link">
           <span class="page-link-label">Forgot Password?</span>
         </p>
         <button class="form-btn" type="submit">Log in</button>
       </form>
-      <div class="buttons-container">
-        <div class="google-login-button">
+      <div class="reviewupdate-container">
+        <div class="Update-button">
           <svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1.1" x="0px" y="0px"
                class="google-icon" viewBox="0 0 48 48" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
             <path fill="#FFC107"

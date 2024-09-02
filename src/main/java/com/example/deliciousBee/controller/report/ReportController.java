@@ -13,6 +13,7 @@ import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.board.VerificationStatus;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.report.Report;
+import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.repository.ReportRepository;
 import com.example.deliciousBee.service.report.ReportService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
@@ -150,6 +151,17 @@ public class ReportController {
 		return ResponseEntity.ok(response);
 	}
 
+
+	@GetMapping("/admin/reviews/{reviewId}")
+	@ResponseBody
+	public ResponseEntity<Review> getReviewById(@PathVariable Long reviewId) {
+		Review review = reviewService.findReview(reviewId);
+		if (review != null) {
+			return ResponseEntity.ok(review);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+	}
 
 
 
