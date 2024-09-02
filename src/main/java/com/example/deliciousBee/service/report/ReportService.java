@@ -69,6 +69,7 @@ public class ReportService {
 	}
 
 	public void deleteReport(Long reportId) {
+		reviewRepository.deleteById(reportId);
 		reportRepository.deleteById(reportId);
 	}
 }
