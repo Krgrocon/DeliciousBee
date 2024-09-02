@@ -325,8 +325,21 @@
     }
 
     function deleteReport(reportId) {
-        // AJAX 요청으로 신고 삭제
         fetch(`/admin/report/${reportId}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 삭제 성공 시 처리
+                    loadContent('reportedReviews');
+                } else {
+                    // 삭제 실패 시 처리
+                }
+            });
+    }
+
+
+    function approveRestaurant(restaurantId){
+        fetch(`/admin/restaurant/approve/${restaurantId}`, { method: 'POST' })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {

@@ -1,10 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>에러 페이지</title>
+	<meta charset="UTF-8">
+	<title>레스토랑 위치 검색</title>
+	<style>
+		#map {
+			height: 400px;
+			width: 100%;
+		}
+	</style>
 </head>
 <body>
-	<h2>모든 에러 잡는 페이지</h2>
+<h1>레스토랑 위치 검색</h1>
+<div id="map"></div>
+
+<script>
+	function initMap() {
+		// 초기 지도 중심 설정 (서울시청)
+		const initialCenter = { lat: 37.5665, lng: 126.9780 };
+		const map = new google.maps.Map(document.getElementById("map"), {
+			zoom: 15,
+			center: initialCenter,
+		});
+
+		// 임의의 레스토랑 데이터 (예시)
+		const restaurants = [
+			{
+				name: "맛있는 피자집",
+				category: "피자, 양식",
+				latitude: 37.5670,
+				longitude: 126.9785,
+				address: "서울시 중구 세종대로 110",
+				average_rating: 4.5,
+				distance: 0.3,
+				imageUrls: ["/images/pizza1.jpg", "/images/pizza2.jpg"]
+			},
+			{
+				name: "최고의 한식당",
+				category: "한식, 백반",
+				latitude: 37.5660,
+				longitude: 126.9775,
+				address: "서울시 중구 세종대로 100",
+				average_rating: 4.2,
+				distance: 0.5,
+				imageUrls: ["/images/koreanfood1.jpg"]
+			},
+			// ... 더 많은 레스토랑 데이터 추가 가능
+		];
+
+		// 레스토랑 마커 표시
+		restaurants.forEach(restaurant => {
+			const marker = new google.maps.Marker({
+				map: map,
+				position: { lat: restaurant.latitude, lng: restaurant.longitude },
+				title: restaurant.name
+			});
+
+			// 정보창 내용 생성
+			const infowindowContent = `
+                <h3>${restaurant.name}</h3>
+                <p>카테고리: ${restaurant.category}</p>
+                <p>주소: ${restaurant.address}</p>
+                <p>거리: ${restaurant.distance.toFixed(2)} km</p>
+                <p>평균 평점: ${restaurant.average_rating}</p>
+                <div>
+                    ${restaurant.imageUrls.map(imageUrl => `<img src="${imageUrl}" alt="${restaurant.name}" width="100">`).join('')}
+                </div>
+            `;
+
+			// 정보창 생성 및 마커에 연결
+			const infowindow = new google.maps.InfoWindow({
+				content: infowindowContent
+			});
+
+			// 페이지 로드 시 정보창 표시
+			infowindow.open(map, marker);
+
+			// 마커에 클릭 이벤트 추가 (선택 사항 - 클로저 사용)
+			marker.addListener("click", () => {
+				infowindow.close();
+			});
+		});
+	}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=myMap"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&libraries=places,geometry&callback=initMap" async></script>
+
 </body>
 </html>
