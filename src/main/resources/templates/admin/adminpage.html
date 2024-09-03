@@ -518,30 +518,28 @@
                 inputbox.value = review.reviewContents; // 리뷰 내용 표시
 
                 // 사진 데이터 설정 (review.attachedFile 에서 가져오기)
-                const photos = review.attachedFile.map(file => file.getSavedFilename()); // Review 엔티티의 attachedFile 필드 사용
+                const photos = review.attachedFile.map(file => file.saved_filename); // Review 엔티티의 attachedFile 필드 사용
 
-                // 사진을 표시할 컨테이너 요소
+// 사진을 표시할 컨테이너 요소
                 const photoContainer = document.querySelector(".modal-image-container"); // 이미 존재하는 컨테이너 사용
                 photoContainer.innerHTML = ""; // 기존 사진 삭제
 
-                // 초기 표시할 사진 개수
-                const initialDisplayCount = 4;
-                let currentStartIndex = 0;
+// 초기 표시할 사진 개수 (필요에 따라 수정)
+                const initialDisplayCount = Math.min(photos.length, 4);
 
-                // 사진 출력 함수
+// 사진 출력 함수
                 function displayPhotos(startIndex, endIndex) {
                     for (let i = startIndex; i < endIndex; i++) {
                         const photoUrl = photos[i];
                         if (photoUrl) { // 이미지 URL이 있는 경우에만 처리
                             const img = document.createElement("img");
-                            img.src = '/upload/' + photoUrl;
-                            img.alt = "사진";
+                            img.src = `/review/display?filename=${photoUrl}`; // 이미지 URL 설정
+                            img.alt = "리뷰 사진";
                             img.classList.add("modal-image"); // 이미지에 클래스 추가
                             photoContainer.appendChild(img);
                         }
                     }
                 }
-
                 // 더보기 버튼 생성
                 const moreButton = document.createElement("button");
                 moreButton.textContent = "더보기";
