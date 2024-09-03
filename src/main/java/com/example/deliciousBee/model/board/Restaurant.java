@@ -32,7 +32,7 @@
         private CategoryType category;
 
         private String address;
-        private Long phone_number;
+        private String phone_number;
         private String opening_hours;
         private String menu_name;
         private String price_range;
