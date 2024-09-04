@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.example.deliciousBee.util.FileService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +21,6 @@ import com.example.deliciousBee.repository.ReviewLikeRepository;
 import com.example.deliciousBee.repository.ReportRepository;
 import com.example.deliciousBee.repository.RestaurantRepository;
 import com.example.deliciousBee.repository.ReviewRepository;
-import com.example.deliciousBee.util.FileService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -157,19 +157,19 @@ public class ReviewService {
 		}
 
 		// 새로운 파일처리
-		if (files != null && files.length > 0) {
-			attachedFiles = new ArrayList<>();
-			for (MultipartFile file : files) {
-				if (file.isEmpty()) {
-					continue;
-				}
-				AttachedFile savedFile = fileService.saveFile(file);
-				if (savedFile != null) {
-					savedFile.setReview(findReview);
-					attachedFiles.add(savedFile);
-				}
-			}
-		}
+//		if (files != null && files.length > 0) {
+//			attachedFiles = new ArrayList<>();
+//			for (MultipartFile file : files) {
+//				if (file.isEmpty()) {
+//					continue;
+//				}
+//				AttachedFile savedFile = fileService.saveFile(file);
+//				if (savedFile != null) {
+//					savedFile.setReview(findReview);
+//					attachedFiles.add(savedFile);
+//				}
+//			}
+//		}
 
 		if (attachedFiles != null && !attachedFiles.isEmpty()) {
 			saveReview(findReview, attachedFiles);

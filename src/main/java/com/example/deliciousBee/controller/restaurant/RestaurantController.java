@@ -9,16 +9,23 @@ import com.example.deliciousBee.service.restaurant.RestaurantService;
 import com.example.deliciousBee.service.review.ReviewService;
 import com.example.deliciousBee.util.RestaurantFileService;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +46,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RequestMapping("restaurant")
 public class RestaurantController {
+
+	@Value("${spring.cloud.gcp.storage.bucket}")
+	private String bucketName;
+
 
 	private String uploadPath = "C:\\upload\\";
 
@@ -203,80 +214,43 @@ public class RestaurantController {
 		//수정되면
 		return "redirect:/";
 	}
-	
+
 	@GetMapping("/display")
 	public ResponseEntity<Resource> display(@RequestParam("filename") String filename) {
-		String folder = "";
-		Resource resource = new FileSystemResource(uploadPath + folder + filename);
-		if (!resource.exists()) {
-			return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
-		}
-		HttpHeaders header = new HttpHeaders();
-		Path filePath = null;
 		try {
-			filePath = Paths.get(uploadPath + folder + filename);
-			header.add("Content-type", Files.probeContentType(filePath));
+			// Google Cloud Storage 키 파일 설정
+			String keyFileName = "deliciousbee-acb114448e3c.json";  // GCP 서비스 계정 키 파일명
+			InputStream keyFile = getClass().getResourceAsStream("/" + keyFileName);
+
+			// Google Cloud Storage 클라이언트 생성
+			Storage storage = StorageOptions.newBuilder()
+					.setCredentials(GoogleCredentials.fromStream(keyFile))
+					.build()
+					.getService();
+
+			// 파일을 GCS에서 가져오기
+			Blob blob = storage.get(bucketName, filename);
+
+			if (blob == null || !blob.exists()) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+
+			// Blob의 데이터를 ByteArrayResource로 변환
+			Resource resource = new ByteArrayResource(blob.getContent());
+
+			// 헤더 설정
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Type", blob.getContentType());
+
+			return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+
 		} catch (IOException e) {
 			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
 	}
 
 
-
-
-
-
-
-
-//	@GetMapping("/restaurants")
-//	public String getRestaurants(Pageable pageable) { 
-//	    Page<Restaurant> restaurants = restaurantService.findByNameContaining(keyword, pageable); 
-
-
-
-
-
-
-
-	@GetMapping("rtlist")
-	public String restdList(//@RequestParam(name="id") Model model  
-							//@PageableDefault(page = 0, size = 10)
-							//Pageable pageable,
-							//String keyword
-			){
-//
-//		/*검색기능-3*/
-//		Page<Restaurant> list = null;
-//
-//		/*searchKeyword = 검색하는 단어*/
-//		if(keyword == null){
-//			list = restaurantService.restaurnatList(pageable); //기존의 리스트보여줌
-//		}else{
-////			list = restaurantService.restaurantSearchList(keyword, pageable); //검색리스트반환
-//		}
-//
-//		int nowPage = list.getPageable().getPageNumber() + 1; //pageable에서 넘어온 현재페이지를 가지고올수있다 * 0부터시작하니까 +1
-//		int startPage = Math.max(nowPage - 4, 1); //매개변수로 들어온 두 값을 비교해서 큰값을 반환
-//		int endPage = Math.min(nowPage + 5, list.getTotalPages());
-//
-//		//BoardService에서 만들어준 boardList가 반환되는데, list라는 이름으로 받아서 넘기겠다는 뜻
-//		model.addAttribute("list" , list);
-//		model.addAttribute("nowPage", nowPage);
-//		model.addAttribute("startPage", startPage);
-//		model.addAttribute("endPage", endPage);
-//
-		return "restaurant/rtlist";
-	}
-
-
-//		@GetMapping("/category")
-//		public String filterByCategory(@RequestParam("category"ㅋ) String category, Model model) {
-//		    List<Restaurant> restaurants = restaurantService.findByCategory(category);
-//		    model.addAttribute("restaurants", restaurants);
-//		    model.addAttribute("selectedCategory", category);
-//		    return "/category/korean"; // 목록을 보여줄 페이지
-//		}
 
 
 

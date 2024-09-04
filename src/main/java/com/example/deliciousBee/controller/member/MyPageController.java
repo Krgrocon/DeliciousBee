@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.model.board.CategoryType;
-import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.file.MemberAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.mypage.MyPage;
@@ -35,7 +34,6 @@ import com.example.deliciousBee.repository.MyPageRepository;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.MyPageService;
 import com.example.deliciousBee.service.review.ReviewService;
-import com.example.deliciousBee.util.FileService;
 import com.example.deliciousBee.util.MemberFileService;
 
 import jakarta.servlet.http.HttpSession;
