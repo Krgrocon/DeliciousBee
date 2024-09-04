@@ -25,16 +25,22 @@ public class RestaurantAttachedFile {
 	private Restaurant restaurant;
 
 	private String original_filename;  //원본 파일이름
-	private String saved_filename;     //저장할 파일이름
+	private String saved_filename;     //저장할 파일이름ㅌ
 	private Long file_size;            //파일용량
 
-	public RestaurantAttachedFile(String original_filename, String saved_filename, Long file_size) {
-		this.original_filename = original_filename;
-		this.saved_filename = saved_filename;
-		this.file_size = file_size;
+	public RestaurantAttachedFile(String originalFilename, String savedFilename, long fileSize) {
+		this.original_filename = originalFilename;
+		this.saved_filename = savedFilename;
+		this.file_size = fileSize;
 	}
 
 	public String getSavedFilename() {
 		return this.saved_filename;
 	}
+	public String getOriginalfilename() {
+		return this.original_filename;
+	}
+
+
+
 }

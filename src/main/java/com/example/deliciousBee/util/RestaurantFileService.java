@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.example.deliciousBee.model.board.Restaurant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +24,7 @@ public class RestaurantFileService {
      * @param path 저장한 경로
      * @return 저장된 파일명
      */
-    public RestaurantAttachedFile saveFile(MultipartFile mfile) {
+    public RestaurantAttachedFile saveFile(MultipartFile mfile, Restaurant restaurant) {
         // 업로드 된 파일이 없거나 크기가 0이면 저장하지 않고 null을 리턴
         if (mfile == null || mfile.isEmpty() || mfile.getSize() == 0) {
             return null;
@@ -50,7 +51,6 @@ public class RestaurantFileService {
         if (lastIndex == -1) {
             ext = "";
         }
-
         // 확장자가 있는 경우
         else {
             ext = "." + originalFilename.substring(lastIndex + 1);
@@ -76,7 +76,10 @@ public class RestaurantFileService {
             e.printStackTrace();
         }
 
-        return new RestaurantAttachedFile(originalFilename, savedFilename + ext, mfile.getSize());
+        // RestaurantAttachedFile 객체 생성 및 반환
+        RestaurantAttachedFile attachedFile = new RestaurantAttachedFile(originalFilename, savedFilename + ext, mfile.getSize());
+        attachedFile.setRestaurant(restaurant); // Restaurant 객체 설정
+        return attachedFile;
     }
 
     /**

@@ -44,16 +44,15 @@ public class Restaurant {
 	@Enumerated(EnumType.STRING)
 	private CategoryType category;
 
-	private String address;
-	private Long phone_number;
-	private String opening_hours;
-	private String menu_name;
-	private String price_range;
-	private String homepage_url;
-
 	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private BeeMember member;
+        private String address;
+        private String phone_number;
+        private String opening_hours;
+        private String menu_name;
+        private String price_range;
+        private String homepage_url;
 
 	@Column(columnDefinition = "TEXT", nullable = false)
 	private String description;

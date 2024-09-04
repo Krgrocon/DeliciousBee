@@ -421,7 +421,7 @@
         // 레스토랑 데이터 로드 함수
         function loadRestaurants() {
             $.ajax({
-                url: '/api/restaurants',
+                url: '/api/restaurants/search',
                 type: 'GET',
                 data: {
                     keyword: currentKeyword,

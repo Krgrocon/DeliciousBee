@@ -64,6 +64,11 @@ public class RestaurantService {
     }
 
 
+    public void updateApprove(Restaurant restaurant){
+        restaurant.setVerificationStatus(VerificationStatus.APPROVED);
+        restaurantRepository.save(restaurant);
+    }
+
     public List<Restaurant> findRandom5Restaurants() {
         return restaurantRepository.findRandom5Restaurants();
     }

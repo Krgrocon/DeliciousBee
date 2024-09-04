@@ -5,33 +5,59 @@
     <title>Title</title>
 </head>
 <body>
-<!-- [ 영국 런던을 중심으로 구글지도 만들기 ] -->
-<div id="map" style="height: 600px;"></div>
+<h1>레스토랑 위치 검색</h1>
+<div id="map"></div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=myMap">
-    window.initMap = function () {
+<script>
+    function initMap() {
+        // 초기 지도 중심 설정 (필요에 따라 변경)
+        const initialCenter = { lat: 37.5665, lng: 126.9780 };
         const map = new google.maps.Map(document.getElementById("map"), {
-            center: { lat: 37.5400456, lng: 126.9921017 },
-            zoom: 10,
+            zoom: 15,
+            center: initialCenter,
         });
 
-        const malls = [
-            { label: "C", name: "코엑스몰", lat: 37.5115557, lng: 127.0595261 },
-            { label: "G", name: "고투몰", lat: 37.5062379, lng: 127.0050378 },
-            { label: "D", name: "동대문시장", lat: 37.566596, lng: 127.007702 },
-            { label: "I", name: "IFC몰", lat: 37.5251644, lng: 126.9255491 },
-            { label: "L", name: "롯데월드타워몰", lat: 37.5125585, lng: 127.1025353 },
-            { label: "M", name: "명동지하상가", lat: 37.563692, lng: 126.9822107 },
-            { label: "T", name: "타임스퀘어", lat: 37.5173108, lng: 126.9033793 },
-        ];
-        malls.forEach(({ label, name, lat, lng }) => {
-            const marker = new google.maps.Marker({
-                position: { lat, lng },
-                label,
-                map,
-            });
-        });
-    };
+        // 사용자 위치 가져오기
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLatitude = position.coords.latitude;
+                    const userLongitude = position.coords.longitude;
+
+                    // 지도 중심을 사용자 위치로 변경
+                    map.setCenter({ lat: userLatitude, lng: userLongitude });
+
+                    // 레스토랑 데이터 가져오기
+                    fetch(`/api/restaurants?latitude=${userLatitude}&longitude=${userLongitude}&radius=500&keyword=피자`)
+                        .then(response => response.json())
+                        .then(restaurants => {
+                            // 레스토랑 마커 표시
+                            restaurants.forEach(restaurant => {
+                                const marker = new google.maps.Marker({
+                                    map: map,
+                                    position: { lat: restaurant.latitude, lng: restaurant.longitude },
+                                    title: restaurant.name
+                                });
+
+                                const infowindow = new google.maps.InfoWindow({
+                                    content: `<h3>${restaurant.name}</h3><p>${restaurant.category}</p><p>거리: ${restaurant.distance.toFixed(2)} km</p>`
+                                });
+                                marker.addListener("click", () => {
+                                    infowindow.open(map, marker);
+                                });
+                            });
+                        });
+                },
+                (error) => {
+                    console.error("위치 정보를 가져올 수 없습니다.", error);
+                    // 위치 정보를 가져올 수 없는 경우 처리 (예: 기본 위치 사용)
+                }
+            );
+        } else {
+            console.error("위치 정보를 지원하지 않는 브라우저입니다.");
+            // 위치 정보를 지원하지 않는 브라우저 처리 (예: 기본 위치 사용)
+        }
+    }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=myMap"></script>
 

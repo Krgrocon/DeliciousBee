@@ -65,38 +65,38 @@ public class RestaurantController {
 		model.addAttribute("restaurantForm", new Restaurant());
 		return "restaurant/rtwrite";
 	}
-	@PostMapping("restaurants")
-	public String write(@Validated @ModelAttribute("restaurantForm") Restaurant restaurantform
-			,BindingResult result
-			,@AuthenticationPrincipal BeeMember loginMember
-			,@RequestPart(name="file", required=false) MultipartFile[] files) {
-
-		if(result.hasErrors()) {
-			return "redirect:/";
-		}
-
-		BeeMember findMember = beeMemberService.findMemberById(loginMember.getMember_id());
-
-		restaurantform.setMember(findMember);
-		
-		List<RestaurantAttachedFile> attachedFiles = new ArrayList<>();
-		if (files != null && files.length > 0) { 
-			System.out.println("gd");
-			for (MultipartFile file : files) {
-				if (!file.isEmpty()) {
-					log.info("file 들왓니>?..{}", file);
-					RestaurantAttachedFile attachedFile = fileService.saveFile(file);
-					attachedFile.setRestaurant(restaurantform);
-					log.info("writefomr 들왓니>?..{}", restaurantform);
-					attachedFiles.add(attachedFile);
-					log.info("attachedFile 들왓니>?..{}", attachedFile);
-				}
-				System.out.println("gd");
-			}
-		}
-		restaurantService.saveRestaurant(restaurantform, attachedFiles);
-		return "redirect:/";
-	}
+//	@PostMapping("restaurants")
+//	public String write(@Validated @ModelAttribute("restaurantForm") Restaurant restaurantform
+//			,BindingResult result
+//			,@AuthenticationPrincipal BeeMember loginMember
+//			,@RequestPart(name="file", required=false) MultipartFile[] files) {
+//
+//		if(result.hasErrors()) {
+//			return "redirect:/";
+//		}
+//
+//		BeeMember findMember = beeMemberService.findMemberById(loginMember.getMember_id());
+//
+//		restaurantform.setMember(findMember);
+//
+//		List<RestaurantAttachedFile> attachedFiles = new ArrayList<>();
+//		if (files != null && files.length > 0) {
+//			System.out.println("gd");
+//			for (MultipartFile file : files) {
+//				if (!file.isEmpty()) {
+//					log.info("file 들왓니>?..{}", file);
+//					RestaurantAttachedFile attachedFile = fileService.saveFile(file);
+//					attachedFile.setRestaurant(restaurantform);
+//					log.info("writefomr 들왓니>?..{}", restaurantform);
+//					attachedFiles.add(attachedFile);
+//					log.info("attachedFile 들왓니>?..{}", attachedFile);
+//				}
+//				System.out.println("gd");
+//			}
+//		}
+//		restaurantService.saveRestaurant(restaurantform, attachedFiles);
+//		return "redirect:/";
+//	}
 
 
 	//검색
@@ -128,24 +128,7 @@ public class RestaurantController {
 
 		return "restaurant/rtlist";
 	}
-//	@GetMapping("/search")
-//	public String searchRestaurants(@RequestParam(value = "keyword", required = false) String keyword,
-//									@PageableDefault(page = 0, size = 10) Pageable pageable,
-//									Model model) {
-//
-//		Page<Restaurant> restaurants;
-//		if (keyword == null || keyword.isEmpty()) {
-//			// 검색어가 없는 경우 전체 레스토랑 목록 조회
-//			restaurants = restaurantService.findAll(pageable);restaurants = restaurantService.findAll(pageable);
-//		} else {
-//
-//			restaurants = restaurantService.searchByNameOrMenuName(keyword, pageable); // 2번 방법
-//		}
-//
-//		model.addAttribute("restaurants", restaurants);
-//		model.addAttribute("keyword", keyword);
-//		return "restaurant/rtlist"; // 검색 결과를 보여줄 뷰 이름
-//	}
+
 
 
 	@GetMapping("/rtread/{restaurant_id}")
@@ -238,11 +221,24 @@ public class RestaurantController {
 		}
 		return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
 	}
-	
+
+
+
+
+
+
+
+
 //	@GetMapping("/restaurants")
 //	public String getRestaurants(Pageable pageable) { 
 //	    Page<Restaurant> restaurants = restaurantService.findByNameContaining(keyword, pageable); 
-	    
+
+
+
+
+
+
+
 	@GetMapping("rtlist")
 	public String restdList(//@RequestParam(name="id") Model model  
 							//@PageableDefault(page = 0, size = 10)
