@@ -16,71 +16,55 @@ body {
 	color: white !important;
 }
 
-/* 카드 이미지 스타일 */
 .card-img-top {
 	height: 300px;
 	object-fit: cover;
 	border-radius: 0;
 }
 
-/* 사이드바 카드 높이 */
 .sidebar-card {
 	height: 300px;
 }
 
-/* 카드 제목 스타일 */
 .card-title {
 	font-size: 1.5rem;
 	font-weight: bold;
 	margin-bottom: 0.5rem;
 }
 
-/* 카드 내용 스타일 */
 .card-text {
 	margin-bottom: 1rem;
 }
 
-/* 기본 버튼 스타일 */
 .btn-primary {
 	background-color: #dc3545;
 	border-color: #dc3545;
 }
 
-/* 페이지네이션 링크 스타일 */
 .pagination .page-link {
 	color: #dc3545;
 }
 
-/* 활성 페이지네이션 링크 스타일 */
 .pagination .page-item.active .page-link {
 	background-color: #dc3545;
 	border-color: #dc3545;
 }
 
-/* 카드 스타일 */
-.card {
-	width: 100%;
-}
-
-/* 카드 헤더 스타일 */
 .card-header {
 	background-color: #61686c !important;
 	color: white;
 }
 
-/* 스타일 없는 링크 */
 .no-style-link {
 	color: inherit;
 	text-decoration: none;
 	cursor: default;
 }
 
-/* 오른쪽 정렬 버튼 스타일 */
 .btn-custom {
 	margin-left: auto;
 }
 
-/* 별점 스타일 */
 .rating {
 	display: inline-block;
 	text-align: center;
@@ -119,12 +103,10 @@ body {
 	font-size: 1em;
 }
 
-/* 모달 본문 텍스트 정렬 */
 .modal-body {
 	text-align: left;
 }
 
-/* 버튼 컨테이너 - 버튼 가로 배치 */
 .button-container {
 	display: flex;
 	align-items: center;
@@ -137,4 +119,82 @@ body {
 
 .d-flex-magin {
 	margin-left: 30px
+}
+
+.restaurant-name {
+	font-weight: bold;
+}
+
+.restaurant-photos {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.restaurant-photo-item {
+	width: 214px;
+	height: 214px;
+	position: relative;
+	overflow: hidden;
+	margin: 5px;
+}
+
+.restaurant-photo-img {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: auto; /* 비율 유지 */
+	min-height: 100%; /* 높이를 맞추기 위해 */
+}
+
+.card {
+	max-width: 100%;
+}
+
+.image-gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.image-gallery img {
+	height: 300px;
+	object-fit: cover;
+}
+
+.review-gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.review-gallery img {
+	height: 300px;
+	object-fit: cover;
+}
+
+.restaurantCard {
+	min-height: 300px; /* 원하는 높이로 설정 */
+	display: flex;
+	flex-direction: column;
+	justify-content: center; /* 콘텐츠를 중앙 정렬 */
+	align-items: center; /* 콘텐츠를 중앙 정렬 */
+}
+
+.restaurantCard .card {
+	width: 100%;
+}
+
+.detail-Rating-labels {
+	display: flex;
+	justify-content: space-between;
+}
+
+.Review-Write-hr {
+	margin: 20px 0; 
+	border: none;
+	border-top: 1px solid #dee2e6;
+}
+
+.form-group label {
+	font-weight: bold;
 }
