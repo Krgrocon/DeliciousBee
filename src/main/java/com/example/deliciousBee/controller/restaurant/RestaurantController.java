@@ -43,8 +43,6 @@ public class RestaurantController {
 	private String uploadPath = "C:\\upload\\";
 
 	private final RestaurantService restaurantService;
-	private final BeeMemberService beeMemberService;
-	private final RestaurantFileService fileService;
 	private final ReviewService reviewService;
 
 	@GetMapping("newfile")
@@ -132,9 +130,7 @@ public class RestaurantController {
 
 
 	@GetMapping("/rtread/{restaurant_id}")
-	public String read(@AuthenticationPrincipal BeeMember loginMember
-			,@PathVariable("restaurant_id") Long restaurant_id
-			,Model model) {
+	public String read(@AuthenticationPrincipal BeeMember loginMember,@PathVariable("restaurant_id") Long restaurant_id,Model model) {
 		if(loginMember == null) {
 			return "redirect:/member/login";
 		}
@@ -145,11 +141,11 @@ public class RestaurantController {
 			return "redirect:/shop/index";
 		}
 		model.addAttribute("restaurant", restaurant);
+		log.info("*****restaurant:{}", model);
 
 		// 리뷰 정보 가져오기
 		String memberId = loginMember.getMember_id();
 		List<Review> reviewsByRestaurant = reviewService.getReviewsByRestaurantIdWithFiles(restaurant_id, memberId);
-		log.info("************** allreview:{}", reviewsByRestaurant);
 		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant);
 		return "restaurant/rtread";
 	}
