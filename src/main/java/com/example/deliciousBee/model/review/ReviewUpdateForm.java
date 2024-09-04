@@ -9,7 +9,12 @@ public class ReviewUpdateForm {
 	
 	private Long reviewId;
 	private String reviewContents;
+	
 	private Double rating;
+	private Double tasteRating;
+	private Double priceRating;
+	private Double kindRating;
+	
 	private String recommendItems;
 	private boolean fileRemoved;
 

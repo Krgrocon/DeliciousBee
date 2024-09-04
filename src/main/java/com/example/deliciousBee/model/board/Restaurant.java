@@ -1,124 +1,138 @@
-    package com.example.deliciousBee.model.board;
+package com.example.deliciousBee.model.board;
 
+import java.time.LocalDateTime;
+import java.util.List;
 
+import com.example.deliciousBee.model.file.RestaurantAttachedFile;
+import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.model.menu.Menu;
 
-    import java.time.LocalDateTime;
-    import java.util.List;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-    import com.example.deliciousBee.model.file.AttachedFile;
-    import com.example.deliciousBee.model.file.RestaurantAttachedFile;
-    import com.example.deliciousBee.model.member.BeeMember;
-    import com.example.deliciousBee.model.review.Review;
-    import jakarta.persistence.*;
-    import lombok.*;
-    import net.minidev.json.annotate.JsonIgnore;
+@Data
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@Entity
+public class Restaurant {
 
-    @Data
-    @NoArgsConstructor
-    @Getter
-    @Setter
-    @ToString
-    @Entity
-    public class Restaurant {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+	@Column(nullable = false)
+	private String name;
 
-        @Column(nullable = false)
-        private String name;
+	@Enumerated(EnumType.STRING)
+	private CategoryType category;
 
-        @Enumerated(EnumType.STRING)
-        private CategoryType category;
+	private String address;
+	private Long phone_number;
+	private String opening_hours;
+	private String menu_name;
+	private String price_range;
+	private String homepage_url;
 
-        private String address;
-        private Long phone_number;
-        private String opening_hours;
-        private String menu_name;
-        private String price_range;
-        private String homepage_url;
+	@ManyToOne
+	@JoinColumn(name = "member_id")
+	private BeeMember member;
 
-        @ManyToOne
-        @JoinColumn(name = "member_id")
-        private BeeMember member;
+	@Column(columnDefinition = "TEXT", nullable = false)
+	private String description;
 
-        @Column(columnDefinition = "TEXT" , nullable = false)
-        private String description;
+	@Column(nullable = false)
+	private Double longitude;
 
-        @Column(nullable = false)
-        private Double longitude;
+	@Column(nullable = false)
+	private Double latitude;
 
-        @Column(nullable = false)
-        private Double latitude;
+	// private Long image_id;
+	@Column(nullable = false)
+	private LocalDateTime create_at;
 
-        //    private Long image_id;
-        @Column(nullable = false)
-        private LocalDateTime create_at;
+	@Column(nullable = false)
+	private LocalDateTime updated_at;
 
-        @Column(nullable = false)
-        private LocalDateTime updated_at;
+	private Double average_rating;
+	private Long review_count;
 
-        private Double average_rating;
-        private Long review_count;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private VerificationStatus verificationStatus; // 인증 상태 추가
 
+	@OneToMany(mappedBy = "restaurant")
+	private List<RestaurantAttachedFile> attachedFile;
+	
+	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Menu> menuList;
+	
+	@PrePersist
+	protected void onCreate() {
+		LocalDateTime now = LocalDateTime.now();
+		this.create_at = now;
+		this.updated_at = now;
+	}
 
-        @Enumerated(EnumType.STRING)
-        @Column(nullable = false)
-        private VerificationStatus verificationStatus; // 인증 상태 추가
+	@PreUpdate
+	protected void onUpdate() {
+		this.updated_at = LocalDateTime.now();
+	}
 
+	public Restaurant(String name, String description, Double longitude, Double latitude) {
+		this.name = name;
+		this.description = description;
+		this.longitude = longitude;
+		this.latitude = latitude;
+		this.verificationStatus = VerificationStatus.PENDING; // 기본값 설정
+	}
 
+	public static Restaurant toRestaurant(Restaurant restaurantUpdateForm) {
+		Restaurant restaurant = new Restaurant();
 
-        @OneToMany(mappedBy = "restaurant")
-        private List<RestaurantAttachedFile> attachedFile;
+		restaurant.setId(restaurantUpdateForm.getId());
+		restaurant.setName(restaurantUpdateForm.getName());
+		restaurant.setAddress(restaurantUpdateForm.getAddress());
+		restaurant.setPhone_number(restaurantUpdateForm.getPhone_number());
+		restaurant.setOpening_hours(restaurantUpdateForm.getOpening_hours());
+		restaurant.setMenu_name(restaurantUpdateForm.getMenu_name());
+		restaurant.setPrice_range(restaurantUpdateForm.getPrice_range());
+		restaurant.setHomepage_url(restaurantUpdateForm.getHomepage_url());
+		restaurant.setDescription(restaurantUpdateForm.getDescription());
+		restaurant.setLongitude(restaurantUpdateForm.getLongitude());
+		restaurant.setLatitude(restaurantUpdateForm.getLatitude());
+		restaurant.setUpdated_at(restaurantUpdateForm.getUpdated_at());
+		restaurant.setCategory(restaurantUpdateForm.getCategory());
+		restaurant.setVerificationStatus(restaurantUpdateForm.getVerificationStatus()); // 인증 상태 설정
 
-        @PrePersist
-        protected void onCreate() {
-            LocalDateTime now = LocalDateTime.now();
-            this.create_at = now;
-            this.updated_at = now;
-        }
+		return restaurant;
+	}
 
-        @PreUpdate
-        protected void onUpdate() {
-            this.updated_at = LocalDateTime.now();
-        }
-
-        public Restaurant(String name, String description, Double longitude, Double latitude) {
-            this.name = name;
-            this.description = description;
-            this.longitude = longitude;
-            this.latitude = latitude;
-            this.verificationStatus = VerificationStatus.PENDING; // 기본값 설정
-        }
-
-        public static Restaurant toRestaurant(Restaurant restaurantUpdateForm) {
-            Restaurant restaurant = new Restaurant();
-
-            restaurant.setId(restaurantUpdateForm.getId());
-            restaurant.setName(restaurantUpdateForm.getName());
-            restaurant.setAddress(restaurantUpdateForm.getAddress());
-            restaurant.setPhone_number(restaurantUpdateForm.getPhone_number());
-            restaurant.setOpening_hours(restaurantUpdateForm.getOpening_hours());
-            restaurant.setMenu_name(restaurantUpdateForm.getMenu_name());
-            restaurant.setPrice_range(restaurantUpdateForm.getPrice_range());
-            restaurant.setHomepage_url(restaurantUpdateForm.getHomepage_url());
-            restaurant.setDescription(restaurantUpdateForm.getDescription());
-            restaurant.setLongitude(restaurantUpdateForm.getLongitude());
-            restaurant.setLatitude(restaurantUpdateForm.getLatitude());
-            restaurant.setUpdated_at(restaurantUpdateForm.getUpdated_at());
-            restaurant.setCategory(restaurantUpdateForm.getCategory());
-            restaurant.setVerificationStatus(restaurantUpdateForm.getVerificationStatus()); // 인증 상태 설정
-
-            return restaurant;
-        }
-
-    //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) // 맛집과 이미지의 관계 설정 (CascadeType.ALL: 맛집 삭제 시 이미지도 삭제, orphanRemoval: 이미지 삭제 시 연관 관계도 삭제)
-    //    @JoinColumn(name = "restaurant_id") // 외래 키 설정
-    //    private List<Image> images = new ArrayList<>();
-    //
-    //    // 생성 시 이미지 추가하는 메서드
-    //    public void addImage(Image image) {
-    //        this.images.add(image);
-    //        image.setRestaurant(this); // 양방향 연관 관계 설정
-    //    }
-    }
+	// @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) // 맛집과 이미지의 관계 설정
+	// (CascadeType.ALL: 맛집 삭제 시 이미지도 삭제, orphanRemoval: 이미지 삭제 시 연관 관계도 삭제)
+	// @JoinColumn(name = "restaurant_id") // 외래 키 설정
+	// private List<Image> images = new ArrayList<>();
+	//
+	// // 생성 시 이미지 추가하는 메서드
+	// public void addImage(Image image) {
+	// this.images.add(image);
+	// image.setRestaurant(this); // 양방향 연관 관계 설정
+	// }
+}
