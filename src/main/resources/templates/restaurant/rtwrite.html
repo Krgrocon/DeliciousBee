@@ -74,6 +74,8 @@ function submitRestaurant() {
 	const form = document.getElementById('restaurantForm');
 	const formData = new FormData(form);
 
+
+
 	fetch('/api/restaurants/create', {
 		method: 'POST',
 		body: formData
