@@ -2,24 +2,13 @@ package com.example.deliciousBee.model.board;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.menu.Menu;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,9 +30,11 @@ public class Restaurant {
 	@Column(nullable = false)
 	private String name;
 
+	@ElementCollection(targetClass = CategoryType.class)
+	@CollectionTable(name = "restaurant_categories", joinColumns = @JoinColumn(name = "restaurant_id"))
 	@Enumerated(EnumType.STRING)
-	private CategoryType category;
-
+	@Column(name = "category")
+	private Set<CategoryType> categories;
 	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private BeeMember member;
@@ -118,7 +109,7 @@ public class Restaurant {
 		restaurant.setLongitude(restaurantUpdateForm.getLongitude());
 		restaurant.setLatitude(restaurantUpdateForm.getLatitude());
 		restaurant.setUpdated_at(restaurantUpdateForm.getUpdated_at());
-		restaurant.setCategory(restaurantUpdateForm.getCategory());
+		restaurant.setCategories(restaurantUpdateForm.getCategories());
 		restaurant.setVerificationStatus(restaurantUpdateForm.getVerificationStatus()); // 인증 상태 설정
 
 		return restaurant;

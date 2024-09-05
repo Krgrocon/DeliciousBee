@@ -68,11 +68,9 @@ public class RestaurantController {
 	@GetMapping("rtwrite")
 	public String rtwriteForm(@AuthenticationPrincipal BeeMember loginMember
 			, Model model) {
-
 		if(loginMember == null) {
 			return "redirect:/member/login";
 		}
-
 		model.addAttribute("restaurantForm", new Restaurant());
 		return "restaurant/rtwrite";
 	}

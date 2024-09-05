@@ -25,7 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -90,7 +92,12 @@ public class RestaurantRestController {
         restaurant.setAddress(address);
         restaurant.setPhone_number(phoneNumber);
         restaurant.setDescription(description);
-        restaurant.setCategory(CategoryType.valueOf(category));
+//        Set<CategoryType> categories = new HashSet<>();
+//        for (CategoryType categoryType : restaurantRequest.getCategories()) {
+//            categories.add(categoryType);
+//        }
+//        restaurant.setCategories(categories);
+
         restaurant.setLatitude(latitude);
         restaurant.setLongitude(longitude);
         restaurant.setMember(findMember);

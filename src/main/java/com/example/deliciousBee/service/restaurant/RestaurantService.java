@@ -3,6 +3,7 @@ package com.example.deliciousBee.service.restaurant;
 
 import com.example.deliciousBee.dto.report.RestaurantVerificationDto;
 import com.example.deliciousBee.dto.restaurant.RestaurantDto;
+import com.example.deliciousBee.model.board.CategoryType;
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.board.VerificationStatus;
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
@@ -21,6 +22,8 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import javax.smartcardio.Card;
 
 @Slf4j
 @Service
@@ -97,7 +100,7 @@ public class RestaurantService {
         findRestaurant.setLongitude(updateRestaurant.getLongitude());
         findRestaurant.setLatitude(updateRestaurant.getLatitude());
         findRestaurant.setUpdated_at(updateRestaurant.getUpdated_at());
-        findRestaurant.setCategory(updateRestaurant.getCategory());
+        findRestaurant.setCategories(updateRestaurant.getCategories());
 
         restaurantRepository.save(findRestaurant);
     }
@@ -108,8 +111,8 @@ public class RestaurantService {
     }
 
     // 카테고리
-    public List<Restaurant> findByCategory(String category) {
-        return restaurantRepository.findByCategory(category);
+    public List<Restaurant> findByCategory(CategoryType category) {
+        return restaurantRepository.findByCategoriesContaining(category); // findByCategoriesContaining으로 변경
     }
 
     public RestaurantAttachedFile findFileByRestaurantId(Restaurant restaurant) {

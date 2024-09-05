@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -19,7 +20,7 @@ public class RestaurantDto {
     private Double distance;
     private String address;
     @Enumerated(EnumType.STRING)
-    private CategoryType category;
+    private Set<CategoryType> categories;
     private String description;
     private double average_rating;
     private List<String> imageUrls; // 이미지 URL 리스트
@@ -31,7 +32,7 @@ public class RestaurantDto {
         this.latitude = restaurant.getLatitude();
         this.longitude = restaurant.getLongitude();
         this.address = restaurant.getAddress();
-        this.category = restaurant.getCategory();
+        this.categories = restaurant.getCategories();
         this.description = restaurant.getDescription();
         this.average_rating = restaurant.getAverage_rating() != null ? restaurant.getAverage_rating() : 0.0;
 

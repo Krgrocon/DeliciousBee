@@ -224,10 +224,11 @@ public class ReviewService {
 		return reviewRepository.findAll();
 	}
 
-	// 랜덤 카테고리
+
+
 	public List<Review> getRandomReviewsByCategory(CategoryType category) {
 		// 1. 해당 카테고리의 모든 리뷰를 가져옵니다.
-		List<Review> reviews = reviewRepository.findByRestaurant_Category(category);
+		List<Review> reviews = reviewRepository.findByRestaurantCategoriesContaining(category); // 수정된 메서드 호출
 
 		// 2. 리뷰가 없는 경우 빈 리스트를 반환합니다.
 		if (reviews.isEmpty()) {
