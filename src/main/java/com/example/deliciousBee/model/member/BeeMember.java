@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.example.deliciousBee.model.file.MemberAttachedFile;
 import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.model.review.Review;
 
@@ -24,7 +25,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Entity // JPA가 관리
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,7 +40,7 @@ public class BeeMember implements UserDetails, OAuth2User {
 	@Column(length = 60, nullable = false)
 	private String password;
 
-    @Enumerated(EnumType.STRING)
+	@Enumerated(EnumType.STRING)
 	private NationalType national;
 
 	@Column(length = 50, nullable = false)
@@ -53,12 +56,24 @@ public class BeeMember implements UserDetails, OAuth2User {
 	@Column(length = 100)
 	private String email;
 
-	private boolean isSocialUser;  // 소셜 로그인 플래그
-	
+	private boolean isSocialUser; // 소셜 로그인 플래그
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "profile_image_id") // 외래 키 컬럼 이름 지정
+	private MemberAttachedFile profileImage;
+
 	@OneToOne(mappedBy = "beeMember", cascade = CascadeType.ALL)
 	@JsonIgnore
-    private MyPage myPage; 
+	private MyPage myPage;
 
+//*****************팔로워**********************
+	@OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Follow> followingList; // 내가 팔로우하는 사람들 목록
+
+	@OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Follow> followerList; // 나를 팔로우하는 사람들 목록
+
+	// ************리뷰*************
 	@OneToMany(mappedBy = "beeMember", fetch = FetchType.EAGER)
 	private List<Review> review;
 
@@ -71,7 +86,7 @@ public class BeeMember implements UserDetails, OAuth2User {
 	private Role role;
 
 	@Transient
-	private Map<String, Object> attributes;  // OAuth2User의 속성을 저장할 필드
+	private Map<String, Object> attributes; // OAuth2User의 속성을 저장할 필드
 
 	// 연관관계 메서드
 	public void setSocialLogin(SocialLogin socialLogin) {
@@ -124,25 +139,15 @@ public class BeeMember implements UserDetails, OAuth2User {
 		return this.email; // OAuth2User의 getName() 메서드를 통해 반환할 사용자 식별자
 	}
 
-
-
 	// attributes를 설정하는 메서드
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
-	
+
 	@Override
-    public String toString() {
-        return "BeeMember{" +
-                "member_id='" + member_id + '\'' +
-                ", password='" + password + '\'' +
-                ", national=" + national +
-                ", nickname='" + nickname + '\'' +
-                ", gender=" + gender +
-                ", birth=" + birth +
-                ", email='" + email + '\'' +
-                ", isSocialUser=" + isSocialUser +
-                ", role=" + role +
-                '}';
-    }
+	public String toString() {
+		return "BeeMember{" + "member_id='" + member_id + '\'' + ", password='" + password + '\'' + ", national="
+				+ national + ", nickname='" + nickname + '\'' + ", gender=" + gender + ", birth=" + birth + ", email='"
+				+ email + '\'' + ", isSocialUser=" + isSocialUser + ", role=" + role + '}';
+	}
 }

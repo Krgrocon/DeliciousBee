@@ -17,4 +17,6 @@ public enum CategoryType {
 	public String getDescription() {
 		return description;
 	}
+	
+	 
 }

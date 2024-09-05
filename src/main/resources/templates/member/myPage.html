@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="/myPage.css">
 <title>마이페이지</title>
 </head>
-
 <body>
 	<!-- Navbar -->
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -75,31 +74,109 @@
 	</div>
 
 	<div class="main-info">
-		<img th:if="${myPage.mainImage != null}"
-			th:src="'/myPageImage/' +  ${myPage.mainImage.savedFilename}"
-			alt="메인 이미지" class="main-image"> <img
-			th:unless="${myPage.mainImage != null}" src="/image/bee.jpg"
-			alt="기본 이미지" class="default-main-image">
+		<!-- 메인 이미지 -->
+		<img th:if="${myPage.mainImage == null}" src="/image/back.jpg"
+			alt="기본 이미지" class="default-main-image"> <img
+			th:unless="${myPage.mainImage == null}"
+			th:src="'/myPageImage/' + ${myPage.mainImage.savedFilename}"
+			alt="메인 이미지" class="main-image">
+
+		<!-- 프로필 이미지 -->
 		<div class="profile-image">
-			<img th:if="${myPage.profileImage != null}"
+			<img th:if="${myPage.beeMember.profileImage == null}"
+				src="/image/bee.jpg" alt="기본 이미지" class="default-main-image">
+			<img th:unless="${myPage.beeMember.profileImage == null}"
 				th:src="'/myPageImage/' + ${myPage.profileImage.savedFilename}"
-				alt="프로필 이미지" class="profile-icon"> <img
-				th:unless="${myPage.profileImage != null}" src="/image/bee.jpg"
-				alt="기본 이미지" class="default-profile-image">
+				alt="메인 이미지" class="main-image">
 		</div>
 	</div>
+
+
 	<div class="myPageOwner">
 		<div class="owner-profile">
-			<div class="nickname"
-				th:text="${myPage.beeMember.nickname} + ' 님의 마이페이지' "></div>
+			<div class="nickname-header">
+				<h4 class="nickname"
+					th:text="${myPage.beeMember.nickname} + ' 님의 마이페이지' "></h4>
+				<span th:with="followService=${@followService}"
+					class="follow-button-wrapper">
+					<div th:if="${!isOwner}">
+						<button th:if="${loginMember != null}"
+							th:id="'followButton' + ${myPage.beeMember.member_id}"
+							th:text="${followService.isFollowing(loginMember.member_id, myPage.beeMember.member_id)} ? '언팔로우' : '팔로우'"
+							th:data-following-id="${myPage.beeMember.member_id}"
+							th:class="${followService.isFollowing(loginMember.member_id, myPage.beeMember.member_id)} ? 'follow-button' : 'nofollow'"
+							onclick="toggleFollow(this)"></button>
+						<div class="no-login-follow">
+							<a th:if="${loginMember == null}" th:href="@{login}"
+								onclick="return showLoginAlert()" class="nofollow">팔로우</a>
+						</div>
+						<!-- 팔로워/팔로잉 목록 버튼 -->
+					</div>
+					<button class="follow-list" onclick="showFollowersModal()">팔로워
+						목록</button>
+					<button class="follow-list" onclick="showFollowingModal()">팔로잉
+						목록</button>
+				</span>
+			</div>
+			<h4 class="intro-title">소개글</h4>
+			<div class="introduce"
+				th:if="${myPage.introduce != null and !myPage.introduce.isEmpty()}"
+				th:text="${myPage.introduce}"></div>
+			<div class="introduce"
+				th:unless="${myPage.introduce != null and !myPage.introduce.isEmpty()}">소개글이
+				없습니다</div>
 		</div>
-		<div class="owner-intro">
-			<p class="intro-title">소개글</p>
-			<div class="introduce" th:text="${myPage.introduce}"></div>
+
+		<!-- 팔로워 목록 모달 -->
+		<div id="followersModal" class="modal">
+			<div class="follow-modal-content">
+				<span class="close" onclick="closeFollowersModal()">×</span>
+				<h3>팔로워 목록</h3>
+				<p>팔로워수: <span th:text="${myPage.beeMember.followerList.size()}"></span></p> 
+				<ul>
+					<li th:each="follower : ${myPage.beeMember.followerList}" >
+						<a th:href="@{/member/myPage(id=${follower.follower.myPage.id})}" 
+       					th:text="${follower.follower.nickname}"></a>
+    				</li>
+				</ul>
+			 </div>
+		 </div>
+
+		<!-- 팔로잉 목록 모달 -->
+		<div id="followingModal" class="modal">
+			<div class="follow-modal-content">
+				<span class="close" onclick="closeFollowingModal()">×</span>
+				<h3>팔로잉 목록</h3>
+				<p>팔로워수: <span th:text="${myPage.beeMember.followingList.size()}"></span></p> 
+				<ul>
+					<li th:each="following : ${myPage.beeMember.followingList}">
+						<a th:href="@{/member/myPage(id=${following.following.myPage.id})}" 
+       					th:text="${following.following.nickname}"></a>
+					</li>
+				</ul>
+			</div>
 		</div>
+
 		<div class="owner-stats">
-			<div th:text="'리뷰한수 : ' + ${myPage.beeMember.review.size()}"></div>
+			<span th:text="'리뷰한수 : ' + ${myPage.beeMember.review.size()}"></span>
+			<span th:text="'조회수: ' + ${myPage.hit}"></span> <span
+				th:text="'오늘 방문자 수: ' + ${todayVisitCount}"></span> <a
+				class="today_visitor" onclick="showVisitorsModal()">오늘의 방문자보기</a>
 		</div>
+
+		<!-- 오늘의 방문자 목록 모달 -->
+		<div id="visitorsModal" class="modal">
+			<div class="visit-modal-content">
+				<span class="close" onclick="closeVisitorsModal()">×</span>
+				<h3>오늘의 방문자</h3>
+				<ul>
+					<li th:each="visit : ${visitors}"><a th:href="@{/member/myPage(id=${visit.visitor.myPage.id})}" 
+       					th:text="${visit.visitor.nickname}"></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
 	</div>
 	<div class="myPageMain">
 		<div th:if="${!myPage.beeMember.review.isEmpty()}"
@@ -131,22 +208,35 @@
 							style="width: 300px; height: 300px; object-fit: cover;">
 					</div>
 				</div>
-				<div th:text="'추천 메뉴 : ' + ${review.recommendItems}"
+				<div class="review-comment">
+					<div th:text="'추천 메뉴 : ' + ${review.recommendItems}"
 					class="recommendItems"></div>
-				<div th:text="'리뷰 : ' + ${review.reviewContents}"
+				    <div th:text="'리뷰 : ' + ${review.reviewContents}"
 					class="review_content"></div>
-
+				</div>
 			</div>
 		</div>
-		<p th:unless="${!myPage.beeMember.review.isEmpty()}">작성된 리뷰가 없습니다.</p>
+		<div class="noReview" th:unless="${!myPage.beeMember.review.isEmpty()}">
+			<div class="no-review">
+				작성된 리뷰가 없습니다ㅠ
+				<p th:if="${#authentication.isAuthenticated() and isOwner}"> 
+           			 <a href="rtlist.html">리뷰 작성하러 가기</a> 👉
+        		</p>
+			</div>
+		</div>
+		
 
 	</div>
-	
-	  <div class="button" th:if="${#authentication.principal != null and #authentication.principal.member_id == myPage.beeMember.member_id}">
-		  <button onclick="location.href='/member/updateMyPage'">수정하기</button>
-	  </div>
-	<!-- 다른 사람 or 로그인 안 한 사람 -->
 
+	<div class="goUpdate-button"
+		th:if="${loginMember != null and loginMember.member_id == myPage.beeMember.member_id}">
+		<button onclick="location.href='/member/updateMyPage'">수정하기</button>
+	</div>
+	
+	<div class="under-bar">
+	  <img src="/image/bee.jpg" class="under-image">
+	  <span class="under-comment">DeliciousBee</span>
+	</div>
 
 
 	<script
@@ -174,6 +264,83 @@
 				modal.style.display = 'none';
 			}
 		}
+		
+		//팔로워**************
+		async function toggleFollow(button) {
+    const followingId = button.dataset.followingId;
+    const isFollowing = button.textContent === '언팔로우';
+    const url = isFollowing ? `/unfollow/${followingId}` : `/follow/${followingId}`;
+
+    try {
+        const response = await fetch(url, { method: 'POST' });
+        const success = await response.json(); 
+
+        if (success) {
+            // 버튼 텍스트 및 클래스 변경
+            button.textContent = isFollowing ? '팔로우' : '언팔로우';
+            button.classList.toggle('follow-button', !isFollowing); // 언팔로우 시 btn-secondary 추가
+            button.classList.toggle('nofollow', isFollowing); // 팔로우 시 btn-primary 추가
+        } else {
+            alert('팔로우/언팔로우 요청에 실패했습니다.');
+        }
+   			 } catch (error) {
+        	console.error('팔로우/언팔로우 요청 중 오류 발생:', error);
+        	alert('팔로우/언팔로우 요청 중 오류가 발생했습니다.');
+   		  }
+		}		
+		//로그인안한사람 팔로워하려할때**************
+		function showLoginAlert() {
+	        alert("로그인이 필요한 서비스입니다.");
+	        return true; // 로그인 페이지로 이동
+	    }
+		
+		
+		//*************팔로워 팔로잉 모달****************
+function showFollowersModal() {
+    document.getElementById('followersModal').style.display = 'block';
+}
+
+// 팔로워 목록 모달 닫기 함수
+function closeFollowersModal() {
+    document.getElementById('followersModal').style.display = 'none';
+}
+
+// 팔로잉 목록 모달 열기 함수
+function showFollowingModal() {
+    document.getElementById('followingModal').style.display = 'block';
+}
+
+// 팔로잉 목록 모달 닫기 함수
+function closeFollowingModal() {
+    document.getElementById('followingModal').style.display = 'none';
+}
+
+//오늘의 방문자 목록 모달 열기 함수
+function showVisitorsModal() {
+    document.getElementById('visitorsModal').style.display = 'block';
+}
+
+// 오늘의 방문자 목록 모달 닫기 함수
+function closeVisitorsModal() {
+    document.getElementById('visitorsModal').style.display = 'none';
+}
+
+/* 스크롤 이벤트 처리 (JavaScript) */
+window.addEventListener('scroll', function() {
+    const reviewContainer = document.querySelector('.myPageReview');
+    const reviewBoxes = reviewContainer.querySelectorAll('.review-box');
+
+    // 스크롤 위치가 리뷰 컨테이너의 끝에 가까워지면
+    if (reviewContainer.scrollTop + reviewContainer.clientHeight >= reviewContainer.scrollHeight - 200) {
+        // 숨겨진 리뷰 4개를 더 표시
+        for (let i = 0; i < 4; i++) {
+            const nextReview = reviewBoxes[i + reviewBoxes.length - 4]; // 숨겨진 리뷰 찾기
+            if (nextReview) {
+                nextReview.style.display = 'block';
+            }
+        }
+    }
+});
 	</script>
 </body>
 

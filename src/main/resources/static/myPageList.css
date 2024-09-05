@@ -80,6 +80,16 @@ a:hover {
     background-color: #FFA500; /* 주황색 배경 */
 }
 /* 컨테이너*/
+h2 {
+	text-align: center;
+}
+ 
+.category {
+	margin-left: 200px;
+	margin-right: 200px;
+	
+}
+
 img {
 	border-radius: 20%;
 	border: 1px solid black;

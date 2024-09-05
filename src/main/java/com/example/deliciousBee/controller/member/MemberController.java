@@ -6,6 +6,7 @@ import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.member.*;
 import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.model.mypage.MyPageUpdateForm;
+import com.example.deliciousBee.repository.MyPageVisitRepository;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.MyPageService;
 
@@ -31,6 +32,7 @@ import com.example.deliciousBee.util.FileService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -43,6 +45,7 @@ public class MemberController {
 	private final HttpSession session;
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final MyPageService myPageService;
+	private final MyPageVisitRepository myPageVisitRepository;
 
 	@Autowired
 	private FileService fileService; // fileStore 주입 받음.
@@ -101,6 +104,8 @@ public class MemberController {
 		beeMember.setMyPage(myPage); // BeeMember에 MyPage 설정
 
 		beeMemberService.saveMember(beeMember);
+		
+		
 
 		return "redirect:/"; // redirect:/url에 안남기고
 	}
@@ -141,8 +146,9 @@ public class MemberController {
 		}
 
 	
-
-		model.addAttribute("loginMember", loginMember); // LoginForm()의 빈객체를 담아 보내줌, 필드를 활용하려고
+		// 데이터베이스에서 최신 회원 정보 가져오기
+	    BeeMember updatedMember = beeMemberService.findMemberById(loginMember.getMember_id());
+		model.addAttribute("loginMember", updatedMember); // LoginForm()의 빈객체를 담아 보내줌, 필드를 활용하려고
 		return "member/myInfo";
 	}
 
@@ -168,8 +174,8 @@ public class MemberController {
 		beeMemberService.updateMember(updatedMember); // 서비스 호출하여 업데이트 수행
 
 		// 세션 업데이트
-		request.getSession().setAttribute("loginMember", updatedMember);
-
+	    request.getSession().setAttribute("loginMember", beeMemberService.findMemberById(loginMember.getMember_id())); 
+	    	
 		return "redirect:/member/myInfo"; // 수정 완료 후 프로필 페이지로 리다이렉트
 	}
 
@@ -235,9 +241,9 @@ public class MemberController {
 		if (loginMember == null) {
 			return "redirect:/member/login";
 		}
-		// 필요한 데이터가 있으면 모델에 추가합니다.
-		// model.addAttribute("data", someData);
-		return "member/myList"; // templates/member/myList.html을 반환
+		MyPage myPage = loginMember.getMyPage(); 
+	    model.addAttribute("myPage", myPage);
+	    return "member/myList"; 
 	}
 
 	// ***********************내가 쓴댓글 이동***************************
@@ -274,6 +280,9 @@ public class MemberController {
 			return "redirect:/member/deleteMember";
 		}
 
+		// 회원 삭제 전에 관련된 방문 기록 삭제
+	    myPageVisitRepository.deleteByVisitor(loginMember);
+		
 		// 회원 삭제
 		beeMemberService.deleteMember(loginMember.getMember_id());
 
@@ -286,46 +295,6 @@ public class MemberController {
 		return "redirect:/";
 	}
 
-//******************************친구 요청************************
-//			 // 친구 요청 보내기
-//		    @PostMapping("/member/{friendMemberId}/send-friend-request")
-//		    public String sendFriendRequest(@PathVariable Long friendMemberId,
-//		                                    @SessionAttribute("loginMember") BeeMember loginMember,
-//		                                    RedirectAttributes redirectAttributes) {
-//		        friendService.sendFriendRequest(loginMember, beeMemberService.findMemberById(friendMemberId));
-//		        redirectAttributes.addFlashAttribute("message", "친구 요청을 보냈습니다.");
-//		        return "redirect:/member/" + friendMemberId; // 친구 프로필 페이지로 리다이렉트
-//		    }
-//
-//		    // 친구 요청 수락
-//		    @PostMapping("/friend-request/{friendRequestId}/accept")
-//		    public String acceptFriendRequest(@PathVariable Long friendRequestId,
-//		                                       @SessionAttribute("loginMember") BeeMember loginMember,
-//		                                       RedirectAttributes redirectAttributes) {
-//		        friendService.acceptFriendRequest(friendRequestId);
-//		        redirectAttributes.addFlashAttribute("message", "친구 요청을 수락했습니다.");
-//		        return "redirect:/member/friends"; // 친구 목록 페이지로 리다이렉트
-//		    }
-//
-//		    // 친구 요청 거부
-//		    @PostMapping("/friend-request/{friendRequestId}/reject")
-//		    public String rejectFriendRequest(@PathVariable Long friendRequestId,
-//		                                       @SessionAttribute("loginMember") BeeMember loginMember,
-//		                                       RedirectAttributes redirectAttributes) {
-//		        friendService.rejectFriendRequest(friendRequestId);
-//		        redirectAttributes.addFlashAttribute("message", "친구 요청을 거부했습니다.");
-//		        return "redirect:/member/friends"; // 친구 목록 페이지로 리다이렉트
-//		    }
-//
-//		    // 친구 목록 조회
-//		    @GetMapping("/member/friends")
-//		    public String getFriends(@SessionAttribute("loginMember") BeeMember loginMember,
-//		                             Model model) {
-//		        model.addAttribute("friends", friendService.getFriends(loginMember));
-//		        return "member/friends"; // templates/member/friends.html 을 반환
-//		    }
-//
-//
-//
+
 
 }

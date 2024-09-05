@@ -208,6 +208,7 @@
 </head>
 
 <body>
+<<<<<<< Updated upstream
 <div class="container">
     <header>
         <div class="header-content">
@@ -218,6 +219,39 @@
                     <input type="button" onclick="location.href='/member/myPage'" value="마이페이지">
                     <input type="button" onclick="location.href='/member/logout'" value="로그아웃">
                     <!-- 로그인한 사용자에게만 보이는 콘텐츠 -->
+=======
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <div class="navbar-brand-group">
+            <a class="navbar-brand" href="/">Delicious Bee</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            	<li class="nav-item"><a class="nav-link" href="/member/myPageList">사람들리뷰</a></li>
+                <li class="nav-item">
+                    <a href="#" th:onclick="|location.href='@{/restaurant/rtwrite}'|" class="nav-link">맛집등록</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
+                <div class="tooltip-container" sec:authorize="isAuthenticated()">
+                    <div class="button-content">
+                        <span class="text">내 정보</span>
+                    </div>
+                    <div class="tooltip-content">
+                        <div class="infos">
+                            <a href="/member/myPage" class="info">
+                                <p>마이페이지</p>
+                            </a>
+                            <a href="#" class="info" th:href="@{/logout}">
+                                <p>로그아웃</p>
+                            </a>
+                            
+                        </div>
+                    </div>
+>>>>>>> Stashed changes
                 </div>
                 <div sec:authorize="!isAuthenticated()">
                     <input type="button" onclick="location.href='/member/join'" value="회원가입">

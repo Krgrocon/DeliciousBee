@@ -8,10 +8,12 @@ import com.example.deliciousBee.model.member.BeeMember;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,37 +38,29 @@ public class MyPage {
 
 	
 	@OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "mainImage_id") // 외래 키 컬럼 이름 지정
-    private MemberAttachedFile mainImage;
-
-	@OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "profileImage_id") // 외래 키 컬럼 이름 지정
-    private MemberAttachedFile profileImage;
-
-	@OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "backgroundImage_id") // 외래 키 컬럼 이름 지정
-    private MemberAttachedFile backgroundImage;
+	@JoinColumn(name = "main_image_id") // 외래 키 컬럼 이름 지정
+	private MemberAttachedFile mainImage;
 
 
-//	private Long hit = 0L;                   //조회수
-//	
-//	//엔티티라 부름 vO는 값만 가지고있는거 겟터셋터같은거
-//	public void addHit() {
-//		//조회수 증가
-//		this.hit++;
-//	}
+	private Long hit = 0L;  // 조회수
+	
+	public MyPage() {
+	        this.hit = 0L; 
+	    }
+	
+	@OneToMany(mappedBy = "myPage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER) 
+	private List<MyPageVisit> visits; // MyPage를 방문한 기록
+	
+	
+	 
 
-	public static MyPageUpdateForm toUpdateForm(MyPage myPage) {
+	public static MyPageUpdateForm toUpdateForm(MyPage myPage, BeeMember beeMember) {
 		MyPageUpdateForm myPageUpdateForm = new MyPageUpdateForm();
 
 		myPageUpdateForm.setMyPage_id(myPage.getId());
 		myPageUpdateForm.setIntroduce(myPage.getIntroduce());
 		myPageUpdateForm.setBeeMember(myPage.getBeeMember());
-		myPageUpdateForm.setProfileImage(myPage.getProfileImage());
 		myPageUpdateForm.setMainImage(myPage.getMainImage());
-		myPageUpdateForm.setBackgroundImage(myPage.getBackgroundImage());
-//		myPageUpdateForm.setHit(myPage.getHit());
-
 
 		return myPageUpdateForm;
 

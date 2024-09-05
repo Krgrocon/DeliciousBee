@@ -1,11 +1,10 @@
 body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	margin: 0;
-	padding: 0;
-	color: orange;
-	background-color: #F0E68C;
+	background-color: white;
 	display: flex;
 	flex-direction: column;
+	position: relative;
+	margin: 0px;
 }
 
 .home-image {
@@ -14,21 +13,45 @@ body {
 	height: auto;
 }
 
-.header {
-	position: sticky;
-	top: 0;
-	background-color: rgb(41, 41, 41);
-	padding: 5px 0; /* Reduced vertical padding to make header shorter */
-	text-align: center;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	border-top: 1px solid #000; /* Top border */
-	border-bottom: 1px solid #000; /* Bottom border */
-	z-index: 1000; /* Ensure header is on top */
+
+.myinfo-button {
+  height: 20px;
+  text-align:center;
+  background-color: #f8f9fa; /* 배경색 */
+  border: 1px solid #ced4da; /* 테두리 */
+  border-radius: 5px; /* 둥근 모서리 */
+  padding: 8px 16px; /* 내부 여백 */
+  font-size: 14px; /* 폰트 크기 */
+  cursor: pointer; /* 마우스 커서 모양 */
+  transition: background-color 0.3s ease; /* 배경색 변경 애니메이션 */
+  margin-top: 6px;
+  margin-bottom:10px;
+  
 }
 
+
+.owner-profile input[type="text"] { /* 소개글 입력 칸 스타일 */
+    border: none; /* 테두리 제거 */
+    padding: 10px; /* 내부 여백 */
+    font-size: 16px; /* 글꼴 크기 */
+    width: 90%; /* 넓이 100% */
+    border-radius: 5px; /* 모서리 둥글게 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    background-color: #f5f5f5; /* 옅은 회색 배경 */
+    color: #333; /* 어두운 회색 글씨 */
+    position: relative; /* 입력 칸에 position: relative 설정 */
+    z-index: 1; /* z-index 값을 설정 */
+}
+
+.owner-profile input[type="text"]:focus { /* 포커스 시 스타일 */
+    outline: none; /* 포커스 외곽선 제거 */
+    background-color: #e9e9e9; /* 약간 더 밝은 회색 */
+}
+
+
 .main-info {
-	margin-left: 100px;
-	margin-right: 100px;
+	margin-left: 200px;
+	margin-right: 200px;
 	text-align: center;
 	justify-content: center;
 	height: 350px;
@@ -72,64 +95,111 @@ body {
 	height: 100%;
 	object-fit: cover;
 }
+
+
 /* 마이페이지 소개 부분 */
 .myPageOwner {
-  margin-left: 100px;
-  margin-right: 100px;
-  margin-top: 30px;
-  margin-bottom: 30px;
-  background-color: #DEB887; /* 따뜻한 아이보리 배경 */
+  display: flex;
+  flex-direction: row;
+  margin-left: 200px;
+  margin-right: 200px;
+  margin-top: auto;
+  margin-bottom: 3px;
+  background-color: white; /* 부드러운 카키색 배경 */
+  border-bottom: 1px soild black;
   border-radius: 10px;
   padding: 20px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 30px rgba(0,0,0,0.2);
   text-align: center;
 }
 
 .owner-profile {
-  margin-bottom: 20px;
+  width: 70%;
+  justify-content: center; 
+  
+  
+}
+.nickname-header {
+	display: flex;
+	flex-direction: row;
+	border-bottom: 1px solid rgba(255, 0, 0, 0.3); 
+	width: 90%; /* 선의 길이를 50%로 줄임 */
+	height: 50px;
+	
 }
 
 .nickname {
-  font-size: 24px;
-  font-weight: bold;
-  color: black; /* 꿀벌의 노란색 */
-  text-decoration: none;
-}
-
-.owner-intro {
-  background-color: #FFE4B5; /* 부드러운 카키색 배경 */
-  border-radius: 5px;
-  padding: 15px;
-  margin-bottom: 20px;
+  font-style: italic;
+  font-size: 20px;
+  color: black;
+  margin: 10px;
 }
 
 .intro-title {
-  font-weight: bold;
-  color: #333;
+  text-align: left;
+  color: black;
+  margin-top: 20px;
   margin-bottom: 10px;
+  margin-left: 10px;
+  font-size: 20px;
 }
 
 .introduce {
-  color: #333;
-  line-height: 1.6;
+	 text-align: left;
+   color: black;
+   line-height: 1.6;
+   font-size: 14px;
+   margin-left: 10px;
+   margin-right: 30px;
 }
 
 .owner-stats {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  color: #333;
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: black;
+    text-align: center;
+    font-size: 15px;
+    font-style: italic;
+    border-left: 1px solid brown; /* 테두리 제거 */ 
+    width: 40%;
 }
 
-.owner-stats div {
-  background-color: #FFFFE0; /* 밝은 노란색 배경 */
-  border-radius: 5px;
-  padding: 10px;
+.owner-stats span { /* span 스타일 추가 */
+    display: block; /* 각 span을 블록 요소로 변경 */
+    padding: 8px;
+    background-color: #FFFFE0; /* 밝은 노란색 배경 */
+    border-radius: 5px;
+    margin-bottom: 5px; /* 아래쪽 여백 추가 */
+}
+
+.owner-stats a { /* 링크 스타일 추가 */
+    color: black; /* 검은색 텍스트 */
+    text-decoration: none; /* 밑줄 제거 */
+    font-weight: bold; /* 굵은 글씨 */
+}
+
+.owner-stats a:hover {
+    text-decoration: underline; /* 호버 시 밑줄 표시 */
+}
+
+a.today_visitor {
+    transition: color 0.3s ease; /* 부드러운 전환 효과 추가 */
+    font-weight: normal;
+}
+
+.today_visitor:hover {
+    color: yellow; /* 마우스 호버 시 흰색으로 변경 */
+}
+
+.today_visitor:active {
+    color: #d9d9d9; /* 클릭 시 약간 어두운 흰색으로 변경 */
 }
 
 .myPageMain {
-	margin-left: 100px;
-	margin-right: 100px;
+	margin-left: 200px;
+	margin-right: 200px;
 }
 
 
@@ -143,28 +213,93 @@ body {
 
 
 /* 버튼 스타일 */
-.button {
-	margin-left: 100px;
-	margin-right: 100px;
-	text-align: right;
-	
-}
-button {
-    background-color: #FFD700;
-    color: brown;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-    margin: 30px;
-    margin-bottom: 70px;
+/* 버튼 스타일 */
+.goUpdate-button {
+  /* 기존 스타일 유지 */
+  margin-top: 30px;
+  margin-bottom: 80px;
+  margin-left: 200px;
+  margin-right: 200px;
+  text-align: right;
+  
 }
 
-button:hover {
-    background-color: #0056b3;
+.goUpdate-button button { 
+  background-color: #FFE08C; /* 밝은 노란색 배경 */
+  color: brown; /* 갈색 글씨 */
+  border: 2px solid #8B4513; /* 진한 갈색 테두리 */
+  border-radius: 6px; /* 둥근 모서리 */
+  padding: 10px 20px; /* 넉넉한 패딩 */
+  font-size: 16px; /* 폰트 크기 */
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+  transition: background-color 0.3s ease; /* 호버 효과 */
 }
+
+
+.follow-button-wrapper {
+	display: flex;
+	flex-direction: row;
+}
+
+.follow-button {
+  background-color: grey;
+  color: white; /* 흰색 텍스트 */
+  border: none;
+  border-radius: 5px; /* 둥근 모서리 */
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+  transition: background-color 0.3s ease; /* 호버 효과 */
+  margin-top: 5px;
+  margin-right: 8px;
+}
+
+.follow-button:hover {
+  background-color: #FFA500; /* 주황색 배경 */
+}
+
+.nofollow {
+  background-color: orange;
+  color: white; /* 흰색 텍스트 */
+  border: none;
+  border-radius: 5px; /* 둥근 모서리 */
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+  transition: background-color 0.3s ease; /* 호버 효과 */
+  margin-top: 5px;
+  margin-right: 8px;
+}
+
+.nofollow:hover {
+  background-color: #FFA500; /* 주황색 배경 */
+}
+
+.no-login-follow {
+	margin-top: 15px;
+	font-size: 14px;
+}
+
+.follow-list {
+    background-color: #FFE08C; /* 밝은 노란색 배경 */
+    color: brown; /* 갈색 글씨 */
+    border: 2px solid #8B4513; /* 진한 갈색 테두리 */
+    border-radius: 6px; /* 둥근 모서리 */
+    padding: 6px 6px; /* 넉넉한 패딩 */
+    font-size: 13px; /* 폰트 크기 */
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    transition: background-color 0.3s ease; /* 호버 효과 */
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.follow-list button:hover {
+    background-color: #FFA500; /* 주황색 배경 */
+}
+
 
 /*    리뷰    */
 .myPageReview {
@@ -172,6 +307,7 @@ button:hover {
 	flex-wrap: wrap;
 	gap: 15px;
 	justify-content: space-between;
+	margin-bottom: 200px;
 }
 
 .review-box {
@@ -213,6 +349,19 @@ button:hover {
 a {
 	text-decoration: none;
 }
+
+.no-review{
+	background-color: white; /* 부드러운 카키색 배경 */
+ 	border-bottom: 1px soild black;
+  	border-radius: 10px;
+  	padding: 20px;
+ 	box-shadow: 0 20px 30px rgba(0,0,0,0.2);
+	text-align: center;
+	font-size: 30px;
+	font-style: italic;
+	margin-bottom: 200px;
+	
+}
 .rating-stars {
 	margin: 10px;
 	display: inline-block;
@@ -224,14 +373,25 @@ a {
 	height: 18px;
 }
 
-.recommendItems {
+.review-comment {
 	margin-top: 10px;
-	font-size: 20px;
+	border-top: 1px solid grey;
+	border-bottom: 1px solid grey;
+	border-radius: 20px;
+	font-size: 15px;
+}
+.recommendItems {
+  margin-left: 10px;	
+  margin-top: 13px;
+  font-weight: bold; /* 추천 메뉴 텍스트 굵게 */
+  color: orange; /* 추천 메뉴 텍스트 오렌지색 */
 	
 }
 
 .review_content {
-	font-size: 20px;
+	margin-left: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
 	line-height: 1.5; /* 줄 간격 */
 }
 
@@ -287,6 +447,28 @@ a {
 	bottom: 10px;
 }
 
+.under-bar {
+	border: 1px solid black;
+	background-color: #343a40;
+	height: 70px;
+	display: flex; /* flexbox 사용 */
+	align-items: flex-end; /* 컨텐츠를 아래쪽으로 정렬 */
+	justify-content: flex-end; /* 컨텐츠를 오른쪽으로 정렬 */
+	padding: 10px; /* 여백 추가 */
+}
+
+.under-image {
+	display: flex;
+	margin-right: 10px; /* 이미지와 텍스트 사이 간격 */
+	height: 50px;
+	width: 50px;
+}
+
+.under-comment {
+	font-size: 20px;
+	font-weight: bold;
+	color: white;
+}
 .navbar {
 	background-color: #343a40;
 	color: white;
@@ -366,6 +548,76 @@ a {
 	height: 100%;
 	overflow: auto;
 	background-color: rgba(0, 0, 0, 0.4);
+}
+
+.follow-modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%; /* 모달 넓이 조절 */
+    border-radius: 10px; /* 모서리 둥글게 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+}
+
+.follow-modal-content h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333; /* 어두운 텍스트 색상 */
+    font-family: 'Arial Rounded MT Bold', sans-serif; /* 둥근 폰트 */
+}
+
+.follow-modal-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.follow-modal-content li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd; /* 각 항목 사이 구분선 */
+    text-align: left;
+}
+
+.follow-modal-content li a {
+    color: #333; /* 어두운 텍스트 색상 */
+    text-decoration: none; /* 밑줄 제거 */
+    font-weight: bold; /* 굵은 글씨 */
+    display: block; /* 링크를 전체 너비로 */
+}
+
+.follow-modal-content li a:hover {
+    text-decoration: underline; /* 마우스 호버 시 밑줄 */
+    color: #FFA500; /* 주황색 */
+}
+
+/* ... 기존 CSS ... */
+
+.visit-modal-content {
+    background-color: #fff; /* 흰색 배경 */
+    margin: 15% auto; 
+    padding: 15px; /* 여백 조정 */
+    border: 1px solid #ddd; /* 연한 회색 테두리 */
+    width: 30%; /* 모달 넓이 조절 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+}
+
+.visit-modal-content h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #333; /* 어두운 텍스트 색상 */
+    font-family: 'Arial Rounded MT Bold', sans-serif; /* 둥근 폰트 */
+}
+
+.visit-modal-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.visit-modal-content li {
+    padding: 8px;
+    text-align: center; /* 방문자 이름 가운데 정렬 */
+    color: #555; /* 약간 어두운 회색 텍스트 */
 }
 
 .form-container {

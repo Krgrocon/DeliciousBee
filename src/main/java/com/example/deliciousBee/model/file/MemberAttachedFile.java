@@ -25,7 +25,7 @@ public class MemberAttachedFile {
 	private Long MemberAttachedFile_id;   //첨부파일 아이디
 
 	
-	@ManyToOne(cascade = CascadeType.REMOVE)
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="myPage_id")
 	private MyPage myPage;
 
@@ -33,12 +33,10 @@ public class MemberAttachedFile {
 	private String saved_filename;     //저장할 파일이름
 	private Long file_size;            //파일용량
 	
-	private String imageType;
 
-	public MemberAttachedFile(String original_filename, String saved_filename, Long file_size,  String imageType) {
+	public MemberAttachedFile(String original_filename, String saved_filename, Long file_size) {
 		this.original_filename = original_filename;
 		this.saved_filename = saved_filename;
 		this.file_size = file_size;
-		this.imageType = imageType;
 	}
 }

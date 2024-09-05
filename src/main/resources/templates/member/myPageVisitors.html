@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지 방문자 목록</title>
+</head>
+<body>
+    <h1>마이페이지 방문자 목록</h1>
+    <ul>
+        <li th:each="visit : ${visitors}"> <div th:text="${visit.visitDate}"></div>
+            <span th:text="${visit.visitor.nickname}"></span>
+        </li>
+    </ul>
+</body>
+</html>
