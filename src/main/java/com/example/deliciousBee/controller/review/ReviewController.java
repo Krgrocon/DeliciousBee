@@ -43,7 +43,6 @@ import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.model.review.ReviewConverter;
 import com.example.deliciousBee.model.review.ReviewUpdateForm;
 import com.example.deliciousBee.model.review.ReviewWriteForm;
-import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
 import com.example.deliciousBee.service.review.ReviewService;
 import com.example.deliciousBee.util.FileService;
@@ -63,21 +62,7 @@ public class ReviewController {
 	private String uploadPath = "C:\\upload\\";
 	private final ReviewService reviewService;
 	private final FileService fileService;
-	private final BeeMemberService beeMemberService;
 	private final RestaurantService restaurantService;
-
-	@GetMapping("allreview/{restaurant_id}")
-	public String allReview(@PathVariable("restaurant_id") Long restaurant_id, Model model,
-							@AuthenticationPrincipal BeeMember loginMember) {
-
-		String MemberId = loginMember.getMember_id();
-		List<Review> allReview = reviewService.getReviewsByRestaurantIdWithFiles(restaurant_id, MemberId);
-		Restaurant restaurant = restaurantService.findRestaurant(restaurant_id);
-		model.addAttribute("restaurant", restaurant);
-		model.addAttribute("allReview", allReview);
-		model.addAttribute("uploadPath", uploadPath);
-		return "review/allreview";
-	}
 
 	@PostMapping("write/{restaurant_id}")
 	public String postWriteReview(@Validated @ModelAttribute("writeForm") ReviewWriteForm reviewWriteForm,
@@ -183,7 +168,6 @@ public class ReviewController {
 	@ResponseBody
 	public ResponseEntity<Map<Object, Object>> likeReview(@PathVariable(name = "reviewId") Long reviewId,
 														  @AuthenticationPrincipal BeeMember loginMember) {
-		log.info("여기까지는 오니?");
 		Map<Object, Object> response = new HashMap<>();
 		long likeCount = reviewService.likeReview(loginMember, reviewId);
 		response.put("success", true);
@@ -196,7 +180,6 @@ public class ReviewController {
 	public ResponseEntity<Map<String, Object>> unlikeReview(@PathVariable(name = "reviewId") Long reviewId
 			, @AuthenticationPrincipal BeeMember loginMember) {
 		Map<String, Object> response = new HashMap<>();
-		log.info("여기에 오니?");
 		int likeCount = reviewService.unlikeReview(loginMember, reviewId);
 		response.put("success", true);
 		response.put("likeCount", likeCount);
