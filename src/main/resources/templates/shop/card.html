@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+  .restaurantCard {
+    width: 300px;
+    height: 300px;
+    position: relative;
+    border-radius: 10px;
+  }
+
+  .restaurantCard::before {
+    content: "";
+    z-index: -1;
+    position: absolute;
+    inset: 0;
+    transform: translate3d(0, 0, 0) scale(0.95);
+    filter: blur(20px);
+  }
+
+
+  .star {
+    position: absolute;
+    right: 0; /* 부모 요소의 오른쪽 경계에 위치 */
+    bottom: 0; /* 부모 요소의 아래쪽 경계에 위치 */
+  }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    overflow: hidden;
+  }
+
+  .card .img-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: scale 0.6s, rotate 0.6s, filter 1s;
+  }
+
+  .card .img-content img {
+    width: 100%;  /* 컨테이너의 너비를 완전히 채움 */
+    height: 100%; /* 컨테이너의 높이를 완전히 채움 */
+    object-fit: cover; /* 비율을 유지하면서 컨테이너를 꽉 채움 */
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+  }
+  .card .intro-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    color: #e8e8e8;
+    padding: 20px 24px;
+    line-height: 1.5;
+    border-radius: 5px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(50px);
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+  }
+
+  .card .intro-content .heading {
+    font-size: 32px;
+    font-weight: 700;
+  }
+
+  .card:hover .intro-content {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .card:hover .img-content {
+    scale: 2.5;
+    filter: blur(7px);
+  }
+
+  .card:hover .img-content svg {
+    fill: transparent;
+  }
+
+
+</style>
+<body>
+<div class="restaurantCard">
+  <p>
+    hellos
+  </p>
+  <div class="card">
+    <div class="img-content">
+      <img src="../../static/image/123.jpg" alt="코드잇 이미지"/>
+      <p class="star">dd</p>
+    </div>
+    <div class="intro-content">
+      <p class="heading">제목</p>
+      <p>
+        설명
+      </p>
+      <p>
+        별점
+      </p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

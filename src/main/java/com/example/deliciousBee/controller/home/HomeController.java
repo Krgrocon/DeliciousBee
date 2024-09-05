@@ -27,7 +27,7 @@ public class HomeController {
 
 	@GetMapping("/")
 	public String restaurantlist(Model model) {
-		List<Restaurant> restaurantlist = restaurantService.findAll();
+		List<Restaurant> restaurantlist = restaurantService.findRandom5Restaurants();
 		model.addAttribute("restaurantlist", restaurantlist);
 		return "shop/index";
 	}

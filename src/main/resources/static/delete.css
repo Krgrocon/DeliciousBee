@@ -69,8 +69,8 @@ input[type="password"] {
 }
 
 .buttons {
-	display: flex;
-	justify-content: center; /* 버튼들을 컨테이너 안에서 가운데 정렬 */
+    display: flex;
+    justify-content: center; /* 버튼들을 컨테이너 안에서 가운데 정렬 */
 }
 .delete-button {
     padding: 15px 30px;

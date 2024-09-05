@@ -5,11 +5,10 @@ import java.io.IOException;
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.member.*;
 import com.example.deliciousBee.model.mypage.MyPage;
-import com.example.deliciousBee.model.mypage.MyPageUpdateForm;
-import com.example.deliciousBee.repository.MyPageVisitRepository;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.MyPageService;
 
+import com.example.deliciousBee.util.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,11 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.example.deliciousBee.util.FileService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

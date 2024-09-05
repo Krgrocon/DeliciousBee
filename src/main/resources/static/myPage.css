@@ -58,248 +58,6 @@ body {
 	position: relative; /* main-info를 기준으로 자식 요소 positioning */
 }
 
-.main-image {
-	position: absolute;
-	top: 50%; /* 위에서 50% 위치 */
-	left: 50%;
-	transform: translate(-50%, -50%); /* 가운데 정렬 */
-	width: 120px;
-	height: 120px;
-	border: 1px solid black;
-	border-radius: 50%;
-	overflow: hidden;
-	z-index: 1;
-}
-
-.profile-image {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 150px; /* profile-image 크기를 main-image보다 작게 조정 */
-	height: 150px;
-	border: 1px solid black;
-	border-radius: 50%;
-	overflow: hidden;
-	z-index: 2; /* profile-image를 main-image보다 위에 배치 */
-}
-
-.default-profile-image {
-	width: 100%;
-	height: 100%;
-	object-fit: cover; /* 이미지 비율 유지 */
-}
-
-.default-main-image {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
-
-
-/* 마이페이지 소개 부분 */
-.myPageOwner {
-  display: flex;
-  flex-direction: row;
-  margin-left: 200px;
-  margin-right: 200px;
-  margin-top: auto;
-  margin-bottom: 3px;
-  background-color: white; /* 부드러운 카키색 배경 */
-  border-bottom: 1px soild black;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 20px 30px rgba(0,0,0,0.2);
-  text-align: center;
-}
-
-.owner-profile {
-  width: 70%;
-  justify-content: center; 
-  
-  
-}
-.nickname-header {
-	display: flex;
-	flex-direction: row;
-	border-bottom: 1px solid rgba(255, 0, 0, 0.3); 
-	width: 90%; /* 선의 길이를 50%로 줄임 */
-	height: 50px;
-	
-}
-
-.nickname {
-  font-style: italic;
-  font-size: 20px;
-  color: black;
-  margin: 10px;
-}
-
-.intro-title {
-  text-align: left;
-  color: black;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  margin-left: 10px;
-  font-size: 20px;
-}
-
-.introduce {
-	 text-align: left;
-   color: black;
-   line-height: 1.6;
-   font-size: 14px;
-   margin-left: 10px;
-   margin-right: 30px;
-}
-
-.owner-stats {
-    width: 30%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    color: black;
-    text-align: center;
-    font-size: 15px;
-    font-style: italic;
-    border-left: 1px solid brown; /* 테두리 제거 */ 
-    width: 40%;
-}
-
-.owner-stats span { /* span 스타일 추가 */
-    display: block; /* 각 span을 블록 요소로 변경 */
-    padding: 8px;
-    background-color: #FFFFE0; /* 밝은 노란색 배경 */
-    border-radius: 5px;
-    margin-bottom: 5px; /* 아래쪽 여백 추가 */
-}
-
-.owner-stats a { /* 링크 스타일 추가 */
-    color: black; /* 검은색 텍스트 */
-    text-decoration: none; /* 밑줄 제거 */
-    font-weight: bold; /* 굵은 글씨 */
-}
-
-.owner-stats a:hover {
-    text-decoration: underline; /* 호버 시 밑줄 표시 */
-}
-
-a.today_visitor {
-    transition: color 0.3s ease; /* 부드러운 전환 효과 추가 */
-    font-weight: normal;
-}
-
-.today_visitor:hover {
-    color: yellow; /* 마우스 호버 시 흰색으로 변경 */
-}
-
-.today_visitor:active {
-    color: #d9d9d9; /* 클릭 시 약간 어두운 흰색으로 변경 */
-}
-
-.myPageMain {
-	margin-left: 200px;
-	margin-right: 200px;
-}
-
-
-
-.update-icon {
-	position: absolute;
-	width: 40px;
-	height: 40px;
-	border: 1px solid black;
-}
-
-
-/* 버튼 스타일 */
-/* 버튼 스타일 */
-.goUpdate-button {
-  /* 기존 스타일 유지 */
-  margin-top: 30px;
-  margin-bottom: 80px;
-  margin-left: 200px;
-  margin-right: 200px;
-  text-align: right;
-  
-}
-
-.goUpdate-button button { 
-  background-color: #FFE08C; /* 밝은 노란색 배경 */
-  color: brown; /* 갈색 글씨 */
-  border: 2px solid #8B4513; /* 진한 갈색 테두리 */
-  border-radius: 6px; /* 둥근 모서리 */
-  padding: 10px 20px; /* 넉넉한 패딩 */
-  font-size: 16px; /* 폰트 크기 */
-  cursor: pointer;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
-  transition: background-color 0.3s ease; /* 호버 효과 */
-}
-
-
-.follow-button-wrapper {
-	display: flex;
-	flex-direction: row;
-}
-
-.follow-button {
-  background-color: grey;
-  color: white; /* 흰색 텍스트 */
-  border: none;
-  border-radius: 5px; /* 둥근 모서리 */
-  padding: 10px 20px;
-  cursor: pointer;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
-  transition: background-color 0.3s ease; /* 호버 효과 */
-  margin-top: 5px;
-  margin-right: 8px;
-}
-
-.follow-button:hover {
-  background-color: #FFA500; /* 주황색 배경 */
-}
-
-.nofollow {
-  background-color: orange;
-  color: white; /* 흰색 텍스트 */
-  border: none;
-  border-radius: 5px; /* 둥근 모서리 */
-  padding: 10px 20px;
-  cursor: pointer;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
-  transition: background-color 0.3s ease; /* 호버 효과 */
-  margin-top: 5px;
-  margin-right: 8px;
-}
-
-.nofollow:hover {
-  background-color: #FFA500; /* 주황색 배경 */
-}
-
-.no-login-follow {
-	margin-top: 15px;
-	font-size: 14px;
-}
-
-.follow-list {
-    background-color: #FFE08C; /* 밝은 노란색 배경 */
-    color: brown; /* 갈색 글씨 */
-    border: 2px solid #8B4513; /* 진한 갈색 테두리 */
-    border-radius: 6px; /* 둥근 모서리 */
-    padding: 6px 6px; /* 넉넉한 패딩 */
-    font-size: 13px; /* 폰트 크기 */
-    cursor: pointer;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
-    transition: background-color 0.3s ease; /* 호버 효과 */
-    margin-right: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-
-.follow-list button:hover {
-    background-color: #FFA500; /* 주황색 배경 */
-}
-
 
 /*    리뷰    */
 .myPageReview {
@@ -318,20 +76,20 @@ a.today_visitor {
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	background-color: #FFFACD;
 	width: 49%; /* 한 줄에 2개씩 배치되도록 수정 */
-    box-sizing: border-box; /* 패딩을 포함하여 크기 계산 */
+	box-sizing: border-box; /* 패딩을 포함하여 크기 계산 */
 }
 .restaurant_name_head {
-  border-bottom: 1px solid #c49b4c; /* 벌꿀색 테두리 */
-  text-align: left;
-  background-color: #FFFACD; /* 옅은 노란색 배경 */
-  color: #333; /* 어두운 텍스트 색상 */
-  padding: 10px;
-  border-radius: 5px; /* 둥근 테두리 */
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
-  font-family: 'Arial Rounded MT Bold', sans-serif; /* 둥근 폰트 */
-  position: relative; /* 아이콘 추가를 위한 position 설정 */
-  display: flex;
-  align-items: center;
+	border-bottom: 1px solid #c49b4c; /* 벌꿀색 테두리 */
+	text-align: left;
+	background-color: #FFFACD; /* 옅은 노란색 배경 */
+	color: #333; /* 어두운 텍스트 색상 */
+	padding: 10px;
+	border-radius: 5px; /* 둥근 테두리 */
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+	font-family: 'Arial Rounded MT Bold', sans-serif; /* 둥근 폰트 */
+	position: relative; /* 아이콘 추가를 위한 position 설정 */
+	display: flex;
+	align-items: center;
 }
 
 
@@ -375,18 +133,7 @@ a {
 
 .review-comment {
 	margin-top: 10px;
-	border-top: 1px solid grey;
-	border-bottom: 1px solid grey;
-	border-radius: 20px;
-	font-size: 15px;
-}
-.recommendItems {
-  margin-left: 10px;	
-  margin-top: 13px;
-  font-weight: bold; /* 추천 메뉴 텍스트 굵게 */
-  color: orange; /* 추천 메뉴 텍스트 오렌지색 */
-	
-}
+
 
 .review_content {
 	margin-left: 10px;
@@ -634,7 +381,7 @@ a {
 .title {
 	text-align: center;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	margin: 10px 0 30px 0;
 	font-size: 28px;
 	font-weight: 800;
@@ -667,7 +414,7 @@ a {
 .page-link-label {
 	cursor: pointer;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	font-size: 9px;
 	font-weight: 700;
 }
@@ -679,7 +426,7 @@ a {
 .form-btn {
 	padding: 10px 15px;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	border-radius: 20px;
 	border: 0 !important;
 	outline: 0 !important;
@@ -698,7 +445,7 @@ a {
 	font-size: 10px;
 	color: #747474;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	text-align: center;
 	margin-top: 5%;
 }
@@ -712,7 +459,7 @@ a {
 	cursor: pointer;
 	font-weight: 800;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
 
 .buttons-container {
@@ -729,13 +476,13 @@ a {
 	box-sizing: border-box;
 	padding: 10px 15px;
 	box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06)
-		0px 0px 0px 1px;
+	0px 0px 0px 1px;
 	cursor: pointer;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	font-size: 11px;
 	gap: 5px;
 	border: 2px solid #747474;

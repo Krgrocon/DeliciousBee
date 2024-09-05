@@ -5,407 +5,158 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RestaurantE</title>
     <style>
-        body {
-            font-family: sans-serif;
-            margin: 0;
-        }
 
-        .header {
-            background-color: #ffc107;
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-
-        .header nav ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
-
-        .header nav li {
-            margin-left: 20px;
-        }
-
-        .header nav a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            display: flex;
-        }
-
-        .sidebar {
-            width: 300px;
-            margin-right: 20px;
-        }
-
-        .sidebar h2 {
-            margin-bottom: 10px;
-        }
-
-        .sidebar input[type="text"],
-        .sidebar select {
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 배경 어둡게 */
+            display: none; /* 초기에는 숨김 */
         }
 
-        .sidebar button {
-            background-color: #ffc107;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .refine-search {
-            margin-top: 20px;
-        }
-
-        .refine-search ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .refine-search li {
-            margin-bottom: 5px;
-        }
-
-        .refine-search input[type="checkbox"] {
-            margin-right: 5px;
-        }
-
-        .restaurant-class {
-            margin-top: 20px;
+        .review-modal-container {
+            width: 350px;
+            background-color: #fff;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            border-radius: 10px;
+            box-sizing: border-box;
+            padding: 20px 30px;
             display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* 화면 중앙에 위치 */
+            z-index: 1000; /* 다른 요소보다 위에 표시 */
         }
 
-        .restaurant-class button {
-            background-color: #f8f9fa;
-            border: 1px solid #ccc;
-            padding: 5px 10px;
-            margin-right: 5px;
-            cursor: pointer;
+        .reviewUp-title {
+            text-align: center;
+            font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+            margin: 10px 0 30px 0;
+            font-size: 28px;
+            font-weight: 800;
         }
 
-        .content {
-            flex: 1;
+        .sub-title {
+            margin: 0;
+            margin-bottom: 5px;
+            font-size: 9px;
+            font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
         }
 
-        .content h2 {
-            margin-bottom: 10px;
-        }
-
-        .search-results {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            grid-gap: 20px;
-        }
-
-        .result-card {
-            border: 1px solid #ccc;
-            padding: 15px;
-        }
-
-        .result-card img {
+        .review-modal-inner-form {
             width: 100%;
-            height: 200px;
-            object-fit: cover;
-            margin-bottom: 10px;
-        }
-
-        .result-card h3 {
-            margin-bottom: 5px;
-        }
-
-        .result-card .rating {
             display: flex;
-            align-items: center;
-            margin-bottom: 10px;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-grow: 1;
         }
 
-        .result-card .rating span {
-            margin-left: 5px;
-            font-weight: bold;
+        .modal-input {
+            border-radius: 20px;
+            border: 1px solid #c0c0c0;
+            outline: 0 !important;
+            box-sizing: border-box;
+            padding: 12px 15px;
         }
 
-        .result-card .features {
-            list-style: none;
-            padding: 0;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .result-card .features li {
-            margin-bottom: 5px;
-        }
-
-        .result-card .price {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .result-card button {
-            background-color: #ffc107;
+        .form-btn {
+            padding: 10px 15px;
+            font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+            border-radius: 20px;
+            border: 0 !important;
+            outline: 0 !important;
+            background: teal;
             color: white;
-            padding: 8px 15px;
-            border: none;
             cursor: pointer;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
         }
 
-        .pagination {
+        .form-btn:active {
+            box-shadow: none;
+        }
+
+
+        .reviewupdate-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
             margin-top: 20px;
-            text-align: center;
+            gap: 15px;
         }
 
-        .pagination span {
-            display: inline-block;
-            padding: 5px 10px;
-            margin: 0 5px;
-            border: 1px solid #ccc;
+        .Update-button {
+            border-radius: 20px;
+            box-sizing: border-box;
+            padding: 10px 15px;
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+            rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
             cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+            font-size: 11px;
+            gap: 5px;
         }
 
-        .pagination .active {
-            background-color: #ffc107;
-            color: white;
+        .inputbox {
+            border-radius: 20px;
+            border: 1px solid #c0c0c0;
+            outline: 0 !important;
+            box-sizing: border-box;
+            padding: 12px 15px;
+            height: 120px;
+            white-space: pre-wrap; /* 텍스트 줄 바꿈 및 공백 유지 */
+            resize: none; /* 크기 조절 방지 */
         }
 
-        .footer {
-            background-color: #343a40;
-            color: white;
-            padding: 20px;
-            text-align: center;
+
+        .Update-button {
+            border: 2px solid #747474;
         }
+
+        .modal-title{
+            margin: 0;
+            margin-left: 4px;
+        }
+
+        .modal-image-container{
+            width: 290px;
+        }
+
+        .modal-image{
+            width: 140px;
+            height: 100px;
+        }
+
     </style>
 </head>
 <body>
-
-<header class="header">
-    <h1>RestaurantE</h1>
-    <nav>
-        <ul>
-            <li><a href="#">Locations</a></li>
-            <li><a href="#">Cuisines</a></li>
-            <li><a href="#">Top Picks</a></li>
-            <li><a href="#">Explore</a></li>
-            <li><a href="#">Login</a></li>
-        </ul>
-    </nav>
-</header>
-
-<div class="container">
-    <aside class="sidebar">
-        <h2><i class="fas fa-arrow-left"></i> Search Filters</h2>
-        <div>
-            <h3>Location</h3>
-            <input type="text" placeholder="New York, USA">
+<div class="review-modal-container">
+    <p class="reviewUp-title">리뷰</p>
+    <form class="review-modal-inner-form">
+        <p class ="modal-title">이름</p>
+        <input type="text" class="modal-input" placeholder="이름">
+        <p class="modal-title">리뷰 내용</p>
+        <textarea class="inputbox" placeholder="리뷰내용"></textarea>
+        <div class="modal-image-container">
+            <img class ="modal-image"/>
+            <img class ="modal-image"/>
+            <img class ="modal-image"/>
+            <img class ="modal-image"/>
         </div>
-        <div>
-            <h3>Cuisine type</h3>
-            <input type="text" placeholder="Italian, Japanese">
-        </div>
-        <div>
-            <h3>Minimum rating</h3>
-            <select>
-                <option value="">stars</option>
-                <option value="1">1 star</option>
-                <option value="2">2 stars</option>
-                <option value="3">3 stars</option>
-                <option value="4">4 stars</option>
-                <option value="5">5 stars</option>
-            </select>
-        </div>
-        <div>
-            <h3>Number of guests</h3>
-            <input type="text" placeholder="people">
-        </div>
-        <button onclick="applyFilters()">Apply Filters</button>
-
-        <div class="refine-search">
-            <h2>Refine Search</h2>
-            <ul>
-                <li><input type="checkbox" checked> Affordable dining option</li>
-                <li><input type="checkbox" checked> Family-friendly</li>
-                <li><input type="checkbox" checked> Complimentary valet</li>
-                <li><input type="checkbox" checked> Casual dining experience</li>
-            </ul>
-            <span style="float: right;">Outdoor</span>
-        </div>
-
-        <div class="average-cost">
-            <h2>Average meal cost</h2>
-            <ul>
-                <li><input type="checkbox" checked> Under $20</li>
-                <li><input type="checkbox" checked> $20 to $50</li>
-                <li><input type="checkbox"> $50 to $100</li>
-                <li><input type="checkbox"> Over $100</li>
-            </ul>
-        </div>
-
-        <div class="customer-reviews">
-            <h2>Customer reviews</h2>
-            <ul>
-                <li><input type="checkbox" checked> Any rating</li>
-                <li><input type="checkbox" checked> Excellent service</li>
-                <li><input type="checkbox"> Highly recommended</li>
-                <li><input type="checkbox"> Satisfactory</li>
-            </ul>
-        </div>
-
-        <div class="restaurant-class">
-            <h2>Restaurant class</h2>
-            <button>Fast food</button>
-            <button>Cafe</button>
-            <button>Bistro</button>
-            <button>Fine dining</button>
-            <button>Gourmet</button>
-        </div>
-    </aside>
-
-    <main class="content">
-        <h2>Showing 20 results for: New York, Italian, Japanese, 4 stars, 4 guests</h2>
-        <h2>Special Offers</h2>
-        <div class="search-results">
-
-            <div class="result-card">
-                <img src="https://via.placeholder.com/300x200" alt="Restaurant Image">
-                <h3>Restaurant Fusion</h3>
-                <p>0.3 miles from city center</p>
-                <div class="rating">
-                    <span>Outstanding</span>
-                    <span>9.8</span>
-                    <span>(2,340 reviews)</span>
-                </div>
-                <ul class="features">
-                    <li>Reservations</li>
-                    <li>Signature dishes</li>
-                    <li>Complimentary dessert</li>
-                    <li>1x tasting menu 1x wine pairing</li>
-                </ul>
-                <div class="tags">
-                    <span>#Deals</span>
-                    <span>#Recommended</span>
-                </div>
-                <div class="price">$120</div>
-                <p>Dinner for 2</p>
-                <button>View options</button>
-            </div>
-
-            <div class="result-card">
-                <img src="https://via.placeholder.com/300x200" alt="Restaurant Image">
-                <h3>Culinary Delight</h3>
-                <p>0.5 miles from city center</p>
-                <div class="rating">
-                    <span>Great</span>
-                    <span>8.5</span>
-                    <span>(1,050 reviews)</span>
-                </div>
-                <ul class="features">
-                    <li>Free valet parking</li>
-                    <li>Complimentary</li>
-                    <li>Chef's special menu</li>
-                    <li>1x tasting menu 1x wine pairing</li>
-                </ul>
-                <div class="tags">
-                    <span>#Deals</span>
-                </div>
-                <div class="price">$180</div>
-                <p>Dinner for 2</p>
-                <button>View options</button>
-            </div>
-
-            <div class="result-card">
-                <img src="https://via.placeholder.com/300x200" alt="Restaurant Image">
-                <h3>Restaurant Fusion</h3>
-                <p>1.5 miles from downtown</p>
-                <div class="rating">
-                    <span>Outstanding</span>
-                    <span>9.8</span>
-                    <span>(5,000 customer reviews)</span>
-                </div>
-                <ul class="features">
-                    <li>Signature dishes available</li>
-                    <li>Luxurious ambiance</li>
-                    <li>Various seating options</li>
-                </ul>
-                <div class="tags">
-                    <span>#Recommended</span>
-                    <span>#Unique experience</span>
-                </div>
-                <div class="price">$150</div>
-                <p>Dinner for two</p>
-                <button>View menu options</button>
-            </div>
-
-            <div class="result-card">
-                <img src="https://via.placeholder.com/300x200" alt="Restaurant Image">
-                <h3>Culinary Haven</h3>
-                <p>2.8 miles from city center</p>
-                <div class="rating">
-                    <span>Decent ratings</span>
-                    <span>7.2</span>
-                    <span>(700 reviews)</span>
-                </div>
-                <ul class="features">
-                    <li>Specialty cuisine</li>
-                    <li>Specialty dishes offered</li>
-                    <li>Cozy interior design</li>
-                    <li>Exclusive dining experience</li>
-                </ul>
-                <div class="tags">
-                    <span>#Affordable</span>
-                </div>
-                <div class="price">$80</div>
-                <p>Lunch reservation for two</p>
-                <button>Explore dining options</button>
-            </div>
-
-        </div>
-
-        <div class="pagination">
-            <span class="active">1</span>
-            <span>2</span>
-            <span>3</span>
-            <span>4</span>
-            <span>5</span>
-        </div>
-    </main>
+        <button class="form-btn">리뷰 수정</button>
+    </form>
 </div>
-
-<footer class="footer">
-    <h3>RestaurantExplorer</h3>
-    <p>Your go-to restaurant guide since 2000!</p>
-    <p>RestaurantExplorer</p>
-    <div class="support">
-        <p>Support</p>
-        <p>Help center</p>
-        <p>Customer support</p>
-        <p>How it works</p>
-        <p>Contact support</p>
-    </div>
-</footer>
-
-<script>
-    function applyFilters() {
-        // This function will be implemented later to filter the results
-        // based on the selected criteria. For now, it's just a placeholder.
-        console.log("Applying filters...");
-    }
-</script>
 </body>
 </html>

@@ -3,57 +3,545 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시물 리스트 페이지</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <meta charset="UTF-8">
+    <title>검색 결과</title>
+    <link rel="stylesheet"><style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        a {
+            text-decoration: none; /* 밑줄 제거 */
+            color: #787878	; /* 기존 색상 유지 */
+        }
+        a:hover {
+            text-decoration: none; /* 호버 시에도 밑줄 제거 */
+            color: inherit;
+        }
+        .container-fluid {
+            padding: 0 20px;
+            margin: 0 auto;
+            max-width: 1000px;
+            display: flex;
+        }
+        .navbar {
+            background-color: #343A40;
+            color: white;
+            padding: 15px; /* 기존 패딩 유지 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        .navbar .nav-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding-left: 15%; /* 왼쪽 패딩 20% */
+        }
+        .navbar-brand-group {
+            display: flex;
+            align-items: center;
+            margin-right: 56.5%;
+        }
+        .navbar-brand {
+            font-size: 1.2rem;
+            text-decoration: none;
+            color: inherit;
+        }
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-item {
+            margin-left: 20px;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-link:hover {
+            color: #FF6347;
+        }
+        .nav-link.active {
+            color: #FF6347;
+        }
+        .navbar-toggler {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            display: none;
+            margin-left: 10px;
+        }
+        .navbar-toggler span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            margin: 5px 0;
+        }
+        .search-section {
+            height: 85%;
+            text-align: center;
+            width: 40%;
+        }
+        .search-container {
+            position: absolute; /* 절대 위치로 설정 */
+            right: 31%; /* 오른쪽 끝으로 위치 */
+            top: 57.5%; /* 세로 중앙 정렬 */
+            transform: translateY(-50%); /* 세로 중앙 정렬 보정 */
+            display: flex; /* 내부 아이템 정렬을 위한 flex */
+            width: 100%; /* 가로 크기 조정 */
+            max-width: 1500px; /* 최대 가로 크기 설정 (필요에 따라 조정) */
+            margin-left: 10px; /* 왼쪽 여백 자동 조정 */
+        }
+        .search-input {
+            width: 80%;
+            line-height: 28px;
+            padding: 0 1rem;
+            padding-left: 2.5rem;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            outline: none;
+            background-color: #F3F3F4;
+            color: #0D0C22;
+            transition: .3s ease;
+            margin-left: 65%;
+        }
+        .search-input::placeholder {
+            color: #9E9EA7;
+        }
+        .search-input:focus, input:hover {
+            outline: none;
+            border-color: rgba(234, 76, 137, 0.4);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgb(234 76 137/ 10%);
+        }
+        .search-intro {
+            font-size: 1.5rem;
+            color: #FFFFFF;
+            margin-top: 1rem;
+            margin-left: 5%;
+        }
+        .search-icon {
+            position: absolute;
+            left: 66%;
+            top: 50%;
+            transform: translateY(-50%);
+            fill: #9E9EA7;
+            width: 1rem;
+            height: 1rem;
+        }
+        .filter-box, content-wrapper {
+            margin: 28px;
+        }
+        .content-wrapper {
+            display: flex;
+            width: 99.5%;
+        }
+        .filter-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #F8F9FA;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 200px; /* 필터 박스 너비 조절 */
+            margin-right: 20px; /* 필터 박스와 메인 콘텐츠 사이 간격 */
+        }
+        .filter-content {
+            height: 500px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        /* 필터 카테고리 스타일 */
+        .filter-category, .filter-ambiance {
+            position: relative;
+        }
+        .additional-content {
+            display: none;
+        }
+        .btn-toggle {
+            background: #E0E0E0;
+            -webkit-box-shadow: 6px 6px 16px #BEBEBE, -6px -6px 16px #ffffff9a;
+            box-shadow: 6px 6px 16px #BEBEBE, -6px -6px 16px #ffffff9a;
+            /* Dimensions */
+            width: 120px;
+            height: 20px;
+            /* Border */
+            border: none;
+            border-radius: 16px;
+            /* Content Aligment */
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+        }
+        .button {
+            /* Appearance */
+            background: #E0E0E0;
+            /* Font-Style */
+            font-size: 15px;
+            font-weight: 600;
+            /* Dimensions */
+            height: 20%;
+            width: 20%;
+            /* Border */
+            border: none;
+            border-radius: 14px;
+            /* Transition */
+            -webkit-transition: all 250ms ease-in-out;
+            transition: all 250ms ease-in-out;
+        }
+        .btn-toggle:hover {
+            /* Appearance */
+            background: #E0E0E0;
+            -webkit-box-shadow: inset 5px 5px 4px #C0C0C0, inset -5px -5px 4px
+            #DDDDDD;
+            box-shadow: inset 5px 5px 4px #C0C0C0, inset -5px -5px 4px #DDDDDD;
+            /* Font-Style */
+            font-size: 20px;
+            font-weight: 400;
+            color: #333333;
+        }
+        .main-content {
+            flex: 1; /* 메인 콘텐츠가 남은 공간을 채우도록 설정 */
+        }
+        .results-container {
+            background-color: #F8F9FA;
+            border-radius: 10px;
+            width: 100%;
+            margin-top: 28px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .sort-container {
+            margin-bottom: 20px;
+        }
+        .sort-buttons {
+            display: flex;
+            align-items: center;
+        }
+        .sort-label {
+            font-weight: bold;
+            color: #343A40;
+            margin-right: 10px;
+        }
+        .btn-sort {
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 50px;
+            margin-left: 5px;
+        }
+        .card {
+            display: flex;
+            flex-direction: row;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .card-body {
+            padding: 20px;
+            background-color: #F8F9FA;
+            width: calc(100% - 300px); /* 이미지 너비를 제외한 나머지 공간을 차지 */
+        }
+        .card-img-left {
+            width: 300px; /* 이미지 너비 고정 */
+            height: 300px; /* 이미지 높이 고정 */
+            object-fit: cover; /* 이미지 비율 유지하면서 자르기 */
+        }
+        .card-footer {
+            background-color: transparent;
+            border-top: none;
+        }
+        .btn-custom {
+            background-color: #FFC107;
+            border: none;
+            border-radius: 10px;
+            color: black;
+            font-size: 10px;
+            padding: 7px 10px;
+            transition: background-color 0.3s;
+        }
+        .btn-custom:hover {
+            background-color: #E0A800;
+        }
+    </style>
 </head>
-<style>
-    .layout{
-        width : 500px;
-        margin : 0 auto;
-        margin-top: 40px;
-    } /*layout 하위에 있는 input태그 스타일 설정*/
-</style>
 
 
 <body>
-
-<div class="layout">
-  <table>
-      <thead>
-      <tr>
-          <th>글번호</th>
-          <th>제목</th>
-      </tr>
-      </thead>
-      <tbody>
-      <!--list에 testboard가 담겨있는것을 하나씩 빼준다-->
-      <tr th:each="restaurant : ${restaurantlist}">
-      <td th:text="${restaurant.id}">1</td>
-
-      <td><!--list와 상세 연결-->
-          <!--href a태그에 링크를 걸어주는역할 --> <!--localhost:8080/board/view?id=board.id-->
-          <a th:text="${restaurant.name}" th:href="@{/(id=${restaurant.id})}"></a>
-          <!--제목입니다-->
-      </td>
-
-      </tr>
-      </td>
-      </tbody>
-  </table>
-
-    <!--굳이 태그로 감쌀필요가없는 부분을 타임리프 문법을 사용할때 쓰는 문법 th:block-->
-    <th:block th:each= "page : ${#numbers.sequence(startPage, endPage)}">
-                                                        <!--검색기능-4-->
-        <a th:if="${page != nowPage}"
-           th:href="@{/restaurant/rtlist(page = ${page -1}, searchKeyword = ${param.searchKeyword})}"
-           th:text="${page}">
-        </a>
-
-        <strong th:if="${page == nowPage}" th:text="${page}" style="color : red"></strong>
-    </th:block>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="nav-container">
+        <div class="navbar-brand-group">
+            <a class="navbar-brand" href="#!">Delicious Bee</a> <label
+                for="searchText"></label>
+            <div class="search-container">
+                <svg class="search-icon" aria-hidden="true" viewBox="0 0 24 24">
+                    <g>
+                        <path
+                                d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                    </g>
+                </svg>
+                <input type="text" placeholder="검색어를 입력해주세요" class="search-input" id="searchText" name="keyword" th:value="${keyword}">
+            </div>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="#!">맛집등록</a></li>
+                <li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
+                <li class="nav-item"><a class="nav-link" id="loginButton"
+                                        href="#">로그인</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="content-wrapper">
+        <!-- 왼쪽 필터 박스 -->
+        <div id="leftBox">
+            <div class="filter-box">
+                <div class="filter-content" id="filterContent">
+                    <!-- 카테고리 필터 -->
+                    <div class="filter-category">
+                        <h5>카테고리</h5>
+                        <div id="categoryFilters"></div>
+                        <button class="btn-toggle" id="toggleCategory">펼쳐보기</button>
+                    </div>
+                    <br><br>
+                    <!-- 분위기 필터 -->
+                    <div class="filter-ambiance mt-3">
+                        <h5>분위기</h5>
+                        <div id="ambianceFilters"></div>
+                        <button class="btn-toggle" id="toggleAmbiance">펼쳐보기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 정렬 및 검색 결과 박스 -->
+            <div class="results-container">
+                <!-- 정렬 박스 -->
+                <div class="sort-container">
+                    <div class="sort-buttons">
+                        <span class="sort-label">⇅ 정렬</span>
+                        <button class="btn btn-custom btn-sort" id="sort-distance">거리순</button>
+                        <button class="btn btn-custom btn-sort" id="sort-rating">평점순</button>
+                    </div>
+                </div>
+                <div id="restaurantList"></div>
+                <div id="pagination"></div>
+            </div>
+        </div>
+    </div>
 
 </div>
+<div id="navigator" class="center"></div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentKeyword = $('#searchText').val();
+        let currentSortBy = "default";
+        let userLatitude = null;
+        let userLongitude = null;
+
+        // 쿠키에서 위치 정보 가져오기
+        const userLocation = getCookie("userLocation");
+        if (userLocation) {
+            const location = JSON.parse(userLocation);
+            userLatitude = location.latitude;
+            userLongitude = location.longitude;
+        }
+
+        // 사용자의 위치 정보를 가져오는 함수
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        userLatitude = position.coords.latitude;
+                        userLongitude = position.coords.longitude;
+                        // 위치 정보를 쿠키에 저장
+                        document.cookie = `userLocation=${JSON.stringify({latitude: userLatitude, longitude: userLongitude})}; path=/`;
+
+                        // 위치 정보를 가져온 후 초기 데이터 로드
+                        loadRestaurants();
+                    },
+                    function(error) {
+                        console.error("Error getting location: ", error);
+                        // 위치 정보를 가져오지 못한 경우에도 초기 데이터 로드
+                        loadRestaurants();
+                    }
+                );
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+                // Geolocation을 사용할 수 없는 경우에도 초기 데이터 로드
+                loadRestaurants();
+            }
+        }
+
+        // 초기 위치 정보 가져오기 시도
+        getUserLocation();
+        loadFilters();
+
+        // 검색 입력 이벤트
+        $('#searchText').on('keyup', function(e) {
+            if (e.key === 'Enter') {
+                currentKeyword = $(this).val();
+                currentPage = 1;
+                loadRestaurants();
+            }
+        });
+
+        // 정렬 버튼 클릭 이벤트
+        $('#sort-distance').click(function() {
+            currentSortBy = "distance";
+            loadRestaurants();
+        });
+
+        $('#sort-rating').click(function() {
+            currentSortBy = "rating";
+            loadRestaurants();
+        });
+
+        // 레스토랑 데이터 로드 함수
+        function loadRestaurants() {
+            $.ajax({
+                url: '/api/restaurants/search',
+                type: 'GET',
+                data: {
+                    keyword: currentKeyword,
+                    page: currentPage - 1,
+                    sortBy: currentSortBy,
+                    latitude: userLatitude,
+                    longitude: userLongitude
+                },
+                success: function(data) {
+                    console.log(data); // 응답 데이터 구조를 확인하기 위해 로그 출력
+
+                    if (data && data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
+                        renderRestaurants(data);
+                        renderPagination(data.page.totalPages, data.page.number + 1);
+                    } else {
+                        console.error("Invalid response data: ", data);
+                    }
+                },
+                error: function(error) {
+                    console.error("Error loading restaurants:", error);
+                }
+            });
+        }
+
+
+     // 레스토랑 렌더링 함수
+        function renderRestaurants(data) {
+            if (data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
+                let restaurants = data._embedded.restaurantDtoList;
+                let html = '';
+
+                restaurants.forEach(function(restaurant) {
+                    let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
+                        ? `/restaurant/display?filename=${restaurant.imageUrls[0].saved_filename}`
+                        : 'default_image_url.jpg'; // 기본 이미지 URL을 설정할 수 있습니다.
+
+                    html += `
+            <div class="col-12 mb-4">
+                <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}">
+                    <a href="/restaurant/rtread/${restaurant.id}">
+                        <img src="${imageUrl}"
+                             alt="Restaurant Image" class="card-img-left">
+                    </a>
+                    <div class="card-body">
+                        <h4 class="badge bg-primary"># ${restaurant.category}</h4>
+                        <a href="/restaurant/rtread?id=${restaurant.id}">
+                            <h2 class="card-title">${restaurant.name}</h2>
+                        </a>
+                        <h4 class="text">${restaurant.address}</h4>
+                        <small class="text-muted">${restaurant.description}</small>
+                        <div class="card-footer">
+                            <h3 class="card-text">평점: ${restaurant.average_rating}★</h3>
+                           <h3 class="card-text">거리: ${restaurant.distance.toFixed(0)} m</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+                });
+
+                $('#restaurantList').html(html);
+            } else {
+                console.error("Invalid data structure: ", data);
+            }
+        }
+        // 쿠키에서 특정 값을 가져오는 함수
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // 페이지네이션 렌더링 함수
+        function renderPagination(totalPages, currentPage) {
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<a href="#" class="page-link" data-page="${i}">${i}</a>`;
+            }
+            $('#pagination').html(html);
+        }
+
+        // 페이지네이션 클릭 이벤트
+        $('#pagination').on('click', '.page-link', function(e) {
+            e.preventDefault();
+            currentPage = $(this).data('page');
+            loadRestaurants();
+        });
+
+        // 필터 데이터 로드 함수
+        function loadFilters() {
+            // 실제로는 서버에서 필터 데이터를 가져와야 합니다.
+            // 여기서는 예시 데이터를 사용합니다.
+            const categories = ['한식', '중식', '일식', '양식'];
+            const ambiances = ['조용한', '활기찬', '로맨틱한', '가족적인'];
+
+            renderFilters('categoryFilters', categories);
+            renderFilters('ambianceFilters', ambiances);
+        }
+
+        // 필터 렌더링 함수
+        function renderFilters(elementId, filters) {
+            let html = '';
+            filters.forEach((filter, index) => {
+                html += `
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="${filter}" id="${elementId}-${index}">
+                    <label class="form-check-label" for="${elementId}-${index}">${filter}</label>
+                </div>
+            `;
+            });
+            $(`#${elementId}`).html(html);
+        }
+
+        // 필터 토글 기능
+        $('#toggleCategory, #toggleAmbiance').click(function() {
+            const $target = $(this).prev('div');
+            $target.slideToggle();
+            $(this).text($target.is(':visible') ? '접기' : '펼쳐보기');
+        });
+    });
+</script>
 </body>
 </html>

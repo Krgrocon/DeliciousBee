@@ -1,6 +1,7 @@
 package com.example.deliciousBee.controller.review;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,6 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +31,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,10 +41,8 @@ import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.model.review.ReviewConverter;
-import com.example.deliciousBee.model.review.ReviewLikeForm;
 import com.example.deliciousBee.model.review.ReviewUpdateForm;
 import com.example.deliciousBee.model.review.ReviewWriteForm;
-import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
 import com.example.deliciousBee.service.review.ReviewService;
 import com.example.deliciousBee.util.FileService;
@@ -52,32 +56,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/review")
 public class ReviewController {
 
+	@Value("${spring.cloud.gcp.storage.bucket}")
+	private String bucketName;
+
 	private String uploadPath = "C:\\upload\\";
 	private final ReviewService reviewService;
 	private final FileService fileService;
-	private final BeeMemberService beeMemberService;
 	private final RestaurantService restaurantService;
-
-	@GetMapping("allreview/{restaurant_id}")
-	public String allReview(@PathVariable("restaurant_id") Long restaurant_id, Model model,
-			@AuthenticationPrincipal BeeMember loginMember) {
-
-		String MemberId = loginMember.getMember_id();
-		List<Review> allReview = reviewService.getReviewsByRestaurantIdWithFiles(restaurant_id, MemberId);
-		log.info("******* allReview:{}", allReview);
-		Restaurant restaurant = restaurantService.findRestaurant(restaurant_id);
-		
-		
-		model.addAttribute("restaurant", restaurant);
-		model.addAttribute("allReview", allReview);
-		model.addAttribute("uploadPath", uploadPath);
-		return "review/allreview";
-	}
 
 	@PostMapping("write/{restaurant_id}")
 	public String postWriteReview(@Validated @ModelAttribute("writeForm") ReviewWriteForm reviewWriteForm,
-			BindingResult result, @RequestParam(name = "file", required = false) MultipartFile[] files,
-			@AuthenticationPrincipal BeeMember loginMember, @PathVariable(name = "restaurant_id") Long restaurant_id) {
+								  BindingResult result, @RequestParam(name = "file", required = false) MultipartFile[] files,
+								  @AuthenticationPrincipal BeeMember loginMember, @PathVariable(name = "restaurant_id") Long restaurant_id) {
 
 		if (result.hasErrors()) {
 			return "redirect:/";
@@ -94,52 +84,106 @@ public class ReviewController {
 		Restaurant restaurant = restaurantService.findRestaurant(restaurant_id);
 		review.setRestaurant(restaurant);
 
+		// 첨부 파일 처리
 		List<AttachedFile> attachedFiles = new ArrayList<>();
 		if (files != null && files.length > 0) {
 			for (MultipartFile file : files) {
 				if (!file.isEmpty()) {
-					AttachedFile attachedFile = fileService.saveFile(file);
-					attachedFile.setReview(review);
-					attachedFiles.add(attachedFile);
+					try {
+						// Google Cloud Storage에 파일 저장
+						AttachedFile attachedFile = fileService.saveFile(file);
+						attachedFile.setReview(review);
+						attachedFiles.add(attachedFile);
+					} catch (IOException e) {
+						e.printStackTrace();
+						// 파일 업로드에 실패하면 에러 처리 (필요시 리다이렉트하거나 에러 메시지를 추가할 수 있음)
+						return "redirect:/error";  // 예: 에러 페이지로 리다이렉트
+					}
 				}
 			}
 		}
 		reviewService.saveReview(review, attachedFiles);
-		return "redirect:/review/allreview/" + restaurant_id;
+		return "redirect:/restaurant/rtread/" + restaurant_id;
 	}
 
-	// 이미지 출력을 위한 매서드
-	@GetMapping("/display")
-	public ResponseEntity<Resource> display(@RequestParam("filename") String filename) {
 
-		String folder = "";
-		Resource resource = new FileSystemResource(uploadPath + folder + filename);
-		if (!resource.exists()) {
-			return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
-		}
-		HttpHeaders header = new HttpHeaders();
-		Path filePath = null;
+	@GetMapping("/display")
+	@ResponseBody
+	public ResponseEntity<Resource> display(@RequestParam("filename") String filename) {
 		try {
-			filePath = Paths.get(uploadPath + folder + filename);
-			header.add("Content-type", Files.probeContentType(filePath));
+			// Google Cloud Storage 키 파일 설정
+			String keyFileName = "deliciousbee-acb114448e3c.json";  // GCP 서비스 계정 키 파일명
+			InputStream keyFile = getClass().getResourceAsStream("/" + keyFileName);
+
+			// Google Cloud Storage 클라이언트 생성
+			Storage storage = StorageOptions.newBuilder()
+					.setCredentials(GoogleCredentials.fromStream(keyFile))
+					.build()
+					.getService();
+
+			// 파일을 GCS에서 가져오기
+			Blob blob = storage.get(bucketName, filename);
+
+			if (blob == null || !blob.exists()) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+
+			// Blob의 데이터를 ByteArrayResource로 변환
+			Resource resource = new ByteArrayResource(blob.getContent());
+
+			// 헤더 설정
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Type", blob.getContentType());
+
+			return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+
 		} catch (IOException e) {
 			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
 	}
 
-	// 리뷰 좋아요 처리
-	@PostMapping("/{reviewId}")
-	@ResponseBody
-	public ResponseEntity<Map<Object, Object>> likeReview(@RequestBody ReviewLikeForm reviewLikeForm) {
-		Review review = ReviewConverter.reviewLikeFormToReview(reviewLikeForm);
-		int likeCount = reviewService.likeReview(review.getId());
+//	// 이미지 출력을 위한 매서드
+//	@GetMapping("/display")
+//	public ResponseEntity<Resource> display(@RequestParam("filename") String filename) {
+//
+//		String folder = "";
+//		Resource resource = new FileSystemResource(uploadPath + folder + filename);
+//		if (!resource.exists()) {
+//			return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
+//		}
+//		HttpHeaders header = new HttpHeaders();
+//		Path filePath = null;
+//		try {
+//			filePath = Paths.get(uploadPath + folder + filename);
+//			header.add("Content-type", Files.probeContentType(filePath));
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
+//	}
 
-		Map<Object, Object> reponse = new HashMap<>();
-		boolean success = true;
-		reponse.put("success", success);
-		reponse.put("likeCount", likeCount);
-		return ResponseEntity.ok(reponse);
+	// 리뷰 좋아요 처리
+	@PostMapping("/{reviewId}/like")
+	@ResponseBody
+	public ResponseEntity<Map<Object, Object>> likeReview(@PathVariable(name = "reviewId") Long reviewId,
+														  @AuthenticationPrincipal BeeMember loginMember) {
+		Map<Object, Object> response = new HashMap<>();
+		long likeCount = reviewService.likeReview(loginMember, reviewId);
+		response.put("success", true);
+		response.put("likeCount", likeCount);
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/{reviewId}/unlike")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> unlikeReview(@PathVariable(name = "reviewId") Long reviewId
+			, @AuthenticationPrincipal BeeMember loginMember) {
+		Map<String, Object> response = new HashMap<>();
+		int likeCount = reviewService.unlikeReview(loginMember, reviewId);
+		response.put("success", true);
+		response.put("likeCount", likeCount);
+		return ResponseEntity.ok(response);
 	}
 
 	// 리뷰삭제
@@ -154,7 +198,7 @@ public class ReviewController {
 
 	@GetMapping("/update/{reviewId}")
 	public String getUpdateReview(@AuthenticationPrincipal BeeMember loginMember,
-			@PathVariable("reviewId") Long reviewId, Model model) {
+								  @PathVariable("reviewId") Long reviewId, Model model) {
 		Review findReview = reviewService.findReview(reviewId);
 		if (findReview == null || !findReview.getBeeMember().getMember_id().equals(loginMember.getMember_id())) {
 			log.info("허용 되지 않는 접근 방식입니다");
@@ -175,11 +219,10 @@ public class ReviewController {
 	// 리뷰 수정
 	@PostMapping("/update")
 	public String postUpdateReview(@Validated @ModelAttribute ReviewUpdateForm reviewUpdateForm, BindingResult result,
-			@RequestParam(name = "file", required = false) MultipartFile[] file) {
+								   @RequestParam(name = "file", required = false) MultipartFile[] file) {
 		Review updateReview = ReviewConverter.reviewUpdateFormToReview(reviewUpdateForm);
-		log.info("**** updateReview:{}", updateReview);
 		reviewService.updateReview(updateReview, reviewUpdateForm.isFileRemoved(), file);
-		return "redirect:/";
+		return "redirect:/restaurant/rtread/";
 	}
 
 	// 수정시 첨부파일 삭제
