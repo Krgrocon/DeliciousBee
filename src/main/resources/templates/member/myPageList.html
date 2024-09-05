@@ -82,9 +82,7 @@
 		<table>
 
 			<div th:each="entry : ${randomReviewsByCategory}">
-				<h2>
-					<span th:text="${entry.key.description}"></span>
-				</h2>
+				 <h2>카테고리<span th:text="${entry.key}"></span></h2>
 				<div class="reviews" th:each="review : ${entry.value}">
 					<a th:href="@{/member/myPage(id=${review.beeMember.myPage.id})}">
 						<div th:text="${review.beeMember.nickname}" class="nickname"></div>
@@ -104,30 +102,7 @@
 					<span>추천메뉴: </span> <span th:text="${review.recommendItems}"></span>
 				</div>
 			</div>
-			<div th:if="${randomReview != null}">
-				<div class="reviews">
-					<h2>양식</h2>
-					<a
-						th:href="@{/member/myPage(id=${randomReview.beeMember.myPage.id})}">
-						<span th:text="${randomReview.beeMember.nickname}"></span>
-					</a>님의 리뷰
-					<div th:each="file : ${randomReview.attachedFile}">
-						<div th:if="${file.saved_filename}">
-							<img
-								th:src="@{'/review/display?filename='+${file.saved_filename}}"
-								alt="Review Image"
-								style="width: 300px; height: 300px; object-fit: cover;">
-						</div>
-					</div>
-					<div class="content">
-						<div th:text="${randomReview.reviewContents}"></div>
-					</div>
-					<span>추천메뉴: </span> <span th:text="${randomReview.recommendItems}"></span>
-
-					</p>
-				</div>
-			</div>
-
+			
 
 
 			<h5>리뷰 순위</h5>
