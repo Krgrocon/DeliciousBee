@@ -5,9 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="/myPage.css">
-<title>마이페이지 꾸미기</title>
+<title>마이페이지</title>
 </head>
-
 <body>
 	<!-- Navbar -->
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -73,54 +72,66 @@
 			</p>
 		</div>
 	</div>
-
+<form th:action="@{/member/updateMyPage}" onsubmit="return formCheck()" method="POST">
 	<div class="main-info">
-		<input type="file" id="mainImageInput" name="mainImage"
-			accept="image/*" style="display: none;"> <label
-			for="mainImageInput"> <img
-			th:if="${myPage.mainImage != null}"
-			th:src="'/myPageImage/' +  ${myPage.mainImage.savedFilename}"
-			alt="메인 이미지" class="main-image"> <img
-			th:unless="${myPage.mainImage != null}" src="/image/bee.jpg"
-			alt="기본 이미지" class="default-main-image">
-		</label>
+		<!-- 메인 이미지 -->
+		<img th:if="${myPage.mainImage == null}" src="/image/back.jpg"
+			alt="기본 이미지" class="default-main-image"> <img
+			th:unless="${myPage.mainImage == null}"
+			th:src="'/myPageImage/' + ${myPage.mainImage.savedFilename}"
+			alt="메인 이미지" class="main-image">
+
+		<!-- 프로필 이미지 -->
 		<div class="profile-image">
-			<input type="file" id="profileImageInput" name="profileImage"
-				accept="image/*" style="display: none;"> <label
-				for="profileImageInput"> <img
-				th:if="${myPage.profileImage != null}"
+			<img th:if="${myPage.beeMember.profileImage == null}"
+				src="/image/bee.jpg" alt="기본 이미지" class="default-main-image">
+			<img th:unless="${myPage.beeMember.profileImage == null}"
 				th:src="'/myPageImage/' + ${myPage.profileImage.savedFilename}"
-				alt="프로필 이미지" class="profile-icon"> <img
-				th:unless="${myPage.profileImage != null}" src="/image/bee.jpg"
-				alt="기본 이미지" class="default-profile-image">
-			</label>
+				alt="메인 이미지" class="main-image">
 		</div>
 	</div>
-	<div>
-		<label for="backgroundImageInput">배경 이미지:</label> <input type="file"
-			id="backgroundImageInput" name="backgroundImage" accept="image/*">
-	</div>
+
+
 	<div class="myPageOwner">
 		<div class="owner-profile">
-			<a th:href="@{/member/updateMyPage}" class="nickname"
-				th:text="${myPage.beeMember.nickname} + ' 님의 마이페이지' "></a> <a
-				href="/member/myInfo"> <img src="/image/set.png" alt="톱니바퀴 아이콘"
-				class="update-icon" title="내 정보로 이동">
-			</a>
+			<div class="nickname-header">
+			<h4 class="nickname" th:text="${myPage.beeMember.nickname} + ' 님의 마이페이지' "></h4>
+			 <a class="myinfo-button" th:href="@{/member/myInfo}">내 정보</a>
+			</div>
+			<h4 class="intro-title">소개글</h4>
+			<input type="text" name="introduce"  id="introduceInput" th:value="${myPage.introduce}" th:placeholder="${myPage.introduce == null || myPage.introduce.isEmpty()} ? '소개글을 입력하세요' : ''"
+			 maxlength="100" oninput="updateCharacterCount()">
+			 <p id="charCount">0/100 자</p>
 		</div>
-		<div class="owner-intro">
-			<p class="intro-title">소개글</p>
-			<input type="text" name="name" th:value="${myPage.introduce}"
-				required>
-		</div>
+	
+		
 		<div class="owner-stats">
-			<div th:text="'리뷰한수 : ' + ${myPage.beeMember.review.size()}"></div>
+			<span th:text="'리뷰한수 : ' + ${myPage.beeMember.review.size()}"></span>
+			<span th:text="'조회수: ' + ${myPage.hit}"></span> <span
+				th:text="'오늘 방문자 수: ' + ${todayVisitCount}"></span>
+			<a class="today_visitor" onclick="showVisitorsModal()">오늘의 방문자보기</a>
 		</div>
 	</div>
+	
+		 <!-- 오늘의 방문자 목록 모달 -->
+    <div id="visitorsModal" class="modal">
+        <div class="visit-modal-content">
+            <span class="close" onclick="closeVisitorsModal()">×</span>
+            <h3>오늘의 방문자</h3>
+            <ul>
+                 <li th:each="visit : ${visitors}"> 
+                <span th:text="${visit.visitor.nickname}"></span> 
+            </li>
+            </ul>
+        </div>
+    </div>
+    
+	
 	<div class="myPageMain">
 		<div th:if="${!myPage.beeMember.review.isEmpty()}"
 			class="myPageReview">
 			<div th:each="review : ${myPage.beeMember.review}" class="review-box">
+
 				<div class="restaurant_name_head">
 					<span><img src="/image/bee.jpg" alt="벌 이미지"
 						style="width: 35px; height: 35px; object-fit: cover;"></span> <a
@@ -135,6 +146,8 @@
 							src="/image/empty_star.png" alt="빈 별">
 						</span>
 					</div>
+					<span><a
+						th:href="@{/review/allreview/{restaurantId}(restaurantId=${review.restaurant.id})}">리뷰보기</a></span>
 				</div>
 				<div th:each="file : ${review.attachedFile}">
 					<div th:if="${file.saved_filename}">
@@ -151,17 +164,18 @@
 
 			</div>
 		</div>
-		<p th:unless="${!myPage.beeMember.review.isEmpty()}">작성된 리뷰가 없습니다.</p>
-
+		<p class="noReview" th:unless="${!myPage.beeMember.review.isEmpty()}">
+			<div class="no-review">작성된 리뷰가 없습니다ㅠ
+				<p><a href="rtlist.html">리뷰 작성하러 가기</a> 👉</p>
+			</div>
+		</p>
 	</div>
-
-	<div class="button">
-		<button onclick="location.href='/member/myPage'">저장하기</button>
+	
+	<div class="goUpdate-button"
+		th:if="${loginMember != null and loginMember.member_id == myPage.beeMember.member_id}">
+		<button type="submit">저장하기</button>
 	</div>
-	<!-- 다른 사람 or 로그인 안 한 사람 -->
-
-
-
+</form>
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
@@ -188,23 +202,95 @@
 			}
 		}
 		
-		//이미지 미리보기 
-		const profileImageInput = document.getElementById('profileImageInput');
-		const profileImage = document.querySelector('.profile-image img'); // 이미지 태그 선택
+		//팔로워**************
+		async function toggleFollow(button) {
+    const followingId = button.dataset.followingId;
+    const isFollowing = button.textContent === '언팔로우';
+    const url = isFollowing ? `/unfollow/${followingId}` : `/follow/${followingId}`;
 
-		profileImageInput.addEventListener('change', (event) => {
-  		const file = event.target.files[0];
+    try {
+        const response = await fetch(url, { method: 'POST' });
+        const success = await response.json(); 
 
-  		if (file) {
-    		const reader = new FileReader();
+        if (success) {
+            // 버튼 텍스트 및 클래스 변경
+            button.textContent = isFollowing ? '팔로우' : '언팔로우';
+            button.classList.toggle('follow-button', !isFollowing); // 언팔로우 시 btn-secondary 추가
+            button.classList.toggle('nofollow', isFollowing); // 팔로우 시 btn-primary 추가
+        } else {
+            alert('팔로우/언팔로우 요청에 실패했습니다.');
+        }
+   			 } catch (error) {
+        	console.error('팔로우/언팔로우 요청 중 오류 발생:', error);
+        	alert('팔로우/언팔로우 요청 중 오류가 발생했습니다.');
+   		  }
+		}		
+		//로그인안한사람 팔로워하려할때**************
+		function showLoginAlert() {
+	        alert("로그인이 필요한 서비스입니다.");
+	        return true; // 로그인 페이지로 이동
+	    }
+		
+		
+		//*************팔로워 팔로잉 모달****************
+function showFollowersModal() {
+    document.getElementById('followersModal').style.display = 'block';
+}
 
-   			   reader.onload = (e) => {
-      		     profileImage.src = e.target.result;
-    	     };
-	
-    	       reader.readAsDataURL(file);
- 		     }
-		});
+// 팔로워 목록 모달 닫기 함수
+function closeFollowersModal() {
+    document.getElementById('followersModal').style.display = 'none';
+}
+
+// 팔로잉 목록 모달 열기 함수
+function showFollowingModal() {
+    document.getElementById('followingModal').style.display = 'block';
+}
+
+// 팔로잉 목록 모달 닫기 함수
+function closeFollowingModal() {
+    document.getElementById('followingModal').style.display = 'none';
+}
+
+//오늘의 방문자 목록 모달 열기 함수
+function showVisitorsModal() {
+    document.getElementById('visitorsModal').style.display = 'block';
+}
+
+// 오늘의 방문자 목록 모달 닫기 함수
+function closeVisitorsModal() {
+    document.getElementById('visitorsModal').style.display = 'none';
+}
+
+// 글자 수를 업데이트하는 함수
+function updateCharacterCount() {
+    const input = document.getElementById('introduceInput');
+    const charCount = document.getElementById('charCount');
+    const currentLength = input.value.length;
+
+    charCount.textContent = `${currentLength}/100 자`;
+
+    // 만약 200자를 초과하면 더 입력하지 못하도록 함
+    if (currentLength > 100) {
+        input.value = input.value.substring(0, 100); // 200자까지만 남김
+    }
+}
+
+// 페이지 로드 시 초기 글자 수 설정
+window.onload = function() {
+    updateCharacterCount();
+};
+
+function formCheck() {
+ 	 
+
+    if (confirm("정보를 수정하시겠습니까?")) {
+    	
+        return true;
+    } else {
+        return false;
+    }
+}
 	</script>
 </body>
 

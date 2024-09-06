@@ -88,6 +88,7 @@ public class BeeMemberService implements UserDetailsService {
 	//******************회원탈퇴*******************
 	@Transactional
 	public void deleteMember(String member_id) {
+		
 		beeMemberRepository.deleteById(member_id);
 
 	}

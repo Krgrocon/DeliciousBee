@@ -62,6 +62,22 @@ body {
     margin-top: 0;
     color: #333;
 }
+.password-change {
+    display: inline-block; /* 블록 요소로 변환하여 패딩과 배경색 적용 */
+    padding: 10px 20px; /* 내부 여백 조정 */
+    background-color: #ff4757; /* 배경색 설정 (예: 빨간색) */
+    color: white; /* 텍스트 색상 설정 */
+    font-weight: bold; /* 텍스트를 굵게 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    text-decoration: none; /* 텍스트 밑줄 제거 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
+    transition: background-color 0.3s ease; /* 배경색 전환 효과 */
+    margin-bottom: 10px;
+}
+
+.password-change:hover {
+    background-color: #ff6b81; /* 마우스를 올렸을 때 배경색 변경 */
+}
 
 /* 정보 박스 스타일 */
 .info {

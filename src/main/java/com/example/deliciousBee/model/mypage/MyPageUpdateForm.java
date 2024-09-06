@@ -22,12 +22,14 @@ public class MyPageUpdateForm {
 	private String introduce;
 
 	private MemberAttachedFile mainImage;
+	
 	private MemberAttachedFile profileImage;
-	private MemberAttachedFile backgroundImage;
 
 	private boolean fileRemoved; // 기본값 false 삭제됬으면 ture 반환, boolea의 getter는 get이아니라 is
 
 	private Long hit;
+	
+	private Long visitor;
 
 	public static MyPage toMyPage(MyPageUpdateForm myPageUpdateForm) {
 		MyPage myPage = new MyPage();
@@ -35,11 +37,14 @@ public class MyPageUpdateForm {
 		myPage.setId(myPageUpdateForm.getMyPage_id());
 		myPage.setIntroduce(myPageUpdateForm.getIntroduce());
 		myPage.setBeeMember(myPageUpdateForm.getBeeMember());
-		myPage.setMainImage(myPageUpdateForm.getMainImage()); // mainImage 설정
-        myPage.setProfileImage(myPageUpdateForm.getProfileImage()); // profileImage 설정
-        myPage.setBackgroundImage(myPageUpdateForm.getBackgroundImage()); // backgroundImage 설정
-//		myPage.setHit(myPageUpdateForm.getHit());
+		myPage.setMainImage(myPageUpdateForm.getMainImage());
 
 		return myPage;
+	}
+	public static BeeMember toBeeMember(MyPageUpdateForm myPageUpdateForm) {
+		BeeMember beeMember = new BeeMember();
+		
+		beeMember.setProfileImage(myPageUpdateForm.getProfileImage());
+		return beeMember;
 	}
 }

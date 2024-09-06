@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .authenticationProvider(daoAuthenticationProvider())
                 .authorizeHttpRequests((authorizeRequest) -> authorizeRequest
                         .requestMatchers("/restaurant/rtwrite", "/comments/save").hasRole(Role.USER.name())
-                        .requestMatchers("/", "/member/login", "/css/**", "images/**", "/js/**", "/login/*", "/logout/*", "/posts/**", "/comments/**").permitAll()
+                        .requestMatchers("/", "/member/login", "/css/**", "images/**", "/js/**", "/login/*", "/logout/*", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling((exceptions) -> exceptions
@@ -80,5 +80,6 @@ public class SecurityConfig {
         provider.setUserDetailsService(beeMemberService);
         return provider;
     }
+    
 }
 

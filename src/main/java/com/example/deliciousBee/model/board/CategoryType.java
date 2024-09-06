@@ -18,6 +18,7 @@ public enum CategoryType {
 		return description;
 	}
 
+
 	public static CategoryType findByDescription(String description) {
 		for (CategoryType categoryType : CategoryType.values()) {
 			if (categoryType.getDescription().equals(description)) {
@@ -26,4 +27,5 @@ public enum CategoryType {
 		}
 		return null; // 또는 예외 처리
 	}
+
 }
