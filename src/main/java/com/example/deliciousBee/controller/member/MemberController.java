@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.member.*;
 import com.example.deliciousBee.model.mypage.MyPage;
+import com.example.deliciousBee.repository.MyPageVisitRepository;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.MyPageService;
 
