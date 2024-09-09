@@ -20,6 +20,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+
+
+
 @Entity // JPA가 관리
 @Getter
 @Setter
@@ -112,10 +115,10 @@ public class BeeMember implements UserDetails, OAuth2User {
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
-//	@Override
-//	public String toString() {
-//		return "BeeMember{" + "member_id='" + member_id + '\'' + ", password='" + password + '\'' + ", national="
-//				+ national + ", nickname='" + nickname + '\'' + ", gender=" + gender + ", birth=" + birth + ", email='"
-//				+ email + '\'' + ", isSocialUser=" + isSocialUser + ", role=" + role + '}';
-//	}
+	@Override
+	public String toString() {
+		return "BeeMember{" + "member_id='" + member_id + '\'' + ", password='" + password + '\'' + ", national="
+				+ national + ", nickname='" + nickname + '\'' + ", gender=" + gender + ", birth=" + birth + ", email='"
+				+ email + '\'' + ", isSocialUser=" + isSocialUser + ", role=" + role + '}';
+	}
 }
