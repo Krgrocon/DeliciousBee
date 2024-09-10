@@ -30,11 +30,20 @@ public class Restaurant {
 	@Column(nullable = false)
 	private String name;
 
-	@ElementCollection(targetClass = CategoryType.class)
-	@CollectionTable(name = "restaurant_categories", joinColumns = @JoinColumn(name = "restaurant_id"))
 	@Enumerated(EnumType.STRING)
-	@Column(name = "category")
-	private Set<CategoryType> categories;
+    private CategoryType category;
+
+	@Column(nullable = false)
+	private String categories;
+	
+    private String mainCategory;
+    
+    @Enumerated(EnumType.STRING)
+    private MoodType mood; 
+    
+    @Enumerated(EnumType.STRING)
+    private PurposeType purpose;
+    
 	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private BeeMember member;
@@ -95,26 +104,27 @@ public class Restaurant {
 		this.verificationStatus = VerificationStatus.PENDING; // 기본값 설정
 	}
 
-	public static Restaurant toRestaurant(Restaurant restaurantUpdateForm) {
-		Restaurant restaurant = new Restaurant();
+    public static Restaurant toRestaurant(Restaurant restaurantUpdateForm) {
+        Restaurant restaurant = new Restaurant();
 
-		restaurant.setId(restaurantUpdateForm.getId());
-		restaurant.setName(restaurantUpdateForm.getName());
-		restaurant.setAddress(restaurantUpdateForm.getAddress());
-		restaurant.setPhone_number(restaurantUpdateForm.getPhone_number());
-		restaurant.setOpening_hours(restaurantUpdateForm.getOpening_hours());
-		restaurant.setMenu_name(restaurantUpdateForm.getMenu_name());
-		restaurant.setPrice_range(restaurantUpdateForm.getPrice_range());
-		restaurant.setHomepage_url(restaurantUpdateForm.getHomepage_url());
-		restaurant.setDescription(restaurantUpdateForm.getDescription());
-		restaurant.setLongitude(restaurantUpdateForm.getLongitude());
-		restaurant.setLatitude(restaurantUpdateForm.getLatitude());
-		restaurant.setUpdated_at(restaurantUpdateForm.getUpdated_at());
-		restaurant.setCategories(restaurantUpdateForm.getCategories());
-		restaurant.setVerificationStatus(restaurantUpdateForm.getVerificationStatus()); // 인증 상태 설정
+        restaurant.setId(restaurantUpdateForm.getId());
+        restaurant.setName(restaurantUpdateForm.getName());
+        restaurant.setAddress(restaurantUpdateForm.getAddress());
+        restaurant.setPhone_number(restaurantUpdateForm.getPhone_number());
+        restaurant.setOpening_hours(restaurantUpdateForm.getOpening_hours());
+        restaurant.setMenu_name(restaurantUpdateForm.getMenu_name());
+        restaurant.setPrice_range(restaurantUpdateForm.getPrice_range());
+        restaurant.setHomepage_url(restaurantUpdateForm.getHomepage_url());
+        restaurant.setDescription(restaurantUpdateForm.getDescription());
+        restaurant.setLongitude(restaurantUpdateForm.getLongitude());
+        restaurant.setLatitude(restaurantUpdateForm.getLatitude());
+        restaurant.setUpdated_at(restaurantUpdateForm.getUpdated_at());
+        restaurant.setCategory(restaurantUpdateForm.getCategory());
+        restaurant.setMainCategory(restaurantUpdateForm.getMainCategory());
+        
+        return restaurant;
+    }
 
-		return restaurant;
-	}
 
 	// @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) // 맛집과 이미지의 관계 설정
 	// (CascadeType.ALL: 맛집 삭제 시 이미지도 삭제, orphanRemoval: 이미지 삭제 시 연관 관계도 삭제)

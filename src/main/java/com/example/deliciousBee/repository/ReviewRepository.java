@@ -21,9 +21,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
 	List<Review>  findAllByRestaurant_IdOrderByVisitDateDesc(Long restaurantId);
 	// 좋아요순으로 정렬
 	List<Review> findAllByRestaurant_IdOrderByLikeCountDesc(Long restaurantId);
-	// 랜덤 카테고리
-	@Query("SELECT r FROM Review r JOIN r.restaurant rest WHERE :category MEMBER OF rest.categories")
-	List<Review> findByRestaurantCategoriesContaining(@Param("category") CategoryType category);
+	
+//	// 랜덤 카테고리
+//	@Query("SELECT r FROM Review r JOIN r.restaurant rest WHERE :category MEMBER OF rest.category")
+//	List<Review> findByRestaurantCategoryContaining(@Param("category") CategoryType category);
 	
 	List<Review> findByRestaurant(Restaurant restaurant);
 

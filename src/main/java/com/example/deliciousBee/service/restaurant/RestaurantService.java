@@ -23,7 +23,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.smartcardio.Card;
 
 @Slf4j
 @Service
@@ -87,32 +86,42 @@ public class RestaurantService {
 //    }
 
     @Transactional
-    public void updateRestaurant(Restaurant updateRestaurant) {
+    public void updateRestaurant(Restaurant updateRestaurant, List<RestaurantAttachedFile> attachedFiles) {
+    	
         Restaurant findRestaurant = findRestaurant(updateRestaurant.getId());
-
+        
         findRestaurant.setName(updateRestaurant.getName());
         findRestaurant.setAddress(updateRestaurant.getAddress());
         findRestaurant.setPhone_number(updateRestaurant.getPhone_number());
         findRestaurant.setOpening_hours(updateRestaurant.getOpening_hours());
+        findRestaurant.setMenu_name(updateRestaurant.getMenu_name());
         findRestaurant.setPrice_range(updateRestaurant.getPrice_range());
         findRestaurant.setHomepage_url(updateRestaurant.getHomepage_url());
         findRestaurant.setDescription(updateRestaurant.getDescription());
         findRestaurant.setLongitude(updateRestaurant.getLongitude());
         findRestaurant.setLatitude(updateRestaurant.getLatitude());
         findRestaurant.setUpdated_at(updateRestaurant.getUpdated_at());
-        findRestaurant.setCategories(updateRestaurant.getCategories());
-
+        findRestaurant.setCategory(updateRestaurant.getCategory());
+        findRestaurant.setMainCategory(updateRestaurant.getMainCategory());
+        
         restaurantRepository.save(findRestaurant);
-    }
+        
+        if (attachedFiles != null && !attachedFiles.isEmpty()) {
+            for (RestaurantAttachedFile attachedFile : attachedFiles) {
+                attachedFile.setRestaurant(findRestaurant); // Set the restaurant reference
+            }
+            fileRepository.saveAll(attachedFiles);
+        }
 
+    }
     @Transactional
     public void deleteRestaurant(Long id) {
         restaurantRepository.deleteById(id);
     }
 
     // 카테고리
-    public List<Restaurant> findByCategory(CategoryType category) {
-        return restaurantRepository.findByCategoriesContaining(category); // findByCategoriesContaining으로 변경
+    public List<Restaurant> findByCategory(String category) {
+        return restaurantRepository.findByCategory(category);
     }
 
     public RestaurantAttachedFile findFileByRestaurantId(Restaurant restaurant) {
@@ -123,6 +132,10 @@ public class RestaurantService {
     public RestaurantAttachedFile findFileByRestaurantAttachedFileId(Long id) {
     	Optional<RestaurantAttachedFile> attachedFile = fileRepository.findById(id);
     	return attachedFile.orElse(null);
+    }
+    
+    public boolean existsById(Long id) {
+        return restaurantRepository.existsById(id);
     }
     
     @Transactional

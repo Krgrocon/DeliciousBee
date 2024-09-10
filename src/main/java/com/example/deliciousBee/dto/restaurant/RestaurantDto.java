@@ -19,8 +19,8 @@ public class RestaurantDto {
     private Double longitude;
     private Double distance;
     private String address;
-    @Enumerated(EnumType.STRING)
-    private Set<CategoryType> categories;
+    private String categories;
+    private String mainCategory;
     private String description;
     private double average_rating;
     private List<String> imageUrls; // 이미지 URL 리스트
@@ -33,6 +33,7 @@ public class RestaurantDto {
         this.longitude = restaurant.getLongitude();
         this.address = restaurant.getAddress();
         this.categories = restaurant.getCategories();
+        this.mainCategory = restaurant.getMainCategory();
         this.description = restaurant.getDescription();
         this.average_rating = restaurant.getAverage_rating() != null ? restaurant.getAverage_rating() : 0.0;
 

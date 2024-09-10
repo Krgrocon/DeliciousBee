@@ -58,7 +58,10 @@
     <div class="row">
       <!-- Main Content Area -->
       <div class="col-lg-8">
-        
+        <a class="btn btn-outline-danger mr-2" 
+   th:href="@{/restaurant/rtupdate(id=${restaurant.id})}">
+    업데이트
+</a>
         <!-- Featured Restaurant -->
         <div class="card mb-4" th:object="${restaurant}">
         <div class="image-gallery">
@@ -78,7 +81,6 @@
         <h3>Restaurant Info</h3>
         <a class="card-text no-style-link" th:href="@{${restaurant.homepage_url}}" th:text="'웹사이트 방문'" target="_blank"></a>
         <p class="card-text" th:text="${restaurant.address}"></p>
-        <p class="card-text" th:text="${restaurant.category}"></p>
         
         <!-- restaurant-photo -->
         <hr>
