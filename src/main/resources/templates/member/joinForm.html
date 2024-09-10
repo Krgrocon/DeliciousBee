@@ -1,27 +1,28 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>델리비 회원가입</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="/css/index.css">
 	<style>
-		/* 동일한 CSS 스타일 유지 */
-		body {
-			font-family: 'Arial', sans-serif;
-			background-color: #f5f5f7;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			height: 100vh;
-			margin: 0;
-		}
+
 		.signup-form {
 			background-color: white;
 			padding: 40px;
 			border-radius: 10px;
 			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 			width: 300px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+
+			margin: 0 auto; /* 가로 중앙 정렬 */
+			position: relative;
+			top: 50%; /* 부모 요소 기준으로 수직 중앙으로 이동 */
+			transform: translateY(-50%); /* 요소의 높이만큼 수직 이동 */
 		}
 		h2 {
 			text-align: center;
@@ -39,7 +40,7 @@
 		button, input[type="submit"], input[type="reset"] {
 			width: 100%;
 			padding: 10px;
-			background-color: #4CAF50;
+			background-color: #5d6468;
 			color: white;
 			border: none;
 			border-radius: 5px;
@@ -48,7 +49,7 @@
 			margin-bottom: 10px;
 		}
 		button:hover, input[type="submit"]:hover, input[type="reset"]:hover {
-			background-color: #45a049;
+			background-color: #485053;
 		}
 		.error {
 			color: red;
@@ -64,6 +65,49 @@
 	</style>
 </head>
 <body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	<div class="container">
+		<div class="navbar-brand-group">
+			<a class="navbar-brand" href="/">Delicious Bee</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+					aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+		</div>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+				<li class="nav-item">
+					<a href="#" th:onclick="|location.href='@{/restaurant/rtwrite}'|" class="nav-link">맛집등록</a>
+				</li>
+				<li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
+				<div class="tooltip-container" sec:authorize="isAuthenticated()">
+					<div class="button-content">
+						<span class="text">내 정보</span>
+					</div>
+					<div class="tooltip-content">
+						<div class="infos">
+							<a href="/member/myPage" class="info">
+								<p>마이페이지</p>
+							</a>
+							<a href="#" class="info" th:href="@{/logout}">
+								<p>로그아웃</p>
+							</a>
+						</div>
+					</div>
+				</div>
+				<li class="nav-item" sec:authorize="!isAuthenticated()">
+					<a class="nav-link" id="loginButton" href="#">로그인</a>
+				</li>
+
+			</ul>
+		</div>
+	</div>
+</nav>
+
+
+
+
 <div class="signup-form">
 	<h2>델리비 회원가입</h2>
 	<form action="join" method="POST" th:object="${member}" onsubmit="return formCheck()">

@@ -9,8 +9,9 @@ public class RestaurantWriteForm {
     private String name;
     
     private String address;
-    private Long phone_number;
+    private String phone_number;
     private String opening_hours;
+    private String menu_name;
     private String price_range;
     private String homepage_url;
     private String description;
@@ -28,6 +29,7 @@ public class RestaurantWriteForm {
 		restaurant.setPhone_number(rwf.getPhone_number());
 		restaurant.setOpening_hours(rwf.getOpening_hours());
 		restaurant.setPrice_range(rwf.getPrice_range());
+		restaurant.setMenu_name(rwf.getMenu_name());
 		restaurant.setHomepage_url(rwf.getHomepage_url());
 		restaurant.setDescription(rwf.getDescription());
 		restaurant.setLongitude(rwf.getLongitude());

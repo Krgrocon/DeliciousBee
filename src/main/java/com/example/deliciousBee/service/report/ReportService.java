@@ -1,6 +1,7 @@
 package com.example.deliciousBee.service.report;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.example.deliciousBee.dto.report.ReportDto;
@@ -21,7 +22,13 @@ public class ReportService {
 	
 	private final ReportRepository reportRepository;
 	private final ReviewRepository reviewRepository;
-	
+
+
+
+	public Optional<Report> getReportById(Long reportId) {
+		return reportRepository.findById(reportId);
+	}
+
 	// 신고 보내는 기능
 	public boolean sendReport(Long reviewId, Report report) {
 		try {

@@ -1,196 +1,491 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>레스토랑 상세보기</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-        .container {
-            margin-top: 30px;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-        .header {
-            color: #333;
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .large-bold-text {
-       	    font-size: 24px;
-       		font-weight: bold;
-       		color:  #ffa500;
-    	}
-        .card {
-            border: none;
-            background-color: #fff;
-            color: #333;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .card-header {
-            background-color: #ffa500;
-            color: #fff;
-            font-weight: bold;
-            border-radius: 10px 10px 0 0;
-        }
-        .card-body {
-            background-color: #f9f9f9;
-            padding: 20px;
-        }
-        .card-body p {
-            margin-bottom: 0.5rem;
-        }
-        .detail-label {
-            font-weight: bold;
-            color: #ffa500;
-        }
-        .detail-value {
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .btn-primary, .btn-danger, .btn-warning {
-            background-color: #ffa500;
-            border: none;
-            color: #000;
-            font-weight: bold;
-            padding: 10px 20px;
-            border-radius: 10px;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        .btn-primary:hover, .btn-danger:hover, .btn-warning:hover {
-            background-color: #ff8c00;
-            color: #fff;
-            transform: scale(1.05);
-        }
-        .btn-primary:active, .btn-danger:active, .btn-warning:active {
-            background-color: #e07b00;
-            transform: scale(1.00);
-        }
-        .btn-group {
-            margin-top: 30px;
-            text-align: center;
-        }
-        .btn-group form {
-            display: inline-block;
-            margin: 0 5px;
-        }
-        .text-center a {
-            background-color: #ffa500;
-            border: none;
-            color: #000;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: bold;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .text-center a:hover {
-            background-color: #ff8c00;
-            color: #fff;
-        }
-        a {
-            font-weight: bold;
-            color: #000;
-        }
-        a:hover {
-            color: #ff8c00;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Delicious Bee</title>
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  
+  <!-- Bootstrap CSS & Custom CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/rtread.css">
 </head>
 <body>
-<div class="container">
-    <h1 class="header">레스토랑 상세보기</h1>
-    <div class="text-center">
-      <div th:each="file : ${restaurant.attachedFile}">
-          <div th:if="${file.saved_filename}">
-            <img th:src="@{'/restaurant/display?filename='+${file.saved_filename}}" alt="Restaurant Image" class="img-fluid mb-2 img-thumbnail">
-          </div>
+  <input type="hidden" id="restaurant-latitude" th:value="${restaurant.latitude}">
+  <input type="hidden" id="restaurant-longitude" th:value="${restaurant.longitude}">
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <div class="navbar-brand-group">
+        <a class="navbar-brand" href="/">Delicious Bee</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
       </div>
-        <a class="btn btn-primary mt-2" href="/">목록으로 돌아가기</a>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a href="#" th:onclick="|location.href='@{/restaurant/rtwrite}'|" class="nav-link">맛집등록</a>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
+          <li class="nav-item" sec:authorize="!isAuthenticated()">
+            <a class="nav-link" id="loginButton" href="#">로그인</a>
+          </li>
+          <li class="nav-item tooltip-container" sec:authorize="isAuthenticated()">
+            <a href="/member/myPage" class="nav-link text">내 정보</a> 
+            <div class="tooltip-content">
+              <div class="infos">
+                <a href="#" class="info" th:href="@{/logout}">
+                  <p>로그아웃</p>
+                </a>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
-	 <p th:text="'# ' + ${restaurant.category}" class="large-bold-text">키워드</p>    <br><br>
-    <form th:object="${restaurant}">
-        <!-- 기본 정보 카드 -->
-        <div class="card detail-card">
-            <div class="card-header">
-                기본 정보
+  </nav>
+
+  <br><br>
+
+  <!-- Page Content -->
+  <div class="container">
+    <div class="row">
+      <!-- Main Content Area -->
+      <div class="col-lg-8">
+        
+        <!-- Featured Restaurant -->
+        <div class="card mb-4" th:object="${restaurant}">
+        <div class="image-gallery">
+          <div th:each="file : ${restaurant.attachedFile}">
+            <a href="#!">
+              <img class="card-img-top" th:src="@{'/restaurant/display?filename='+${file.saved_filename}}" alt="Featured Restaurant" />
+            </a>
+          </div>
+        </div>  
+          <div class="card-body">
+            <div class="small text-muted" th:text="${restaurant.create_at}">January 1, 2023</div>
+            <h2 class="card-title" th:text="${restaurant.name}">Featured Post Title</h2>
+            <p class="card-text" th:text="${restaurant.description}"></p>
+          </div>
+        </div>
+        <hr>
+        <h3>Restaurant Info</h3>
+        <a class="card-text no-style-link" th:href="@{${restaurant.homepage_url}}" th:text="'웹사이트 방문'" target="_blank"></a>
+        <p class="card-text" th:text="${restaurant.address}"></p>
+
+        <!-- restaurant-photo -->
+        <hr>
+        <h3><span class="restaurant-name">[[${restaurant.name}]]</span> of Photo</h3>
+        <div class="col-lg-12">
+        <div class="restaurant-photos">
+          <div class="restaurant-photo-item" th:each="review : ${reviewsByRestaurant}" th:if="${review.attachedFile != null && review.attachedFile.size() > 0}">
+            <div th:each="file, fileStat : ${review.attachedFile}" th:if="${fileStat.index < 6}">
+              <img class="restaurant-photo-img" th:src="@{'/review/display?filename='+${file.saved_filename}}" alt="Review" />
             </div>
-            <div class="card-body">
-                <p><span class="detail-label">이름:</span> <span class="detail-value" th:text="*{name}">레스토랑 이름</span></p>
-                <p><span class="detail-label">주소:</span> <span class="detail-value" th:text="*{address}">레스토랑 주소</span></p>
-                <p><span class="detail-label">전화번호:</span> <span class="detail-value" th:text="*{phone_number}">전화번호</span></p>
-                <p><span class="detail-label">운영 시간:</span> <span class="detail-value" th:text="*{opening_hours}">운영 시간</span></p>
-                <p><span class="detail-label">가격대:</span> <span class="detail-value" th:text="*{price_range}">가격대</span></p>
+          </div>
+        </div>
+        </div>
+        
+        <hr>
+        <div class="d-flex">
+          <h3 style="margin-right: auto;">Review List</h3> 
+          <div class="d-flex-magin" style="display: flex;">
+            <button type="button" class="btn btn-secondary btn-sm ml-2" th:onclick="latestList('likeCount')">좋아요 많은순</button>
+            <button type="button" class="btn btn-secondary btn-sm ml-2" th:onclick="latestList('rating')">평점 많은순</button>
+            <button type="button" class="btn btn-secondary btn-sm ml-2" th:onclick="latestList('visitDate')">최신순</button>
+            <button type="button" class="btn btn-dark ml-2" data-toggle="modal" data-target="#reviewModal">Write Review</button>
+          </div>
+        </div>
+        
+        <!-- Review Modal -->
+        <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">리뷰 작성</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form th:action="@{/review/write/{restaurant_id}(restaurant_id=${restaurant_id})}" method="POST" th:object="${writeForm}" enctype="multipart/form-data">
+                  <div class="form-group">
+                    <label for="reviewContents">리뷰 내용</label>
+                    <textarea class="form-control" id="reviewContents" name="reviewContents" rows="4" required></textarea>
+                  </div>
+                  
+                  <!-- Rating Form -->
+                  <hr class="Review-Write-hr">
+                  <div class="form-group">
+                    <label for="rating">전체 평점</label>
+                    <input type="number" class="form-control" id="rating" name="rating" min="1" max="5" step="1" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="tasteRating">음식 평점</label>
+                    <input type="range" class="form-control-range" id="tasteRating" name="tasteRating" min="1" max="3" step="1" onclick="detailRating(this)">
+                    <div class="detail-Rating-labels">
+                      <span>나쁨</span>
+                      <span>보퉁</span>
+                      <span>좋음</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="priceRating">가격 평점</label>
+                    <input type="range" class="form-control-range" id="priceRating" name="priceRating" min="1" max="3" step="1" onclick="detailRating(this)">
+                    <div class="detail-Rating-labels">
+                      <span>나쁨</span>
+                      <span>보퉁</span>
+                      <span>좋음</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="kindRating">음식 평점</label>
+                    <input type="range" class="form-control-range" id="kindRating" name="kindRating" min="1" max="3" step="1" onclick="detailRating(this)">
+                    <div class="detail-Rating-labels">
+                      <span>나쁨</span>
+                      <span>보퉁</span>
+                      <span>좋음</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Menu Form -->
+                  <hr class="Review-Write-hr">
+                  <div class="form-group" th:each="menu : ${restaurant.menu_name}">
+                    <label>추천 메뉴</label>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="flexCheckDefault">
+                      <label class="form-check-label" for="flexCheckDefault" th:text="${menu}">Menu Name</label>
+                    </div>
+                    <div class="form-group">
+                      <div class="form-check-input" type="checkbox" id="customMenuCheckbox" name="customMenuCheckbox">
+                        <label class="form-check-label" for="customMenuCheckbox">기타</label>
+                      </div>
+                      <input type="text" class="form-control" id="customMenuInput" name="customMenuInput" disabled>
+                    
+                    </div>
+                  </div>
+  
+                  
+                  <hr class="Review-Write-hr">
+                  <div class="form-group">
+                    <label for="visitDate">방문 시기</label>
+                    <input type="date" class="form-control" id="visitDate" name="visitDate" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="file">리뷰 사진 업로드</label>
+                    <input type="file" class="form-control-file" id="file" name="file" multiple>
+                  </div>
+                  <input type="hidden" name="restaurant_id" th:value="${restaurant_id}">
+                  
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">작성</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                  </div>
+                </form>
+              </div>
             </div>
+          </div>
         </div>
 
-        <!-- 홈페이지 카드 -->
-        <div class="card detail-card">
-            <div class="card-header">
-                홈페이지
+        <!-- Report Modal -->
+        <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">리뷰 신고</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <label for="reportReason">신고 사유:</label>
+                <select class="form-control" id="reportReason">
+                  <option value="마음에들지않아요">마음에 들지 않아요</option>
+                  <option value="선정적이에요">선정적이에요</option>
+                  <option value="테러를조장해요">테러를 조장해요</option>
+                  <option value="부적절해요">부적절해요</option>
+                  <option value="스팸이에요">스팸이에요</option>
+                  <option value="혐오발언이에요">혐오 발언이에요</option>
+                  <option value="공격적인내용이있어요">공격적인 내용이 있어요</option>
+                  <option value="거짓정보가포함돼있어요">거짓 정보가 포함돼 있어요</option>
+                  <option value="기타사유">기타 사유</option>
+                </select>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-danger" onclick="submitReport()">신고 제출</button>
+              </div>
             </div>
-            <div class="card-body">
-                <p><span class="detail-label">홈페이지:</span> 
-                    <a th:href="*{homepage_url}" th:text="*{homepage_url}" target="_blank" class="detail-value">홈페이지 링크</a>
-                </p>
-            </div>
+          </div>
         </div>
+        
+        <!-- Review List -->
+        <div class="row restaurantCard"> 
+          <div class="col-lg-12">
+            <div class="card mb-4" th:each="review : ${reviewsByRestaurant}">
+              <div class="card-header">
+                <h3 th:text="${review.beeMember.nickname}"></h3>
+              </div>
+              <!-- Review Images -->
+              <div class="review-gallery">
+              <div th:each="file : ${review.attachedFile}">
+                <div th:if="${file.saved_filename}">
+                  <img class="card-img-top" th:src="@{'/review/display?filename='+${file.saved_filename}}" alt="Review" />
+                </div>
+              </div>
+              </div>
+              <!-- Review Content -->
+              <div class="card-body">
+                <div class="small text-muted" th:text="${review.createDate}">January 1, 2023</div>
+                <h2 class="card-title" th:text="${review.reviewContents}">Post Title</h2>
+                <div class="rating" data-review-id="[[${review.id}]]">
+                  <div class="stars" th:attr="data-rating=${review.rating}"></div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="button-container">
+                  <input type="hidden" class="review-id" th:value="${review.id}">
+                  <button type="button" class="btn btn-success mr-2 like-button" th:onclick="likeReview(this)" th:data-review-id="${review.id}">
+                    좋아요 <span class="like-count">[[${review.likeCount}]]</span>
+                  </button>
+                  
+                  <input type="hidden" class="review-id" th:value="${review.id}">
+                  <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal" data-target="#reportModal" th:data-review-id="${review.id}">신고</button> 
+                  
+                  <div sec:authorize="isAuthenticated() and #authentication.principal.member_id == #vars.review.beeMember.member_id">
+                    <a class="btn btn-outline-secondary mr-1" th:href="@{/review/update/{reviewId}(reviewId=${review.id})}">수정</a>
+                    <input type="hidden" class="review-id" th:value="${review.id}">
+                    <button type="button" class="btn btn-outline-danger mr-2" data-bs-toggle="button" th:onclick="deleteReview(this)">삭제</button>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
 
-        <!-- 설명 카드 -->
-        <div class="card detail-card">
-            <div class="card-header">
-                레스토랑 설명
-            </div>
-            <div class="card-body">
-                <p class="detail-value" th:text="*{description}">레스토랑 설명</p>
-            </div>
+      <div class="col-lg-4">
+        <div class="card mb-4 sidebar-card">
+          <div class="card-header">Map Contents</div>
+          <div class="card-body" id="map">여기에는 해당 지도를 넣어주시면됩니다</div>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <!-- 위치 카드 -->
-        <div class="card detail-card">
-            <div class="card-header">
-                위치
-            </div>
-            <div class="card-body">
-                <p><span class="detail-label">위도:</span> <span class="detail-value" th:text="*{latitude}">위도</span></p>
-                <p><span class="detail-label">경도:</span> <span class="detail-value" th:text="*{longitude}">경도</span></p>
-            </div>
-        </div>
+  <footer class="py-5 bg-dark">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright © Delicious Bee 2023</p>
+    </div>
+  </footer>
 
-        <!-- 날짜 및 리뷰 카드 -->
-        <div class="card detail-card">
-            <div class="card-header">
-                날짜 및 리뷰
-            </div>
-            <div class="card-body">
-                <p><span class="detail-label">등록일:</span> <span class="detail-value" th:text="${#temporals.format(restaurant.create_at, 'yyyy-MM-dd HH:mm:ss')}">등록일</span></p>
-                <p><span class="detail-label">수정일:</span> <span class="detail-value" th:text="${#temporals.format(restaurant.updated_at, 'yyyy-MM-dd HH:mm:ss')}">수정일</span></p>
-                <p><span class="detail-label">평균 평점:</span> <span class="detail-value" th:text="*{average_rating}">평균 평점</span></p>
-                <p><span class="detail-label">리뷰 수:</span> <span class="detail-value" th:text="*{review_count}">리뷰 수</span></p>
-                <div class="btn-group">
-                  <button type="button" th:onclick="'location.href=\'/review/allreview/' + ${restaurant.id} + '\' '" class="btn btn-sm btn-outline-secondary">리뷰 보기</button>
-           	    </div>
-            </div>
-        </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- JavaScript -->
+  <script th:inline="javascript">
+    function initMap() {
+      // 타임리프가 렌더링한 숨겨진 필드에서 경도와 위도 값 가져오기
+      const latitude = parseFloat(document.getElementById('restaurant-latitude').value);
+      const longitude = parseFloat(document.getElementById('restaurant-longitude').value);
 
-        <!-- 삭제 및 수정 버튼 -->
-        <div class="text-center">
-          <th:block th:if="${#authentication.principal != null and #authentication.principal.member_id == #authentication.principal.member_id}">
-		  	<input type="button" name ="member" id = "member" class="btn btn-primary" th:onclick="|location.href='@{/restaurant/rtdelete(id=${restaurant.id})}'|" value="삭제하기">
-          	<input type="button" class="btn btn-danger" th:onclick="|location.href='@{/restaurant/rtupdate(id=${restaurant.id})}'|" value="수정하기">
-          </th:block>
-        </div>
-    </form>
-</div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      // 지도 초기화 및 중심 설정
+      const map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: latitude, lng: longitude },
+        zoom: 17 // 줌 레벨을 설정합니다.
+      });
+
+      // 마커 추가
+      const marker = new google.maps.Marker({
+        position: { lat: latitude, lng: longitude },
+        map: map,
+        title: 'Restaurant Location'
+      });
+    }
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+	  setStarRatings();
+      initMap();
+	  $('#reportModal').on('show.bs.modal', function (event) {
+	    const button = $(event.relatedTarget); 
+	    const reviewId = button.data('review-id');
+	    $(this).data('review-id', reviewId); 
+	  });
+      
+	})
+
+    function editReviewWithModal(button) {
+      const reviewId = card.querySelector('.review-id').value;
+      const card = button.closest('.card');
+      console.log("리뷰 아이디", reviewId);
+    }
+
+    function setStarRatings() {
+      document.querySelectorAll('.card').forEach(function(card) {
+        let starsElement = card.querySelector('.stars');
+        if (starsElement) {
+          let rating = parseFloat(starsElement.getAttribute('data-rating'));
+          if (!isNaN(rating)) {
+            let ratingWidth = (rating / 5) * 100;
+            starsElement.style.setProperty('--rating-width', (ratingWidth / 100) * 100 + 'px');
+          }
+        }
+      });
+    }
+
+    function likeReview(button) {
+    	  const reviewId = $(button).data('review-id');
+    	  const isLiked = $(button).hasClass('liked'); // 좋아요 상태 확인
+    	  console.log(reviewId);
+    	  console.log(isLiked);
+
+    	  $.ajax({
+    	    url: isLiked ? "/review/"+ reviewId +"/unlike" : "/review/"+ reviewId +"/like" , 
+    	    type: "POST",
+    	    contentType: "application/json",
+    	    data: JSON.stringify({ "reviewId": reviewId }),
+    	    success: function(data) {
+    	      if (data.success) {
+    	        const likeCountElement = button.querySelector('.like-count');
+    	        likeCountElement.textContent = data.likeCount;
+    	        $(button).toggleClass('liked');
+    	      } else {
+    	        alert('좋아요 처리에 실패했습니다.');
+    	      }
+    	    },
+    	    error: function(xhr) {
+    	      console.error('AJAX 요청 실패:', xhr);
+    	    }
+    	  });
+    	}
+
+    function deleteReview(button) {
+      const card = button.closest('.card');
+      const reviewId = card.querySelector('.review-id').value;
+      console.log(reviewId);
+      $.ajax({
+        url: "/review/delete/" + reviewId,
+        type: "POST",
+        success: function(response) {
+          if (response.success) {
+            alert('리뷰가 성공적으로 삭제되었습니다.');
+            location.reload();
+          }
+        },
+        error: function(xhr) {
+          console.error('AJAX 요청 실패:', xhr);
+        }
+      });
+    }
+
+    function showReportReasons(button) {
+    	$('#reportModal').modal('show');
+    }
+
+    function submitReport() {
+      const reviewId = $('#reportModal').data('review-id');
+      const reason = $('#reportReason').val();
+
+      $.ajax({
+        url: 'report/submit/' + reviewId,
+        type: 'POST',
+        contentType: "application/json",
+        data: JSON.stringify({ "reason": reason }),
+        success: function(data) {
+          if (data.success) {
+            alert('신고가 제출되었습니다');
+            location.reload();
+          } else {
+            alert('신고 제출에 실패했습니다.');
+          }
+          $('#reportModal').modal('hide'); 
+        },
+        error: function(xhr) {
+          console.error('AJAX 통신 실패', xhr);
+          alert('신고 제출에 실패했습니다.');
+          $('#reportModal').modal('hide'); 
+        }
+      });
+    }
+
+    function latestList(sortBy) {
+      const restaurantId = /*[[${restaurant.id}]]*/ '';
+      $.ajax({
+        url: '/review/allreview/' + restaurantId + '/sort/',
+        type: 'GET',
+        data: { sortBy: sortBy },
+        success: function(response) {
+          console.log(response);
+          const reviewsContainer = $('.restaurantCard'); 
+          reviewsContainer.empty();
+          response.forEach(function(review) {
+            let attachedFileHTML = '';
+            if (review.attachedFile && review.attachedFile.length > 0) {
+              review.attachedFile.forEach(function(file) {
+                attachedFileHTML += `
+                  <div>
+                	<img src="/review/display?filename=${file.saved_filename}" alt="Review Image" class="card-img-top"> 
+                  </div>
+                `;
+              });
+            }
+            const reviewHTML = `
+              <div class="col-lg-12">
+                <div class="card mt-3">
+                  <div class="card-header">
+                    User Info
+                    <h3>${review.userName}</h3> 
+                  </div>
+                  ${attachedFileHTML}
+                  <div class="card-body">
+                    <div class="small text-muted">${review.createDate}</div>
+                    <h2 class="card-title">${review.reviewContents}</h2>
+                    <div class="rating" data-review-id="${review.id}">
+                      <div class="stars" data-rating="${review.rating}"></div>
+                    </div>
+                    <div class="button-container"> 
+                      <input type="hidden" class="review-id" value="${review.id}">
+                      <button type="button" class="btn btn-success mr-2 like-button" onclick="likeReview(this)" data-review-id="${review.id}">
+                      좋아요 <span class="like-count">${review.likeCount}</span>
+                    </button>
+                      <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal" data-target="#reportModal" th:data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button>
+                      ${review.canEdit ? `
+                        <a class="btn btn-outline-secondary mr-2" href="/review/update/${review.id}">수정</a>
+                        <button type="button" class="btn btn-outline-secondary mr-2" data-bs-toggle="button" onclick="deleteReview(this)">삭제</button>
+                      ` : ''}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              `;
+            reviewsContainer.append(reviewHTML);
+            setStarRatings();
+          });
+        },
+        error: function(xhr, status, error) {
+          console.error('AJAX 요청 실패:', status, error);
+        }
+      });
+    }
+    
+    // 디테일 평점 테스트 
+    function detailRating() {
+    	const detailRating =  document.getElementById('tasteRating').value
+    }
+    
+    
+    
+  </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap" async defer></script>
+
 </body>
 </html>

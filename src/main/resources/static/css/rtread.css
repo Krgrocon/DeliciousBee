@@ -1,0 +1,200 @@
+/* 미슐랭 스타일 적용 */
+body {
+	font-family: 'Noto Sans KR', sans-serif;
+}
+
+.navbar {
+	background-color: #61686c !important;
+	color: white;
+	padding: 15px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.nav-link {
+	color: white !important;
+}
+
+.card-img-top {
+	height: 300px;
+	object-fit: cover;
+	border-radius: 0;
+}
+
+.sidebar-card {
+	height: 300px;
+}
+
+.card-title {
+	font-size: 1.5rem;
+	font-weight: bold;
+	margin-bottom: 0.5rem;
+}
+
+.card-text {
+	margin-bottom: 1rem;
+}
+
+.btn-primary {
+	background-color: #dc3545;
+	border-color: #dc3545;
+}
+
+.pagination .page-link {
+	color: #dc3545;
+}
+
+.pagination .page-item.active .page-link {
+	background-color: #dc3545;
+	border-color: #dc3545;
+}
+
+.card-header {
+	background-color: #61686c !important;
+	color: white;
+}
+
+.no-style-link {
+	color: inherit;
+	text-decoration: none;
+	cursor: default;
+}
+
+.btn-custom {
+	margin-left: auto;
+}
+
+.rating {
+	display: inline-block;
+	text-align: center;
+}
+
+.stars {
+	position: relative;
+	display: inline-block;
+	font-size: 20px;
+	color: #ddd;
+}
+
+.stars::before {
+	content: '★★★★★';
+	color: #ffd700;
+	position: absolute;
+	top: -30px;
+	left: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	width: var(--rating-width, 0);
+}
+
+.stars::after {
+	content: '★★★★★';
+	color: #ddd;
+	position: absolute;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	width: 100%;
+}
+
+.rating-text {
+	font-size: 1em;
+}
+
+.modal-body {
+	text-align: left;
+}
+
+.button-container {
+	display: flex;
+	align-items: center;
+}
+
+.d-flex {
+	display: flex;
+	align-items: center;
+}
+
+.d-flex-magin {
+	margin-left: 30px
+}
+
+.restaurant-name {
+	font-weight: bold;
+}
+
+.restaurant-photos {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.restaurant-photo-item {
+	width: 214px;
+	height: 214px;
+	position: relative;
+	overflow: hidden;
+	margin: 5px;
+}
+
+.restaurant-photo-img {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: auto; /* 비율 유지 */
+	min-height: 100%; /* 높이를 맞추기 위해 */
+}
+
+.card {
+	max-width: 100%;
+}
+
+.image-gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.image-gallery img {
+	height: 300px;
+	object-fit: cover;
+}
+
+.review-gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.review-gallery img {
+	height: 300px;
+	object-fit: cover;
+}
+
+.restaurantCard {
+	min-height: 300px; /* 원하는 높이로 설정 */
+	display: flex;
+	flex-direction: column;
+	justify-content: center; /* 콘텐츠를 중앙 정렬 */
+	align-items: center; /* 콘텐츠를 중앙 정렬 */
+}
+
+.restaurantCard .card {
+	width: 100%;
+}
+
+.detail-Rating-labels {
+	display: flex;
+	justify-content: space-between;
+}
+
+.Review-Write-hr {
+	margin: 20px 0; 
+	border: none;
+	border-top: 1px solid #dee2e6;
+}
+
+.form-group label {
+	font-weight: bold;
+}

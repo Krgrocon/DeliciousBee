@@ -74,55 +74,55 @@ body {
 }
 /* 마이페이지 소개 부분 */
 .myPageOwner {
-  margin-left: 100px;
-  margin-right: 100px;
-  background-color: #DEB887; /* 따뜻한 아이보리 배경 */
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  text-align: center;
+	margin-left: 100px;
+	margin-right: 100px;
+	background-color: #DEB887; /* 따뜻한 아이보리 배경 */
+	border-radius: 10px;
+	padding: 20px;
+	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+	text-align: center;
 }
 
 .owner-profile {
-  margin-bottom: 20px;
+	margin-bottom: 20px;
 }
 
 .nickname {
-  font-size: 24px;
-  font-weight: bold;
-  color: black; /* 꿀벌의 노란색 */
-  text-decoration: none;
+	font-size: 24px;
+	font-weight: bold;
+	color: black; /* 꿀벌의 노란색 */
+	text-decoration: none;
 }
 
 .owner-intro {
-  background-color: #FFE4B5; /* 부드러운 카키색 배경 */
-  border-radius: 5px;
-  padding: 15px;
-  margin-bottom: 20px;
+	background-color: #FFE4B5; /* 부드러운 카키색 배경 */
+	border-radius: 5px;
+	padding: 15px;
+	margin-bottom: 20px;
 }
 
 .intro-title {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 10px;
 }
 
 .introduce {
-  color: #333;
-  line-height: 1.6;
+	color: #333;
+	line-height: 1.6;
 }
 
 .owner-stats {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  color: #333;
+	display: flex;
+	justify-content: center;
+	gap: 20px;
+	color: #333;
 }
 
 .owner-stats div {
-  background-color: #FFFFE0; /* 밝은 노란색 배경 */
-  border-radius: 5px;
-  padding: 10px;
+	background-color: #FFFFE0; /* 밝은 노란색 배경 */
+	border-radius: 5px;
+	padding: 10px;
 }
 
 .myPageMain {
@@ -152,23 +152,23 @@ body {
 	margin-left: 100px;
 	margin-right: 100px;
 	text-align: right;
-	
+
 }
 button {
-    background-color: #FFD700;
-    color: brown;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-    margin: 30px;
-    margin-bottom: 70px;
+	background-color: #FFD700;
+	color: brown;
+	border: none;
+	border-radius: 4px;
+	padding: 10px 20px;
+	cursor: pointer;
+	font-size: 16px;
+	transition: background-color 0.3s;
+	margin: 30px;
+	margin-bottom: 70px;
 }
 
 button:hover {
-    background-color: #0056b3;
+	background-color: #0056b3;
 }
 .review-box {
 	border: 1px solid #ccc;
@@ -178,20 +178,20 @@ button:hover {
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	background-color: #FFFACD;
 	width: 48%; /* 한 줄에 2개씩 배치되도록 수정 */
-    box-sizing: border-box; /* 패딩을 포함하여 크기 계산 */
+	box-sizing: border-box; /* 패딩을 포함하여 크기 계산 */
 }
 .restaurant_name_head {
-  border-bottom: 1px solid #c49b4c; /* 벌꿀색 테두리 */
-  text-align: left;
-  background-color: #FFFACD; /* 옅은 노란색 배경 */
-  color: #333; /* 어두운 텍스트 색상 */
-  padding: 10px;
-  border-radius: 5px; /* 둥근 테두리 */
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
-  font-family: 'Arial Rounded MT Bold', sans-serif; /* 둥근 폰트 */
-  position: relative; /* 아이콘 추가를 위한 position 설정 */
-  display: flex;
-  align-items: center;
+	border-bottom: 1px solid #c49b4c; /* 벌꿀색 테두리 */
+	text-align: left;
+	background-color: #FFFACD; /* 옅은 노란색 배경 */
+	color: #333; /* 어두운 텍스트 색상 */
+	padding: 10px;
+	border-radius: 5px; /* 둥근 테두리 */
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+	font-family: 'Arial Rounded MT Bold', sans-serif; /* 둥근 폰트 */
+	position: relative; /* 아이콘 추가를 위한 position 설정 */
+	display: flex;
+	align-items: center;
 }
 
 
@@ -237,7 +237,7 @@ a {
 .recommendItems {
 	margin-top: 10px;
 	font-size: 20px;
-	
+
 }
 
 .review_content {
@@ -392,7 +392,7 @@ a {
 .title {
 	text-align: center;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	margin: 10px 0 30px 0;
 	font-size: 28px;
 	font-weight: 800;
@@ -425,7 +425,7 @@ a {
 .page-link-label {
 	cursor: pointer;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	font-size: 9px;
 	font-weight: 700;
 }
@@ -437,7 +437,7 @@ a {
 .form-btn {
 	padding: 10px 15px;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	border-radius: 20px;
 	border: 0 !important;
 	outline: 0 !important;
@@ -456,7 +456,7 @@ a {
 	font-size: 10px;
 	color: #747474;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	text-align: center;
 	margin-top: 5%;
 }
@@ -470,7 +470,7 @@ a {
 	cursor: pointer;
 	font-weight: 800;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
 
 .buttons-container {
@@ -487,13 +487,13 @@ a {
 	box-sizing: border-box;
 	padding: 10px 15px;
 	box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06)
-		0px 0px 0px 1px;
+	0px 0px 0px 1px;
 	cursor: pointer;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	font-size: 11px;
 	gap: 5px;
 	border: 2px solid #747474;

@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.model.board.CategoryType;
-import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.file.MemberAttachedFile;
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;

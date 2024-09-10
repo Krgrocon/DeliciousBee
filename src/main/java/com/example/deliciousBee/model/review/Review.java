@@ -6,11 +6,13 @@ import java.util.List;
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.model.menu.ReviewMenu;
 import com.example.deliciousBee.model.report.ReportReason;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -48,6 +50,15 @@ public class Review {
 	@Column(name = "rating", nullable = false)
 	private Double rating;
 	
+	@Column(name = "tasting_rating", nullable = false)
+	private Double tasteRating;
+	
+	@Column(name = "price_rating", nullable = false)
+	private Double priceRating;
+	
+	@Column(name = "kind_rating", nullable = false)
+	private Double kindRating;
+	
 	@Column(name = "recommend_items")
 	private String recommendItems;
 	
@@ -60,9 +71,6 @@ public class Review {
 	@Column(name = "like_count", nullable = false)
 	private Integer likeCount;
 	
-	@Column(name = "dislike_count", nullable = false)
-	private Integer dislikeCount;
-	
 	@Column(name = "report_count")
     private Integer reportCount;
 
@@ -73,7 +81,10 @@ public class Review {
     @Transient
     @JsonProperty
     private boolean canEdit;
-	
+    
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewMenu> reviewMenuList;
+    
 	@OneToMany(mappedBy = "review", fetch = FetchType.EAGER)
 	@JsonManagedReference
 	private List<AttachedFile> attachedFile;

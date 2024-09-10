@@ -1,12 +1,146 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delicious Bee - 관리자 페이지</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/index.css">
     <style>
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 배경 어둡게 */
+            display: none; /* 초기에는 숨김 */
+        }
+
+        .review-modal-container {
+            width: 350px;
+            background-color: #fff;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            border-radius: 10px;
+            box-sizing: border-box;
+            padding: 20px 30px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* 화면 중앙에 위치 */
+            z-index: 1000; /* 다른 요소보다 위에 표시 */
+        }
+
+        .reviewUp-title {
+            text-align: center;
+            font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+            margin: 10px 0 30px 0;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .sub-title {
+            margin: 0;
+            margin-bottom: 5px;
+            font-size: 9px;
+            font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        }
+
+        .review-modal-inner-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .modal-input {
+            border-radius: 20px;
+            border: 1px solid #c0c0c0;
+            outline: 0 !important;
+            box-sizing: border-box;
+            padding: 12px 15px;
+        }
+
+        .form-btn {
+            padding: 10px 15px;
+            font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+            border-radius: 20px;
+            border: 0 !important;
+            outline: 0 !important;
+            background: teal;
+            color: white;
+            cursor: pointer;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        }
+
+        .form-btn:active {
+            box-shadow: none;
+        }
+
+
+        .reviewupdate-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            margin-top: 20px;
+            gap: 15px;
+        }
+
+        .Update-button {
+            border-radius: 20px;
+            box-sizing: border-box;
+            padding: 10px 15px;
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+            rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+            font-size: 11px;
+            gap: 5px;
+        }
+
+        .inputbox {
+            border-radius: 20px;
+            border: 1px solid #c0c0c0;
+            outline: 0 !important;
+            box-sizing: border-box;
+            padding: 12px 15px;
+            height: 120px;
+            white-space: pre-wrap; /* 텍스트 줄 바꿈 및 공백 유지 */
+            resize: none; /* 크기 조절 방지 */
+        }
+
+
+        .Update-button {
+            border: 2px solid #747474;
+        }
+
+        .modal-title{
+            margin: 0;
+            margin-left: 4px;
+        }
+
+        .modal-image-container{
+            width: 290px;
+        }
+
+        .modal-image{
+            width: 140px;
+            height: 100px;
+        }
         body {
             font-family: 'Noto Sans KR', sans-serif;
             margin: 0;
@@ -89,6 +223,48 @@
     </style>
 </head>
 <body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="nav-container">
+        <div class="navbar-brand-group">
+            <a class="navbar-brand" href="/">Delicious Bee</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a href="#" th:onclick="|location.href='@{/restaurant/rtwrite}'|" class="nav-link">맛집등록</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
+                <div class="tooltip-container" sec:authorize="isAuthenticated()">
+                    <div class="button-content">
+                        <span class="text">내 정보</span>
+                    </div>
+                    <div class="tooltip-content">
+                        <div class="infos">
+                            <a href="/member/myPage" class="info">
+                                <p>마이페이지</p>
+                            </a>
+                            <a href="#" class="info" th:href="@{/logout}">
+                                <p>로그아웃</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" id="loginButton" href="#">로그인</a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+
 <div class="container">
     <h1>관리자 페이지</h1>
 
@@ -101,9 +277,94 @@
     <div class="content-section" id="content">
         <!-- 콘텐츠가 여기에 로드됩니다. -->
     </div>
+
+
+</div>
+<div id="loginModal" class="modal">
+    <div class="form-container">
+        <span class="close" onclick="closeModal()">×</span>
+        <p class="title">DeliciousBee</p>
+        <form action="/member/login" method="post" class="form">
+            <input type="text" name="member_id" class="input" placeholder="아이디">
+            <input type="password" name="password" class="input" placeholder="비밀번호">
+            <p class="page-link">
+                <span class="page-link-label">Forgot Password?</span>
+            </p>
+            <button class="form-btn" type="submit">Log in</button>
+        </form>
+        <div class="buttons-container">
+            <div class="google-login-button">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1.1" x="0px" y="0px"
+                     class="google-icon" viewBox="0 0 48 48" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#FFC107"
+                          d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12 c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24 c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                    <path fill="#FF3D00"
+                          d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657 C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
+                    <path fill="#4CAF50"
+                          d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36 c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
+                    <path fill="#1976D2"
+                          d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571 c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                </svg>
+                <a href="/oauth2/authorization/google" class="google-text">Login with google</a>
+            </div>
+        </div>
+        <p class="sign-up-label">
+            Don't have an account?<a href="member/join" class="sign-up-link" >회원가입</a>
+
+        </p>
+    </div>
 </div>
 
+
+<div id="reviewModal" class="review-modal-container" style="display: none;">
+    <p class="reviewUp-title">리뷰</p>
+    <form class="review-modal-inner-form">
+        <p class ="modal-title">이름</p>
+        <input type="text" class="modal-input" placeholder="이름">
+        <p class="modal-title">리뷰 내용</p>
+        <textarea class="inputbox" placeholder="리뷰내용"></textarea>
+        <div class="modal-image-container">
+            <img class ="modal-image"/>
+            <img class ="modal-image"/>
+            <img class ="modal-image"/>
+            <img class ="modal-image"/>
+        </div>
+        <button class="form-btn">리뷰 수정</button>
+    </form>
+</div>
 <script>
+
+    // 로그인 모달 제어
+    document.addEventListener('DOMContentLoaded', function() {
+        var loginButton = document.getElementById('loginButton');
+        if (loginButton) {
+            loginButton.addEventListener('click', function(event) {
+                event.preventDefault(); // 링크 기본 동작 방지
+                var loginModal = document.getElementById('loginModal');
+                if (loginModal) {
+                    loginModal.style.display = 'block';
+                } else {
+                    console.error('loginModal 요소를 찾을 수 없습니다.');
+                }
+            });
+        } else {
+            console.error('loginButton 요소를 찾을 수 없습니다.');
+        }
+    });
+
+    // 닫기 버튼 클릭 시 모달 닫기
+    function closeModal() {
+        document.getElementById('loginModal').style.display = 'none';
+    }
+
+    // 모달 외부 영역 클릭 시 모달 닫기
+    window.onclick = function(event) {
+        let modal = document.getElementById('loginModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+
     function loadContent(contentType) {
 
         // 활성화된 탭 버튼 스타일 변경
@@ -114,21 +375,45 @@
         let content = '';
         switch (contentType) {
             case 'pendingRestaurants':
-                content = `
+                // AJAX 요청
+                fetch('/admin/restaurants/pending')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('미승인 레스토랑 목록:', data);
+                        if (data.success) {
+                            let rows = '';
+                            data.pending.forEach(restaurant => { // data.pending으로 변경
+                                rows += `
+                        <tr>
+                            <td>${restaurant.id}</td>
+                            <td>${restaurant.name}</td>
+                            <td>${restaurant.address}</td>
+                            <td>${restaurant.description}</td>
+                            <td><button onclick="approveRestaurant(${restaurant.id})">승인</button></td>
+                        </tr>
+                    `;
+                            });
+                            content = `
                     <table>
                         <thead>
                             <tr>
                                 <th>점포 ID</th>
                                 <th>점포명</th>
-                                <th>등록일</th>
+                                <th>주소</th>
+                                <th>설명</th>
                                 <th>승인</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- 여기에 등록된 점포 목록이 표시됩니다. -->
+                            ${rows}
                         </tbody>
                     </table>
                 `;
+                            document.getElementById('content').innerHTML = content;
+                        } else {
+                            // 오류 처리
+                        }
+                    });
                 break;
             case 'reportedReviews':
                 // AJAX 요청
@@ -142,9 +427,9 @@
                                 rows += `
                         <tr>
                             <td>${report.reviewId}</td>
-                            <td>${report.reviewContents}</td>
+                            <td>${report.reason}</td>
                             <td>${report.reportDate}</td>
-                            <td><button onclick="deleteReport(${report.id})">삭제</button></td>
+                           <td><button onclick="openModal(${report.id}, ${report.reviewId})" data-report-id="${report.id}">관리</button></td>
                         </tr>
                                 `;
                             });
@@ -155,7 +440,7 @@
                                             <th>리뷰 ID</th>
                                             <th>내용</th>
                                             <th>신고일</th>
-                                            <th>삭제</th>
+                                            <th>관리</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -191,7 +476,6 @@
     }
 
     function deleteReport(reportId) {
-        // AJAX 요청으로 신고 삭제
         fetch(`/admin/report/${reportId}`, { method: 'DELETE' })
             .then(response => response.json())
             .then(data => {
@@ -202,6 +486,98 @@
                     // 삭제 실패 시 처리
                 }
             });
+    }
+
+
+    function approveRestaurant(restaurantId){
+        fetch(`/admin/restaurant/approve/${restaurantId}`, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 삭제 성공 시 처리
+                    loadContent('reportedReviews');
+                } else {
+					console.log('gogo')
+                }
+            });
+    }
+
+   function openModal(reportId, reviewId) { // reviewId 인자 추가
+        // 모달 표시
+        const reviewModal = document.getElementById("reviewModal");
+        reviewModal.style.display = "block";
+
+        // 전달받은 reviewId 사용
+        fetch(`/admin/reviews/${reviewId}`, { method: 'GET' })
+            .then(response => response.json())
+            .then(review => {
+                // 모달에 리뷰 정보 표시
+                const modalInput = document.querySelector(".modal-input");
+                const inputbox = document.querySelector(".inputbox");
+                modalInput.value = review.userName; // 작성자 표시
+                inputbox.value = review.reviewContents; // 리뷰 내용 표시
+
+                // 사진 데이터 설정 (review.attachedFile 에서 가져오기)
+                const photos = review.attachedFile.map(file => file.saved_filename); // Review 엔티티의 attachedFile 필드 사용
+
+// 사진을 표시할 컨테이너 요소
+                const photoContainer = document.querySelector(".modal-image-container"); // 이미 존재하는 컨테이너 사용
+                photoContainer.innerHTML = ""; // 기존 사진 삭제
+
+// 초기 표시할 사진 개수 (필요에 따라 수정)
+                const initialDisplayCount = Math.min(photos.length, 4);
+
+// 사진 출력 함수
+                function displayPhotos(startIndex, endIndex) {
+                    for (let i = startIndex; i < endIndex; i++) {
+                        const photoUrl = photos[i];
+                        if (photoUrl) { // 이미지 URL이 있는 경우에만 처리
+                            const img = document.createElement("img");
+                            img.src = `/review/display?filename=${photoUrl}`; // 이미지 URL 설정
+                            img.alt = "리뷰 사진";
+                            img.classList.add("modal-image"); // 이미지에 클래스 추가
+                            photoContainer.appendChild(img);
+                        }
+                    }
+                }
+                // 더보기 버튼 생성
+                const moreButton = document.createElement("button");
+                moreButton.textContent = "더보기";
+                moreButton.classList.add("more-button");
+
+                // 더보기 버튼 클릭 이벤트 처리
+                moreButton.addEventListener("click", () => {
+                    currentStartIndex += initialDisplayCount;
+                    const nextEndIndex = Math.min(currentStartIndex + initialDisplayCount, photos.length);
+
+                    if (currentStartIndex < photos.length) {
+                        displayPhotos(currentStartIndex, nextEndIndex);
+                    } else {
+                        moreButton.disabled = true; // 더 이상 표시할 사진이 없으면 버튼 비활성화
+                        moreButton.textContent = "더 이상 사진이 없습니다.";
+                    }
+                });
+
+                // 초기 사진 출력
+                displayPhotos(0, initialDisplayCount);
+
+                // 더보기 버튼을 DOM에 추가 (필요한 경우)
+                if (photos.length > initialDisplayCount) {
+                    photoContainer.appendChild(moreButton);
+                }
+
+            })
+            .catch(error => {
+                console.error("리뷰 정보를 가져오는 중 오류 발생:", error);
+                // 오류 처리 (예: 사용자에게 오류 메시지 표시)
+            });
+    }
+
+
+    // 모달 닫기 함수
+    function closeModal() {
+        const reviewModal = document.getElementById("reviewModal");
+        reviewModal.style.display = "none";
     }
 
     // 페이지 로드 시 기본 콘텐츠 로드

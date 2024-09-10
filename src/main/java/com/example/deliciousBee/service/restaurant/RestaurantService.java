@@ -1,8 +1,11 @@
 package com.example.deliciousBee.service.restaurant;
 
 
+import com.example.deliciousBee.dto.report.RestaurantVerificationDto;
+import com.example.deliciousBee.dto.restaurant.RestaurantDto;
+import com.example.deliciousBee.model.board.CategoryType;
 import com.example.deliciousBee.model.board.Restaurant;
-import com.example.deliciousBee.model.file.AttachedFile;
+import com.example.deliciousBee.model.board.VerificationStatus;
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.repository.RestaurantRepository;
 import com.example.deliciousBee.repository.RtFileRepository;
@@ -14,10 +17,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import javax.smartcardio.Card;
 
 @Slf4j
 @Service
@@ -31,17 +37,43 @@ public class RestaurantService {
 
     public void saveRestaurant(Restaurant restaurant, List<RestaurantAttachedFile> attachedFile) {
     	if(attachedFile != null) {
-    		restaurantRepository.save(restaurant);
+            restaurant.setVerificationStatus(VerificationStatus.PENDING);
+            restaurantRepository.save(restaurant);
+
     		fileRepository.saveAll(attachedFile);
     	}
     	else {
     		log.info("else filev파파파ㅏㅍ {}", attachedFile);
     		restaurantRepository.save(restaurant);
     	}
+
     }
-    
-    public List<Restaurant> findAll() {
-        return restaurantRepository.findAll();
+
+//    //수정함
+//    public List<Restaurant> findAll() {
+//        return restaurantRepository.findAll();
+//    }
+
+    //내가 수정함
+    public Page<Restaurant> findAll(Pageable pageable) {
+        return restaurantRepository.findAll(pageable);
+    }
+
+    public List<RestaurantVerificationDto> getPendingRestaurantDtos() {
+        List<Restaurant> pendingRestaurants = restaurantRepository.findPendingRestaurants();
+        return pendingRestaurants.stream()
+                .map(RestaurantVerificationDto::new) // Restaurant -> RestaurantReportDto 변환
+                .collect(Collectors.toList());
+    }
+
+
+    public void updateApprove(Restaurant restaurant){
+        restaurant.setVerificationStatus(VerificationStatus.APPROVED);
+        restaurantRepository.save(restaurant);
+    }
+
+    public List<Restaurant> findRandom5Restaurants() {
+        return restaurantRepository.findRandom5Restaurants();
     }
 
     public Restaurant findRestaurant(Long id) {
@@ -68,7 +100,7 @@ public class RestaurantService {
         findRestaurant.setLongitude(updateRestaurant.getLongitude());
         findRestaurant.setLatitude(updateRestaurant.getLatitude());
         findRestaurant.setUpdated_at(updateRestaurant.getUpdated_at());
-        findRestaurant.setCategory(updateRestaurant.getCategory());
+        findRestaurant.setCategories(updateRestaurant.getCategories());
 
         restaurantRepository.save(findRestaurant);
     }
@@ -79,8 +111,8 @@ public class RestaurantService {
     }
 
     // 카테고리
-    public List<Restaurant> findByCategory(String category) {
-        return restaurantRepository.findByCategory(category);
+    public List<Restaurant> findByCategory(CategoryType category) {
+        return restaurantRepository.findByCategoriesContaining(category); // findByCategoriesContaining으로 변경
     }
 
     public RestaurantAttachedFile findFileByRestaurantId(Restaurant restaurant) {
@@ -97,16 +129,52 @@ public class RestaurantService {
     public Page<Restaurant> findByNameContaining(String keyword, Pageable pageable) {
     	return restaurantRepository.findByNameContaining(keyword, pageable);
     }
-    
-	
-    //페이지
-//    public Page<Restaurant> restaurnatList(Pageable pageable) {
-//        return restaurantRepository.findAll(pageable);
-//    }
 
-//    public Page<Restaurant> restaurantSearchList(String keyword, Pageable pageable) {
-//        return restaurantRepository.findByNameContaining(
-//                keyword, pageable);
-//    }
+    public Page<Restaurant> searchByNameOrMenuName(String keyword, Pageable pageable) {
+        return restaurantRepository.searchByNameOrMenuName(keyword, pageable);
+    }
+
+    public Page<RestaurantDto> searchRestaurants(String keyword, Pageable pageable, String sortBy, Double userLatitude, Double userLongitude) {
+        Page<Restaurant> restaurants;
+
+        if (keyword == null || keyword.isEmpty()) {
+            // 검색어가 없는 경우 전체 레스토랑 목록 조회
+            if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null) {
+                restaurants = restaurantRepository.findAllSortedByDistance(userLatitude, userLongitude, pageable);
+            } else {
+                restaurants = restaurantRepository.findAll(pageable);
+            }
+        } else {
+            if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null) {
+                restaurants = restaurantRepository.searchByNameOrMenuNameSortedByDistance(keyword, userLatitude, userLongitude, pageable);
+            } else {
+                restaurants = restaurantRepository.searchByNameOrMenuName(keyword, pageable);
+            }
+        }
+
+        // DTO로 변환
+        return restaurants.map(restaurant -> {
+            RestaurantDto dto = new RestaurantDto(restaurant); // RestaurantDto가 이미지 리스트를 처리
+            if (userLatitude != null && userLongitude != null) {
+                double distance = calculateDistance(userLatitude, userLongitude, restaurant.getLatitude(), restaurant.getLongitude());
+                dto.setDistance(distance);
+            }
+            return dto;
+        });
+    }
+
+
+    private Double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        double R = 6371; // 지구의 반지름 (단위: km)
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distanceKm = R * c; // 거리 (단위: km)
+
+        return distanceKm * 1000; // 거리 (단위: m)
+    }
 
 }
