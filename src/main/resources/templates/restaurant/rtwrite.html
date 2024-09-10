@@ -74,7 +74,15 @@ function submitRestaurant() {
 	const form = document.getElementById('restaurantForm');
 	const formData = new FormData(form);
 
+    // 선택된 상세 카테고리들을 배열로 저장
+    const selectedCategories = [];
+    const checkboxes = document.querySelectorAll('input[name="category[]"]:checked');
+    checkboxes.forEach(checkbox => {
+        selectedCategories.push(checkbox.value);
+    });
 
+    // 쉼표로 구분된 문자열로 변환하여 FormData에 추가
+    formData.append('categories', selectedCategories.join(',')); 
 
 	fetch('/api/restaurants/create', {
 		method: 'POST',
@@ -267,21 +275,33 @@ h1 {
 			</div>
 		</div>
 
+<div class="form-group">
+    <label for="mainCategory">메인 카테고리</label>
+    <select class="form-control" id="mainCategory" name="mainCategory" required onchange="updateSubcategories(this.value)">
+        <option value="">메인 카테고리 선택</option>
+        <option value="한식">한식</option>
+        <option value="일식">일식</option>
+        <option value="중식">중식</option>
+        <option value="양식">양식</option>
+        <option value="아시안">아시안</option>
+        <option value="패스트푸드">패스트푸드</option>
+        <option value="디저트">디저트</option>
+    </select>
+</div>
+
+		<div class="form-group" id="subcategory-container">
+			<label>카테고리</label>
+			<div id="category-checkboxes">
+				<!-- 서브 카테고리 체크박스가 여기에 동적으로 추가될 예정입니다. -->
+			</div>
+		</div>
+		
+
 		<div class="form-group">
 			<label for="description">설명</label>
 			<textarea class="form-control" id="description" name="description" rows="3" required></textarea>
 		</div>
 
-		<div class="form-group">
-			<label for="category">카테고리</label>
-			<select class="form-control" id="category" name="category" required>
-				<option value="한식">한식</option>
-				<option value="양식">양식</option>
-				<option value="중식">중식</option>
-				<option value="일식">일식</option>
-				<option value="디저트">디저트</option>
-			</select>
-		</div>
 
 		<div class="form-group">
 			<label for="image">이미지 업로드</label>
@@ -291,7 +311,42 @@ h1 {
 		<button type="button" class="btn btn-primary" onclick="submitRestaurant()">등록</button>
 	</form>
 </div>
+	<script>
+	// categoryEnum 객체 정의
+	const categoryEnum = {
+	    "한식": ["백반", "죽", "국수", "찌개", "탕", "전골", "족발", "보쌈", "한정식", "분식"],
+	    "일식": ["초밥", "회", "돈가스", "일본식카레", "일본식면요리"],
+	    "중식": ["중식"],
+	    "양식": ["파스타", "스테이크"],
+	    "아시안": ["아시안"],
+	    "패스트푸드": ["피자", "햄버거", "핫도그", "샌드위치"],
+	    "디저트": ["카페", "디저트"]
+	};
 
+	function updateSubcategories(mainCategory) {
+		const checkboxContainer = document.getElementById("category-checkboxes");
+		checkboxContainer.innerHTML = ''; // 기존 체크박스들 제거
+
+		if (!mainCategory) return;
+
+		const subcategories = categoryEnum[mainCategory] || [];
+
+		subcategories.forEach(subcategory => {
+			const label = document.createElement("label");
+			label.classList.add("checkbox-inline"); 
+
+			const checkbox = document.createElement("input");
+			checkbox.type = "checkbox";
+			checkbox.name = "category[]"; // 배열 형태로 값을 받기 위해 [] 추가
+			checkbox.value = subcategory;
+			checkbox.id = `category_${subcategory}`;
+
+			label.appendChild(checkbox);
+			label.appendChild(document.createTextNode(subcategory));
+			checkboxContainer.appendChild(label);
+		});
+	}
+</script>
 	<!-- 부트스트랩 JS -->
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 	<script

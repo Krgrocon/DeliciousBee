@@ -93,63 +93,141 @@
         <a class="btn btn-primary mt-2" href="/">목록으로 돌아가기</a>
         </div>
         <!-- 맛집 등록 폼 -->          
-        <form action="#" th:action="@{/restaurant/rtupdates}" method="post" enctype="multipart/form-data" th:object="${restaurantForm}">
-           <input type="hidden" th:field="*{id}">
+        <form enctype="multipart/form-data" id="restaurantForm" name="restaurantForm">
+          <input type="hidden" name="id" id="restaurantId" value="0"> <!-- 기본값을 숫자로 설정 -->
             <div class="form-group">
                 <label for="name">이름</label>
-                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                <input type="text" class="form-control" id="name" name="name" required>
             </div>
             <div class="form-group">
                 <label for="address">주소</label>
-                <input type="text" class="form-control" id="address" th:field="*{address}">
+                <input type="text" class="form-control" id="address" name="address">
             </div>
             <div class="form-group">
                 <label for="phone_number">전화번호</label>
-                <input type="text" class="form-control" id="phone_number" th:field="*{phone_number}">
+                <input type="text" class="form-control" id="phone_number" name="phone_number">
             </div>
             <div class="form-group">
                 <label for="opening_hours">영업 시간</label>
-                <input type="text" class="form-control" id="opening_hours" th:field="*{opening_hours}">
+                <input type="text" class="form-control" id="opening_hours" name="opening_hours">
+            </div>
+            <div class="form-group">
+                <label for="menu_name">메뉴</label>
+                <input type="text" class="form-control" id="menu_name" name="menu_name">
             </div>
             <div class="form-group">
                 <label for="price_range">가격대</label>
-                <input type="text" class="form-control" id="price_range" th:field="*{price_range}">
+                <input type="text" class="form-control" id="price_range" name="price_range">
             </div>
             <div class="form-group">
                 <label for="homepage_url">홈페이지 URL</label>
-                <input type="url" class="form-control" id="homepage_url" th:field="*{homepage_url}">
+                <input type="url" class="form-control" id="homepage_url" name="homepage_url">
             </div>
             <div class="form-group">
                 <label for="description">설명</label>
-                <textarea class="form-control" id="description" th:field="*{description}" rows="5" required></textarea>
+                <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
             </div>
             <div class="form-group">
                 <label for="longitude">경도</label>
-                <input type="number" step="0.000001" class="form-control" id="longitude" th:field="*{longitude}" required>
+                <input type="number" step="0.000001" class="form-control" id="longitude" name="longitude" required>
             </div>
             <div class="form-group">
                 <label for="latitude">위도</label>
-                <input type="number" step="0.000001" class="form-control" id="latitude" th:field="*{latitude}" required>
+                <input type="number" step="0.000001" class="form-control" id="latitude" name="latitude" required>
             </div>
+            
             <div class="form-group">
-                <label for="category">카테고리</label>
-                <select class="form-control" id="category" th:field="*{category}" required>
-                    <option value="한식">한식</option>
-                    <option value="양식">양식</option>
-                    <option value="중식">중식</option>
-                    <option value="일식">일식</option>
-                    <option value="디저트">디저트</option>
-                </select>
-            </div>
+    <label for="mainCategory">메인 카테고리</label>
+    <select class="form-control" id="mainCategory" name="mainCategory" required onchange="updateSubcategories(this.value)">
+        <option value="">메인 카테고리 선택</option>
+        <option value="한식">한식</option>
+        <option value="일식">일식</option>
+        <option value="중식">중식</option>
+        <option value="양식">양식</option>
+        <option value="아시안">아시안</option>
+        <option value="패스트푸드">패스트푸드</option>
+        <option value="디저트">디저트</option>
+    </select>
+</div>
+
+		<div class="form-group">
+			<label for="category">카테고리</label>
+			<select class="form-control" id="category" name="category" required>
+			<option value="">상세 선택</option>
+			</select>
+		</div>
+            
             <div class="form-group">
                 <label for="image">이미지 업로드</label>
                 <input type="file" class="form-control-file" id="image" name="file">
             </div>
-            <input type="submit" class="btn btn-primary" value="수정">
+          <input type="hidden" id="fileRemoved" name="fileRemoved" value="false">
+          
+            <button type="button" class="btn btn-primary" onclick="submitRestaurant()">수정</button>
             <input type="reset" class="btn btn-primary" value="취소">
         </form>
     </div>
 
+	<script>
+	
+        function submitRestaurant() {
+            const form = document.getElementById('restaurantForm');
+            const restaurantId = Number(document.getElementById('restaurantId').value); // 문자열을 숫자로 변환
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            console.log('전송할 데이터:', data);
+            
+            fetch(`/api/restaurants/update/${restaurantId}`, { // URL에 숫자로 변환된 ID 사용
+                method: 'PUT',
+                body: formData
+                
+            })
+            .then(response => response.json())  // 응답을 JSON으로 변환
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/';
+                } else {
+                    alert(`맛집 등록에 실패했습니다: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('요청 처리 중 오류가 발생했습니다.');
+            });
+        }
+        
+     // categoryEnum 객체 정의
+    	const categoryEnum = {
+    	    "한식": ["백반", "죽", "국수", "찌개", "탕", "전골", "족발", "보쌈", "한정식", "분식"],
+    	    "일식": ["초밥", "회", "돈가스", "일본식카레", "일본식면요리"],
+    	    "중식": ["중식"],
+    	    "양식": ["파스타", "스테이크"],
+    	    "아시안": ["아시안"],
+    	    "패스트푸드": ["피자", "햄버거", "핫도그", "샌드위치"],
+    	    "디저트": ["카페", "디저트"]
+    	};
+
+    	// updateSubcategories 함수 정의
+    	function updateSubcategories(mainCategory) {
+    	    const subcategorySelect = document.getElementById("category");
+    	    subcategorySelect.innerHTML = '<option value="">서브 카테고리 선택</option>';
+
+    	    if (!mainCategory) return;
+
+    	    const subcategories = categoryEnum[mainCategory] || [];
+
+    	    subcategories.forEach(subcategory => {
+    	        const option = document.createElement("option");
+    	        option.value = subcategory;
+    	        option.textContent = subcategory;
+    	        subcategorySelect.appendChild(option);
+    	    });
+    	}
+    </script>  
     <!-- 부트스트랩 JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>

@@ -10,20 +10,33 @@
             padding: 0;
             font-family: Arial, sans-serif;
         }
+        h2 {
+        margin-top: 20px;
+        }
+        h4 {
+        margin: 0px;
+        margin-bottom: 5px;
+        font-size: 14px;
+        }
+        h5 {
+        margin-top: 10px;
+        }
         a {
             text-decoration: none; /* 밑줄 제거 */
-            color: #787878	; /* 기존 색상 유지 */
+            color: black; /* 기존 색상 유지 */
+            margin: 0px;
         }
         a:hover {
             text-decoration: none; /* 호버 시에도 밑줄 제거 */
             color: inherit;
         }
-        .container-fluid {
-            padding: 0 20px;
-            margin: 0 auto;
-            max-width: 1000px;
-            display: flex;
-        }
+.container-fluid {
+    padding: 0 20px;
+    margin: 0 auto;
+    max-width: 1050px;
+    display: flex;
+    gap: 20px; /* 필터 박스와 메인 콘텐츠 사이의 간격 */
+}
         .navbar {
             background-color: #343A40;
             color: white;
@@ -48,6 +61,7 @@
             font-size: 1.2rem;
             text-decoration: none;
             color: inherit;
+            z-index: 10;
         }
         .navbar-nav {
             display: flex;
@@ -94,8 +108,8 @@
             top: 57.5%; /* 세로 중앙 정렬 */
             transform: translateY(-50%); /* 세로 중앙 정렬 보정 */
             display: flex; /* 내부 아이템 정렬을 위한 flex */
-            width: 100%; /* 가로 크기 조정 */
-            max-width: 1500px; /* 최대 가로 크기 설정 (필요에 따라 조정) */
+            width: 108%; /* 가로 크기 조정 */
+            max-width: 1700px; /* 최대 가로 크기 설정 (필요에 따라 조정) */
             margin-left: 10px; /* 왼쪽 여백 자동 조정 */
         }
         .search-input {
@@ -136,95 +150,139 @@
             height: 1rem;
         }
         .filter-box, content-wrapper {
-            margin: 28px;
+            margin-right: 18px;
+            margin-top: 18px;
         }
         .content-wrapper {
             display: flex;
             width: 99.5%;
         }
-        .filter-box {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            background-color: #F8F9FA;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            width: 200px; /* 필터 박스 너비 조절 */
-            margin-right: 20px; /* 필터 박스와 메인 콘텐츠 사이 간격 */
-        }
-        .filter-content {
-            height: 500px;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-        /* 필터 카테고리 스타일 */
-        .filter-category, .filter-ambiance {
-            position: relative;
-        }
-        .additional-content {
-            display: none;
-        }
-        .btn-toggle {
-            background: #E0E0E0;
-            -webkit-box-shadow: 6px 6px 16px #BEBEBE, -6px -6px 16px #ffffff9a;
-            box-shadow: 6px 6px 16px #BEBEBE, -6px -6px 16px #ffffff9a;
-            /* Dimensions */
-            width: 120px;
-            height: 20px;
-            /* Border */
-            border: none;
-            border-radius: 16px;
-            /* Content Aligment */
-            display: -webkit-box;
-            display: -ms-flexbox;
-            display: flex;
-            -webkit-box-pack: center;
-            -ms-flex-pack: center;
-            justify-content: center;
-            -webkit-box-align: center;
-            -ms-flex-align: center;
-            align-items: center;
-        }
-        .button {
-            /* Appearance */
-            background: #E0E0E0;
-            /* Font-Style */
-            font-size: 15px;
-            font-weight: 600;
-            /* Dimensions */
-            height: 20%;
-            width: 20%;
-            /* Border */
-            border: none;
-            border-radius: 14px;
-            /* Transition */
-            -webkit-transition: all 250ms ease-in-out;
-            transition: all 250ms ease-in-out;
-        }
-        .btn-toggle:hover {
-            /* Appearance */
-            background: #E0E0E0;
-            -webkit-box-shadow: inset 5px 5px 4px #C0C0C0, inset -5px -5px 4px
-            #DDDDDD;
-            box-shadow: inset 5px 5px 4px #C0C0C0, inset -5px -5px 4px #DDDDDD;
-            /* Font-Style */
-            font-size: 20px;
-            font-weight: 400;
-            color: #333333;
-        }
-        .main-content {
-            flex: 1; /* 메인 콘텐츠가 남은 공간을 채우도록 설정 */
-        }
+.filter-box {
+    border: none;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    width: 180px; /* 필터 박스의 고정 너비 */
+}
+
+/* 필터 제목 스타일 */
+.filter-box h5 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #EAEAEA;
+    padding-bottom: 5px;
+}
+
+/* 필터 항목 스타일 */
+.filter-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* 항목 간의 간격 */
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 5px 0;
+    cursor: pointer;
+}
+
+.form-check-input {
+    display: none; /* 기본 체크박스 숨기기 */
+}
+
+.form-check-label {
+    font-size: 13px;
+    color: #333;
+    margin-left: 25px; /* 체크박스와 텍스트 간의 간격 */
+    line-height: 16px; /* 체크박스와 텍스트의 수직 정렬을 맞추기 위해 설정 */
+}
+
+/* 커스텀 체크박스 스타일 */
+.checkmark {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 16px;
+    width: 16px;
+    background-color: white;
+    border-radius: 4px;
+    border: 1px solid #D8D8D8;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+/* 체크 표시 */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px;
+    transform: translateY(-50%);
+    width: 4px; /* 체크 표시의 너비 조정 */
+    height: 10px; /* 체크 표시의 높이 조정 */
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+/* 체크된 상태 스타일 */
+.form-check-input:checked + .checkmark {
+    background-color: #A4A4A4;
+}
+
+.form-check-input:checked + .checkmark:after {
+    display: block;
+}
+
+@keyframes checkAnim {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: 0px;
+    }
+}
+
+/* 필터 박스 토글 버튼 */
+.btn-toggle {
+    background: #F8F9FA;
+    border: 1px solid #E0E0E0;
+    border-radius: 5px;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 4px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin-top: 10px;
+    width: 100%; /* 버튼 너비를 100%로 설정하여 부모 요소에 맞게 조정 */
+}
+
+.btn-toggle:hover {
+    background: #E0E0E0;
+}
+
+.main-content {
+    flex: 1; /* 남은 공간을 차지하도록 설정 */
+}
+
         .results-container {
-            background-color: #F8F9FA;
             border-radius: 10px;
             width: 100%;
-            margin-top: 28px;
+            margin-top: 18px;
             padding: 15px;
+            background-color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .sort-container {
-            margin-bottom: 20px;
+                        border-bottom: 2px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
         }
         .sort-buttons {
             display: flex;
@@ -241,31 +299,60 @@
             border-radius: 50px;
             margin-left: 5px;
         }
+        .ang {
+        	margin-left: 1px;
+            border-bottom: 2px solid #ddd;
+        	display: flex;
+        }
+        .text-description {
+        	margin-top: 10px;
+        	font-size: 14px;
+        }
         .card {
             display: flex;
             flex-direction: row;
+            margin-bottom: 15px;
             border: none;
-            border-radius: 15px;
+            border-radius: 5px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
             overflow: hidden;
         }
         .card-body {
-            padding: 20px;
-            background-color: #F8F9FA;
-            width: calc(100% - 300px); /* 이미지 너비를 제외한 나머지 공간을 차지 */
+            padding-left: 20px;
+            padding-right: 20px;
+            width: calc(100% - 240px); /* 이미지 너비를 제외한 나머지 공간을 차지 */
+            height: 240px;
         }
         .card-img-left {
-            width: 300px; /* 이미지 너비 고정 */
-            height: 300px; /* 이미지 높이 고정 */
+            width: 240px; /* 이미지 너비 고정 */
+            height: 240px; /* 이미지 높이 고정 */
             object-fit: cover; /* 이미지 비율 유지하면서 자르기 */
+            display: block;
+            border-radius: 5px;
         }
-        .card-footer {
-            background-color: transparent;
-            border-top: none;
-        }
+.card-footer {
+    background-color: transparent;
+    border-top: none;
+    display: flex; /* 한 줄에 표시 */
+    justify-content: space-between; /* 양쪽 끝으로 배치 */
+    align-items: center; /* 세로 중앙 정렬 */
+    padding-top: 20px; /* 약간의 위쪽 여백 */
+    margin-top: 11%;
+}
+
+.card-footer .card-text  {
+	
+    margin: 0; /* 여백 제거 */
+    font-size: 15px; /* 폰트 크기 조절 (원하는 대로 수정 가능) */
+}
+
+.card-distance{
+    margin: 0; /* 여백 제거 */
+    font-size: 12px; /* 폰트 크기 조절 (원하는 대로 수정 가능) */
+}
+
         .btn-custom {
-            background-color: #FFC107;
+            background-color: #F2F2F2;
             border: none;
             border-radius: 10px;
             color: black;
@@ -274,17 +361,29 @@
             transition: background-color 0.3s;
         }
         .btn-custom:hover {
-            background-color: #E0A800;
+            background-color:#BDBDBD;
         }
+        .card-title {
+        	font-size: 22px;
+        	height:20px;
+        	margin-bottom: 10px;
+        }
+        .badge {
+        	color: #787878;
+        	margin-bottom: 10px;
+        }
+		#pagination {
+   			display: flex;
+ 			align-items: center;
+ 			margin-left: auto; 
     </style>
 </head>
-
 
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="nav-container">
         <div class="navbar-brand-group">
-            <a class="navbar-brand" href="#!">Delicious Bee</a> <label
+            <a class="navbar-brand" href="/">Delicious Bee</a> <label
                 for="searchText"></label>
             <div class="search-container">
                 <svg class="search-icon" aria-hidden="true" viewBox="0 0 24 24">
@@ -298,10 +397,10 @@
         </div>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="#!">맛집등록</a></li>
-                <li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" th:onclick="|location.href='@{/restaurant/rtwrite}'|" >맛집등록</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">커뮤니티</a></li>
                 <li class="nav-item"><a class="nav-link" id="loginButton"
-                                        href="#">로그인</a></li>
+                                        href="#" th:onclick="|location.href='@{/restaurant/rtwrite}'|" >로그인</a></li>
             </ul>
         </div>
     </div>
@@ -318,12 +417,17 @@
                         <div id="categoryFilters"></div>
                         <button class="btn-toggle" id="toggleCategory">펼쳐보기</button>
                     </div>
-                    <br><br>
                     <!-- 분위기 필터 -->
                     <div class="filter-ambiance mt-3">
                         <h5>분위기</h5>
                         <div id="ambianceFilters"></div>
                         <button class="btn-toggle" id="toggleAmbiance">펼쳐보기</button>
+                    </div>
+                    <!-- 방문목적 필터 -->
+                    <div class="filter-purpose">
+                        <h5>방문목적</h5>
+                        <div id="purposeFilters"></div>
+                        <button class="btn-toggle" id="togglePurpose">펼쳐보기</button>
                     </div>
                 </div>
             </div>
@@ -459,21 +563,21 @@
 
                     html += `
             <div class="col-12 mb-4">
-                <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}">
+                <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}" data-mainCategory="${restaurant.mainCategory}">
                     <a href="/restaurant/rtread/${restaurant.id}">
                         <img src="${imageUrl}"
                              alt="Restaurant Image" class="card-img-left">
                     </a>
                     <div class="card-body">
-                        <h4 class="badge bg-primary"># ${restaurant.category}</h4>
-                        <a href="/restaurant/rtread?id=${restaurant.id}">
-                            <h2 class="card-title">${restaurant.name}</h2>
-                        </a>
+                    	<a href="/restaurant/rtread?id=${restaurant.id}">
+                    	<h2 class="card-title">${restaurant.name}</h2>
+                		</a>
+                        <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
                         <h4 class="text">${restaurant.address}</h4>
                         <small class="text-muted">${restaurant.description}</small>
                         <div class="card-footer">
-                            <h3 class="card-text">평점: ${restaurant.average_rating}★</h3>
-                           <h3 class="card-text">거리: ${restaurant.distance.toFixed(0)} m</h3>
+                            <h3 class="card-text">★${restaurant.average_rating}</h3>
+                           <h3 class="card-text">현 위치에서 ${restaurant.distance.toFixed(0)} m </h3>
                         </div>
                     </div>
                 </div>
@@ -513,34 +617,69 @@
         function loadFilters() {
             // 실제로는 서버에서 필터 데이터를 가져와야 합니다.
             // 여기서는 예시 데이터를 사용합니다.
-            const categories = ['한식', '중식', '일식', '양식'];
-            const ambiances = ['조용한', '활기찬', '로맨틱한', '가족적인'];
+            const categories = ['한식', '중식', '일식', '양식', '아시안', '패스트푸드', '디저트'];
+            const ambiances = ['가성비좋은', '분위기좋은', '고급스러운', '조용한', '시끌벅적', '뷰맛집', '이색적인', '로컬', '예쁜', '힙한'];
+            const purposes = ['점심식사', '아침식사', '저녁식사', '가족외식', '데이트', '회식', '모임', '접대', '혼밥', '혼술', '아이동반', '혼카페', '건강식'];
 
             renderFilters('categoryFilters', categories);
             renderFilters('ambianceFilters', ambiances);
-        }
+            renderFilters('purposeFilters', purposes);
+            }
 
         // 필터 렌더링 함수
         function renderFilters(elementId, filters) {
-            let html = '';
-            filters.forEach((filter, index) => {
-                html += `
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="${filter}" id="${elementId}-${index}">
-                    <label class="form-check-label" for="${elementId}-${index}">${filter}</label>
-                </div>
-            `;
-            });
-            $(`#${elementId}`).html(html);
-        }
-
-        // 필터 토글 기능
-        $('#toggleCategory, #toggleAmbiance').click(function() {
-            const $target = $(this).prev('div');
+    let html = '';
+    filters.forEach((filter, index) => {
+        const isHidden = index >= 3 ? 'style="display:none;"' : '';
+        html += `
+            <div class="form-check" ${isHidden}>
+                <input class="form-check-input custom-checkbox" type="checkbox" id="${elementId}-${index}" data-category="${filter}">
+                <label class="checkmark" for="${elementId}-${index}"></label>
+                <label class="form-check-label" for="${elementId}-${index}">${filter}</label>
+            </div>
+        `;
+    });
+    document.getElementById(elementId).innerHTML = html;
+}
+     // 필터 토글 기능
+        $('#toggleCategory, #toggleAmbiance, #togglePurpose').click(function() {
+        	const $button = $(this);
+            const $target = $button.closest('div').find('.form-check').slice(3);
             $target.slideToggle();
             $(this).text($target.is(':visible') ? '접기' : '펼쳐보기');
         });
-    });
+        });
+
+         // 필터링 함수
+            function filterRestaurants() {
+                let selectedCategories = [];
+
+                // 체크된 카테고리 수집
+                $('.form-check-input:checked').each(function() {
+                    selectedCategories.push($(this).data('category'));
+                });
+
+                // 필터링 로직 적용
+                $('.card').each(function() {
+                    let cardCategory = $(this).data('maincategory'); 
+
+                    if (selectedCategories.length === 0 || selectedCategories.includes(cardCategory)) {
+                        $(this).show(); 
+                    } else {
+                        $(this).hide(); 
+                    }
+                });
+            }
+
+            // 카테고리 체크박스 변경 이벤트
+            $('#categoryFilters').on('change', '.form-check-input', function() {
+                filterRestaurants();
+            });
+
+            // 필터 초기화
+            filterRestaurants();
+        
+  
 </script>
 </body>
 </html>

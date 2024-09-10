@@ -226,22 +226,22 @@ public class ReviewService {
 
 
 
-	public List<Review> getRandomReviewsByCategory(CategoryType category) {
-		// 1. 해당 카테고리의 모든 리뷰를 가져옵니다.
-		List<Review> reviews = reviewRepository.findByRestaurantCategoriesContaining(category); // 수정된 메서드 호출
-
-		// 2. 리뷰가 없는 경우 빈 리스트를 반환합니다.
-		if (reviews.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		// 3. 랜덤 리뷰를 여러 개 선택합니다. (예: 3개)
-		Collections.shuffle(reviews); // 리스트를 랜덤하게 섞습니다.
-		int numberOfReviews = Math.min(3, reviews.size()); // 최대 3개 또는 리뷰 개수만큼 선택합니다.
-		List<Review> randomReviews = reviews.subList(0, numberOfReviews);
-
-		// 4. 랜덤 리뷰를 반환합니다.
-		return randomReviews;
-	}
+//	public List<Review> getRandomReviewsByCategory(CategoryType category) {
+//		// 1. 해당 카테고리의 모든 리뷰를 가져옵니다.
+//		List<Review> reviews = reviewRepository.findByRestaurantCategoryContaining(category); // 수정된 메서드 호출
+//
+//		// 2. 리뷰가 없는 경우 빈 리스트를 반환합니다.
+//		if (reviews.isEmpty()) {
+//			return Collections.emptyList();
+//		}
+//
+//		// 3. 랜덤 리뷰를 여러 개 선택합니다. (예: 3개)
+//		Collections.shuffle(reviews); // 리스트를 랜덤하게 섞습니다.
+//		int numberOfReviews = Math.min(3, reviews.size()); // 최대 3개 또는 리뷰 개수만큼 선택합니다.
+//		List<Review> randomReviews = reviews.subList(0, numberOfReviews);
+//
+//		// 4. 랜덤 리뷰를 반환합니다.
+//		return randomReviews;
+//	}
 
 }

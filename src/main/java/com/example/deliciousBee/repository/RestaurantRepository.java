@@ -14,10 +14,11 @@ import java.util.List;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
-//    List<Restaurant> findByCategory(CategoryType category);
-    List<Restaurant> findByCategoriesContaining(CategoryType category);
-
-
+    List<Restaurant> findByCategory(String category);
+//    List<Restaurant> findByCategoriesContaining(CategoryType category);
+    
+    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END FROM Restaurant r WHERE r.id = :id")
+    boolean existsById(@Param("id") Long id); 
 
     @Query("SELECT r FROM Restaurant r WHERE r.verificationStatus = 'PENDING'")
     List<Restaurant> findPendingRestaurants();

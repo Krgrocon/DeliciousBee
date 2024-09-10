@@ -136,8 +136,6 @@ public class RestaurantController {
 		return "restaurant/rtlist";
 	}
 
-
-
 	@GetMapping("/rtread/{restaurant_id}")
 	public String read(@AuthenticationPrincipal BeeMember loginMember,@PathVariable("restaurant_id") Long restaurant_id,Model model) {
 		if(loginMember == null) {
@@ -182,32 +180,32 @@ public class RestaurantController {
 			return "redirect:/member/login";
 		}
 		Restaurant findRestaurant = restaurantService.findRestaurant(id);
-		if(findRestaurant == null || !findRestaurant.getMember().getMember_id().equals(loginMember.getMember_id())) {
-
-			return "redirect:/shop/index";
-		}
+//		if(findRestaurant == null || !findRestaurant.getMember().getMember_id().equals(loginMember.getMember_id())) {
+//
+//			return "redirect:/shop/index";
+//		}
 
 		model.addAttribute("restaurantForm", findRestaurant);
 		return "restaurant/rtupdate";
 	}
 
 
-	@PostMapping("rtupdates")
-	public String update(@Validated @ModelAttribute("restaurantForm") Restaurant update
-			,BindingResult result
-	) {
-
-		if(result.hasErrors()) {
-			return "restaurant/rtupdate";
-		}
-		//수정
-		Restaurant updateRestaurant = Restaurant.toRestaurant(update);
-
-		restaurantService.updateRestaurant(updateRestaurant);
-
-		//수정되면
-		return "redirect:/";
-	}
+//	@PostMapping("rtupdates")
+//	public String update(@Validated @ModelAttribute("restaurantForm") Restaurant update
+//			,BindingResult result
+//	) {
+//
+//		if(result.hasErrors()) {
+//			return "restaurant/rtupdate";
+//		}
+//		//수정
+//		Restaurant updateRestaurant = Restaurant.toRestaurant(update);
+//
+//		restaurantService.updateRestaurant(updateRestaurant);
+//
+//		//수정되면
+//		return "redirect:/";
+//	}
 
 	@GetMapping("/display")
 	public ResponseEntity<Resource> display(@RequestParam("filename") String filename) {

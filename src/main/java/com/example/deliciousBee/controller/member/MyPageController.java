@@ -205,12 +205,12 @@ public class MyPageController {
 		}
 
 		// 랜텀 카테고리
-		Map<CategoryType, List<Review>> randomReviewsByCategory = new HashMap<>();
-		for (CategoryType category : CategoryType.values()) {
-			List<Review> randomReviews = reviewService.getRandomReviewsByCategory(category);
-			randomReviewsByCategory.put(category, randomReviews);
-		}
-		model.addAttribute("randomReviewsByCategory", randomReviewsByCategory);
+//		Map<CategoryType, List<Review>> randomReviewsByCategory = new HashMap<>();
+//		for (CategoryType category : CategoryType.values()) {
+//			List<Review> randomReviews = reviewService.getRandomReviewsByCategory(category);
+//			randomReviewsByCategory.put(category, randomReviews);
+//		}
+//		model.addAttribute("randomReviewsByCategory", randomReviewsByCategory);
 
 		// 리뷰 순 정리
 		List<MyPage> reviewCount = myPageRepository.findMyPagesOrderByReviewCountDesc(); // MyPageRepository를 직접 사용
