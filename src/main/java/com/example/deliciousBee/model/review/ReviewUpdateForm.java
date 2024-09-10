@@ -1,7 +1,5 @@
 package com.example.deliciousBee.model.review;
 
-import java.util.List;
-
 import lombok.Data;
 
 @Data
@@ -10,10 +8,10 @@ public class ReviewUpdateForm {
 	private Long reviewId;
 	private String reviewContents;
 	
-	private Double rating;
-	private Double tasteRating;
-	private Double priceRating;
-	private Double kindRating;
+	private Integer rating;
+	private Integer tasteRating;
+	private Integer priceRating;
+	private Integer kindRating;
 	
 	private String recommendItems;
 	private boolean fileRemoved;

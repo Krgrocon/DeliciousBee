@@ -7,6 +7,7 @@ import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.model.menu.Menu;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
 import com.example.deliciousBee.util.FileService;
@@ -97,10 +98,23 @@ public class RestaurantRestController {
         restaurant.setLatitude(latitude);
         restaurant.setLongitude(longitude);
         restaurant.setMember(findMember);
+        
+        // 메뉴 추가 로직
+        List<Menu> menus = new ArrayList<>();
+        for (int i = 0; i < menuNames.size(); i++) {
+            Menu menu = new Menu();
+            menu.setName(menuNames.get(i));
+            menu.setPrice(priceRanges.get(i));
+            menu.setRestaurant(restaurant);
+            menus.add(menu);
+        }
+        restaurant.setMenuList(menus);
+        
+        
 
         // 업로드한 파일 정보를 저장할 리스트
         List<RestaurantAttachedFile> attachedFiles = new ArrayList<>();
-
+        
         // 파일 업로드 처리 (Google Cloud Storage)
         if (files != null && files.length > 0) {
             for (MultipartFile file : files) {

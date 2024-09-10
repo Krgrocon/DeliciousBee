@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Data
 @NoArgsConstructor
 @Getter
 @Setter
@@ -47,12 +46,12 @@ public class Restaurant {
 	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private BeeMember member;
-        private String address;
-        private String phone_number;
-        private String opening_hours;
-        private String menu_name;
-        private String price_range;
-        private String homepage_url;
+	private String address;
+	private String phone_number;
+	private String opening_hours;
+	private String menu_name;
+	private String price_range;
+	private String homepage_url;
 
 	@Column(columnDefinition = "TEXT", nullable = false)
 	private String description;
@@ -79,11 +78,14 @@ public class Restaurant {
 
 	@OneToMany(mappedBy = "restaurant")
 	private List<RestaurantAttachedFile> attachedFile;
-	
+
 	// 메뉴리스트 추가
 	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Menu> menuList;
 	
+	
+	
+
 	@PrePersist
 	protected void onCreate() {
 		LocalDateTime now = LocalDateTime.now();

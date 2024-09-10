@@ -1,10 +1,12 @@
 package com.example.deliciousBee.model.review;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.file.AttachedFile;
+import com.example.deliciousBee.model.keyWord.ReviewKeyWord;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.menu.ReviewMenu;
 import com.example.deliciousBee.model.report.ReportReason;
@@ -48,19 +50,16 @@ public class Review {
 	private String reviewContents;
 	
 	@Column(name = "rating", nullable = false)
-	private Double rating;
+	private Integer rating;
 	
 	@Column(name = "tasting_rating", nullable = false)
-	private Double tasteRating;
+	private Integer tasteRating;
 	
 	@Column(name = "price_rating", nullable = false)
-	private Double priceRating;
+	private Integer priceRating;
 	
 	@Column(name = "kind_rating", nullable = false)
-	private Double kindRating;
-	
-	@Column(name = "recommend_items")
-	private String recommendItems;
+	private Integer kindRating;
 	
 	@Column(name = "visit_date", nullable = false)
 	private LocalDate visitDate;
@@ -88,6 +87,9 @@ public class Review {
 	@OneToMany(mappedBy = "review", fetch = FetchType.EAGER)
 	@JsonManagedReference
 	private List<AttachedFile> attachedFile;
+	
+	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewKeyWord> keywords = new ArrayList<>();;
 	
 	@ManyToOne
 	@JsonIgnore

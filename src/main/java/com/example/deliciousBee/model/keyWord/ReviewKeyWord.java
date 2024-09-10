@@ -1,4 +1,4 @@
-package com.example.deliciousBee.model.menu;
+package com.example.deliciousBee.model.keyWord;
 
 import com.example.deliciousBee.model.review.Review;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,27 +14,34 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewMenu {
+@Entity
+public class ReviewKeyWord {
 	
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
+	@ManyToOne
     @JoinColumn(name = "review_id")
-    @JsonIgnore
     private Review review;
+	
+	@ManyToOne
+    @JoinColumn(name = "keyWord_id")
+	private KeyWord keyWord;
+	
+	@Column(name = "custom_keyword_name")
+    private String customKeyWordName;
 
-    @ManyToOne
-    @JoinColumn(name = "menu_id")
-    private Menu menu;
-
-    @Column(name = "custom_menu_name")
-    private String customMenuName;
-
+	public ReviewKeyWord(Review review, KeyWord keyWord, String customKeyWordName) {
+		super();
+		this.review = review;
+		this.keyWord = keyWord;
+		this.customKeyWordName = customKeyWordName;
+	}
+	
+	
 
 }

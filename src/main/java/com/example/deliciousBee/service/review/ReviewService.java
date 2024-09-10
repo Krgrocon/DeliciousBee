@@ -1,12 +1,10 @@
 package com.example.deliciousBee.service.review;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.example.deliciousBee.util.FileService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,10 +15,11 @@ import com.example.deliciousBee.model.like.ReviewLike;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.repository.FileRepository;
-import com.example.deliciousBee.repository.ReviewLikeRepository;
 import com.example.deliciousBee.repository.ReportRepository;
 import com.example.deliciousBee.repository.RestaurantRepository;
+import com.example.deliciousBee.repository.ReviewLikeRepository;
 import com.example.deliciousBee.repository.ReviewRepository;
+import com.example.deliciousBee.util.FileService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -146,7 +145,6 @@ public class ReviewService {
 		Review findReview = findReview(updateReview.getId());
 		findReview.setReviewContents(updateReview.getReviewContents());
 		findReview.setRating(updateReview.getRating());
-		findReview.setRecommendItems(updateReview.getRecommendItems());
 
 		// 기존 파일 가져오기
 		List<AttachedFile> attachedFiles = findFilesByReviewId(findReview.getId());

@@ -1,32 +1,12 @@
 package com.example.deliciousBee.controller.restaurant;
 
-import com.example.deliciousBee.model.board.Restaurant;
-import com.example.deliciousBee.model.file.RestaurantAttachedFile;
-import com.example.deliciousBee.model.member.BeeMember;
-import com.example.deliciousBee.model.review.Review;
-import com.example.deliciousBee.service.member.BeeMemberService;
-import com.example.deliciousBee.service.restaurant.RestaurantService;
-import com.example.deliciousBee.service.review.ReviewService;
-import com.example.deliciousBee.util.RestaurantFileService;
-
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -38,8 +18,28 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.deliciousBee.model.board.Restaurant;
+import com.example.deliciousBee.model.keyWord.KeyWord;
+import com.example.deliciousBee.model.keyWord.KeywordCategory;
+import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.model.review.Review;
+import com.example.deliciousBee.service.keyWord.ReviewKeyWordService;
+import com.example.deliciousBee.service.restaurant.RestaurantService;
+import com.example.deliciousBee.service.review.ReviewService;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
@@ -55,6 +55,7 @@ public class RestaurantController {
 
 	private final RestaurantService restaurantService;
 	private final ReviewService reviewService;
+	private final ReviewKeyWordService reviewKeyWordService;
 
 	@GetMapping("newfile")
 	public String newfile(@AuthenticationPrincipal BeeMember loginMember
@@ -137,7 +138,10 @@ public class RestaurantController {
 	}
 
 	@GetMapping("/rtread/{restaurant_id}")
-	public String read(@AuthenticationPrincipal BeeMember loginMember,@PathVariable("restaurant_id") Long restaurant_id,Model model) {
+	public String read(@AuthenticationPrincipal BeeMember loginMember
+			,@PathVariable("restaurant_id") Long restaurant_id
+			,Model model) {
+		
 		if(loginMember == null) {
 			return "redirect:/member/login";
 		}
@@ -148,12 +152,15 @@ public class RestaurantController {
 			return "redirect:/shop/index";
 		}
 		model.addAttribute("restaurant", restaurant);
-		log.info("*****restaurant:{}", model);
 
 		// 리뷰 정보 가져오기
 		String memberId = loginMember.getMember_id();
 		List<Review> reviewsByRestaurant = reviewService.getReviewsByRestaurantIdWithFiles(restaurant_id, memberId);
 		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant);
+		
+		// 카테고리 가져오기
+		Map<KeywordCategory, List<KeyWord>> keywordsByCategory = reviewKeyWordService.getKeywordsByCategory();
+        model.addAttribute("keywordsByCategory", keywordsByCategory);
 		return "restaurant/rtread";
 	}
 

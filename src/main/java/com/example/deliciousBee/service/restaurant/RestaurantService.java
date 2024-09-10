@@ -1,6 +1,14 @@
 package com.example.deliciousBee.service.restaurant;
 
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.example.deliciousBee.dto.report.RestaurantVerificationDto;
 import com.example.deliciousBee.dto.restaurant.RestaurantDto;
 import com.example.deliciousBee.model.board.CategoryType;

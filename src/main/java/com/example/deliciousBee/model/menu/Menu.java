@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @AllArgsConstructor
@@ -27,11 +28,16 @@ public class Menu {
 	@Column(nullable = false)
 	private String name;
 	
-	private Long price;
+	private String price;
 	
 	@ManyToOne
 	@JoinColumn(name = "restaurant_id")
 	@JsonIgnore
 	private Restaurant restaurant;
+	
+	@Override
+	public String toString() {
+	    return "Menu{id=" + id + ", name=" + name + ", price=" + price + "}";
+	}
 
 }

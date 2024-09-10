@@ -147,7 +147,7 @@
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="kindRating">음식 평점</label>
+                    <label for="kindRating">친절 평점</label>
                     <input type="range" class="form-control-range" id="kindRating" name="kindRating" min="1" max="3" step="1" onclick="detailRating(this)">
                     <div class="detail-Rating-labels">
                       <span>나쁨</span>
@@ -158,21 +158,45 @@
                   
                   <!-- Menu Form -->
                   <hr class="Review-Write-hr">
-                  <div class="form-group" th:each="menu : ${restaurant.menu_name}">
-                    <label>추천 메뉴</label>
+                  <div class="form-group">
+                  <label for="recommendItems">추천 메뉴</label>
+                  <div th:each="menu : ${restaurant.menuList}">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="flexCheckDefault">
-                      <label class="form-check-label" for="flexCheckDefault" th:text="${menu}">Menu Name</label>
-                    </div>
-                    <div class="form-group">
-                      <div class="form-check-input" type="checkbox" id="customMenuCheckbox" name="customMenuCheckbox">
-                        <label class="form-check-label" for="customMenuCheckbox">기타</label>
-                      </div>
-                      <input type="text" class="form-control" id="customMenuInput" name="customMenuInput" disabled>
-                    
+                      <input class="form-check-input" type="checkbox" th:value="${menu.id}" name="reviewMenuList">
+                      <label class="form-check-label" th:text="${menu.name}">Menu Name</label>
+                      <span th:text="'    ' +${menu.price} + '원'" ></span>
                     </div>
                   </div>
-  
+                  
+                  <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="customMenuCheckbox" name="customMenuCheckbox">
+                      <label class="form-check-label" for="customMenuCheckbox">기타</label>
+                  </div>
+                  <input type="text" class="form-control" id="customMenuInput" name="customMenuInput" disabled>
+                  <input type="hidden" id="customMenuName" name="customMenuName">
+                  </div>
+                  
+                  <!-- KeyWord Form -->
+                  <hr class="Review-Write-hr">
+                  <div class="form-group">
+                    <label for="keywords">키워드 등록</label>
+                    <div th:each="category : ${T(com.example.deliciousBee.model.keyWord.KeywordCategory).values()}">
+                      <label for="keywords" th:text="${category.key.name().replace('_', ' ')}"></label>
+                      <select class="form-control" multiple name="keywords">
+                        <option th:each="keyword : ${category.value}" th:value="${keyword.id}" th:text="${keyword.keywordName}">[[${keyword.keywordName}]]</option>
+                      </select>
+                      
+                      <!-- custom KeyWord Form -->
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" th:id="${category.name() + 'Checkbox'}" th:name="${category.name() + 'Checkbox'}">
+                          <label class="form-check-label-review-keyword" th:for="${category.name() + 'Checkbox'}" th:text="'존재하지 않은 ' + ${category} + ' 키워드를 작성해주세요'"></label>
+                        </div>
+                          <input type="text" class="form-control" id="customMenuInput" name="customMenuInput" disabled>
+                          <input type="hidden" id="customMenuName" name="customMenuName">
+                    </div>
+                    
+                  </div>
+  	
                   
                   <hr class="Review-Write-hr">
                   <div class="form-group">
@@ -233,6 +257,14 @@
             <div class="card mb-4" th:each="review : ${reviewsByRestaurant}">
               <div class="card-header">
                 <h3 th:text="${review.beeMember.nickname}"></h3>
+                <hr>
+                <div th:each="menu : ${review.reviewMenuList}">
+                  <span>Menu : </span>
+                  <button type="button" class="btn menu-button" name="menu-button">
+                  <span th:if="${menu.menu != null}">[[${menu.menu.name}]]</span> 
+                  <span th:if="${menu.customMenuName != null}">[[${menu.customMenuName}]]</span>
+                  </button>
+                </div>
               </div>
               <!-- Review Images -->
               <div class="review-gallery">
@@ -250,6 +282,27 @@
                   <div class="stars" th:attr="data-rating=${review.rating}"></div>
                 </div>
                 
+                <div>
+                <span th:switch="${review.kindRating}">
+                <span th:case="1">응대 : 나쁨 / </span>
+                <span th:case="2">응대 : 보통 / </span>
+                <span th:case="3">응대 : 좋음 / </span>
+                <span th:case="*">평점 없음 / </span> 
+                </span>
+                <span th:switch="${review.priceRating}">
+                <span th:case="1">가격 : 나쁨 / </span>
+                <span th:case="2">가격 : 보통 / </span>
+                <span th:case="3">가격 : 좋음 / </span>
+                <span th:case="*">평점 없음 / </span> 
+                </span>
+                <span th:switch="${review.tasteRating}">
+                <span th:case="1">음식 : 나쁨</span>
+                <span th:case="2">음식 : 보통</span>
+                <span th:case="3">음식 : 좋음</span>
+                <span th:case="*">평점 없음</span> 
+                </span>
+                
+                </div>
                 <!-- Action Buttons -->
                 <div class="button-container">
                   <input type="hidden" class="review-id" th:value="${review.id}">
@@ -266,8 +319,19 @@
                     <button type="button" class="btn btn-outline-danger mr-2" data-bs-toggle="button" th:onclick="deleteReview(this)">삭제</button>
                   </div>
                 </div>
+                <!-- Category list-->
+                <div class="button-container">
+                  <div th:each="reviewKeyword : ${review.keywords}">
+                    <div class="review-keyword">
+                      <i class="review-keyword-icon"></i>
+                      <span th:text="${reviewKeyword.keyWord.keywordName}">키워드 출력 부분</span>
+                    </div>
+                  </div>
+                </div>
+                
                 
               </div>
+              
             </div>
           </div>
         </div>
@@ -324,6 +388,25 @@
 	  });
       
 	})
+	
+	$(document).ready(function() {
+    $('#customMenuCheckbox').change(function() {
+      const customInput = $('#customMenuInput');
+      if ($(this).is(':checked')) {
+    	  customInput.prop('disabled', false);
+        } else {
+          customInput.prop('disabled', false);
+          customInput.val('');
+          $('#customMenuName').val('');
+          
+        }
+      });
+    
+    $('#customMenuInput').on('input', function() {
+        $('#customMenuName').val($(this).val()); 
+      });
+    });
+	
 
     function editReviewWithModal(button) {
       const reviewId = card.querySelector('.review-id').value;
@@ -477,11 +560,6 @@
           console.error('AJAX 요청 실패:', status, error);
         }
       });
-    }
-    
-    // 디테일 평점 테스트 
-    function detailRating() {
-    	const detailRating =  document.getElementById('tasteRating').value
     }
     
     

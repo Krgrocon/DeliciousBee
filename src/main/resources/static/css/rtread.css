@@ -110,6 +110,7 @@ body {
 .button-container {
 	display: flex;
 	align-items: center;
+	margin-top: 10px;
 }
 
 .d-flex {
@@ -190,11 +191,50 @@ body {
 }
 
 .Review-Write-hr {
-	margin: 20px 0; 
+	margin: 20px 0;
 	border: none;
 	border-top: 1px solid #dee2e6;
 }
 
 .form-group label {
 	font-weight: bold;
+	font-size: 14px;
+}
+
+.menu-button {
+	line-height: 30px;
+	padding: 0px 12px;
+	font-size: 14px;
+	background: #efefef;
+	border-radius: 15px;
+	display: inline-block;
+	margin-right: 6px;
+	margin-bottom: 10px;
+	color: #202020;
+}
+
+.review-keyword {
+	line-height: 16px; font-size : 14px;
+	display: inline-block;
+	color: #505050;
+	margin: 4px 0px 4px 6px;
+	font-size: 14px;
+}
+
+.review-keyword-icon {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-bottom: 1px;
+  border-radius: 50%; 
+  border: 2px solid #505050;
+  position: relative; 
+}
+
+.form-check {
+	margin: 10px 0px 10px 0;
+}
+
+.form-check-label-review-keyword{
+	font-size: 14px;
 }
