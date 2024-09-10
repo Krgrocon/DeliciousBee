@@ -1,113 +1,120 @@
-/* delete.css */
+/* 기본 스타일 */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f8f8f8; /* 밝은 회색 배경 */
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* 전체 내용 가운데 정렬 */
-    justify-content: center; /* 세로 가운데 정렬 */
-    min-height: 100vh; /* 최소 높이를 화면 높이로 설정 */
+    background-color: #f4f4f4;
 }
 
+/* 헤더 스타일 */
 .header {
-    background-color: #FFD700; /* 밝은 노란색 */
-    padding: 10px 0;
+    background-color: #fff;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
     text-align: center;
-    width: 100%; /* 헤더 너비를 전체 화면으로 설정 */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 그림자 효과 */
 }
 
-.bee-image img {
-    width: 150px;
-    border-radius: 50%; /* 이미지를 둥글게 */
+.header .bee-image img {
+    max-width: 100px;
 }
 
-.contents {
+/* 컨테이너 스타일 */
+.container {
     display: flex;
-    flex-direction: column;
-    align-items: center; /* 내용을 가운데 정렬 */
-    gap: 20px;
-    width: 100%; /* 내용 영역 너비를 전체 화면으로 설정 */
-    max-width: 500px; /* 최대 너비 설정 */
-    padding: 30px; /* 내용 영역 패딩 */
-    background-color: #fff; /* 흰색 배경 */
-    border-radius: 10px; /* 둥근 모서리 */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 그림자 효과 */
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.sidebar {
+    flex: 0 0 200px; /* 사이드바 너비를 고정 */
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-right: 1px solid #ddd;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 10px;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* 컨텐츠 스타일 */
+.contents {
+    flex: 1;
+    padding: 20px;
+    text-align: center; /* 텍스트 가운데 정렬 */
 }
 
 .title {
-    font-size: 36px;
-    color: #333;
-    text-align: center;
-    font-weight: bold;
+    font-size: 24px;
     margin-bottom: 20px;
+    color: #333;
 }
 
 .info {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* 내용을 가운데 정렬 */
-    gap: 10px; /* 요소 간 간격 */
+    margin-bottom: 20px;
 }
 
-input[type="password"] {
-    padding: 15px;
-    font-size: 18px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 300px;
-    text-align: center; /* 입력 필드 내용 가운데 정렬 */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 그림자 효과 */
+.info input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
 }
 
-.button-container { /* 버튼들을 담는 컨테이너 추가 */
-    display: flex;
-    gap: 15px; /* 버튼 간 간격 */
-    justify-content: center; /* 버튼들을 컨테이너 안에서 가운데 정렬 */
-}
-
+/* 버튼 스타일 */
 .buttons {
-	display: flex;
-	justify-content: center; /* 버튼들을 컨테이너 안에서 가운데 정렬 */
+    display: flex;
+    justify-content: center; /* 버튼 가운데 정렬 */
+    gap: 10px; /* 버튼 간 간격 */
 }
+
 .delete-button {
-    padding: 15px 30px;
-    font-size: 18px;
+    background-color: grey;
     color: #fff;
-    background-color: #ff5733; /* 밝은 주황색 계열 */
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
+    padding: 10px 20px;
     cursor: pointer;
+    font-size: 16px;
     transition: background-color 0.3s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 그림자 효과 */
-    font-weight: bold; /* 텍스트 굵게 */
 }
 
 .delete-button:hover {
-    background-color: #e44d26; /* 짙은 주황색 계열 */
+    background-color: #333333;
 }
 
 .back-button {
-    padding: 15px 30px; /* 버튼 크기 조정 */
-    font-size: 18px;
-    color: #fff;
     background-color: #007bff; /* 파란색 */
+    color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
+    padding: 10px 20px;
     cursor: pointer;
+    font-size: 16px;
     transition: background-color 0.3s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 그림자 효과 */
-    font-weight: bold; /* 텍스트 굵게 */
+    text-decoration: none; /* 밑줄 제거 */
 }
 
 .back-button:hover {
-    background-color: #0056b3; /* 짙은 파란색 */
+    background-color: #0056b3; /* 파란색 짙게 */
 }
 
-.home-image {
-    max-width: 100%; /* 이미지 크기 조절 */
-    height: auto; /* 높이 자동 조절 */
-    border-radius: 50%; /* 이미지를 둥글게 */
+.sidebar a.active {
+    color: yellow;
+    font-weight: bold;
 }
