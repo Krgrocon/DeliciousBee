@@ -43,9 +43,10 @@ public class SecurityConfig {
                 .headers((headerConfig) -> headerConfig.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()))
                 .authenticationProvider(daoAuthenticationProvider())
                 .authorizeHttpRequests((authorizeRequest) -> authorizeRequest
-                        .requestMatchers("/restaurant/rtwrite", "/comments/save").hasRole(Role.USER.name())
-                        .requestMatchers("/", "/member/login", "/css/**", "images/**", "/js/**", "/login/*", "/logout/*", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**").permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/restaurant/rtwrite", "/comments/save").hasRole("USER")
+                        .requestMatchers("/", "/member/login", "/css/**", "images/**", "/js/**", "/login/*", "/logout/*", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**" , "/restaurant/display/**" , "/image/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .exceptionHandling((exceptions) -> exceptions
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
@@ -54,9 +55,9 @@ public class SecurityConfig {
                 )
                 .formLogin((formLogin) -> formLogin
                         .loginPage("/member/login")
-                        .usernameParameter("member_id") // 필드 이름 지정
+                        .usernameParameter("member_id")
                         .loginProcessingUrl("/member/login")
-                        .defaultSuccessUrl("/")
+                        .successHandler(new CustomAuthenticationSuccessHandler())
                         .permitAll()
                 )
                 .sessionManagement((sessionManagement) ->
@@ -66,7 +67,7 @@ public class SecurityConfig {
                 .oauth2Login((oauth) -> oauth
                         .loginPage("/member/login")
                         .userInfoEndpoint((endpoint) -> endpoint.userService(customOAuth2UserService))
-                        .defaultSuccessUrl("/")
+                        .successHandler(new CustomAuthenticationSuccessHandler())
                 );
 
         return http.build();

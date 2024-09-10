@@ -376,8 +376,7 @@
                         userLatitude = position.coords.latitude;
                         userLongitude = position.coords.longitude;
                         // 위치 정보를 쿠키에 저장
-                        document.cookie = `userLocation=${JSON.stringify({latitude: userLatitude, longitude: userLongitude})}; path=/`;
-
+                        document.cookie = `userLocation=${JSON.stringify({latitude: userLatitude, longitude: userLongitude})}; path=/; domain=localhost; max-age=3600`;
                         // 위치 정보를 가져온 후 초기 데이터 로드
                         loadRestaurants();
                     },
@@ -455,7 +454,7 @@
 
                 restaurants.forEach(function(restaurant) {
                     let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
-                        ? `/restaurant/display?filename=${restaurant.imageUrls[0].saved_filename}`
+                        ? `/restaurant/display?filename=${restaurant.imageUrls[0]}`
                         : 'default_image_url.jpg'; // 기본 이미지 URL을 설정할 수 있습니다.
 
                     html += `
