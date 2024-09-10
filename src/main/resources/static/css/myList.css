@@ -70,11 +70,7 @@ body {
 }
 
 /* 게시글 리스트 스타일 */
-.post-list {
-    margin-top: 20px;
-}
-
-.post-item {
+.review-box {
     background-color: #fafafa;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -83,30 +79,26 @@ body {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.post-item h2 {
-    margin: 0 0 10px;
-    font-size: 18px;
-    color: #333;
+.restaurant-name {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 10px;
 }
 
-.post-item p {
-    margin: 0;
-    color: #666;
+.review_content {
+    margin-bottom: 10px;
 }
 
-/* 버튼 스타일 */
-button {
+.detail-button {
+    display: inline-block;
+    padding: 8px 12px;
     background-color: #007bff;
-    color: #fff;
-    border: none;
+    color: white;
+    text-decoration: none;
     border-radius: 4px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-    margin-top: 10px;
+    transition: background-color 0.3s ease;
 }
 
-button:hover {
+.detail-button:hover {
     background-color: #0056b3;
 }

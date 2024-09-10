@@ -164,11 +164,10 @@
 
 			</div>
 		</div>
-		<p class="noReview" th:unless="${!myPage.beeMember.review.isEmpty()}">
+		<div class="noReview" th:unless="${!myPage.beeMember.review.isEmpty()}">
 			<div class="no-review">작성된 리뷰가 없습니다ㅠ
-				<p><a href="rtlist.html">리뷰 작성하러 가기</a> 👉</p>
 			</div>
-		</p>
+		</div>
 	</div>
 	
 	<div class="goUpdate-button"
