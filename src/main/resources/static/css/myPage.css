@@ -1,0 +1,1015 @@
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	background-color: white;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	margin: 0px;
+}
+
+.home-image {
+	background-color: rgb(41, 41, 41);
+	width: 50px;
+	height: auto;
+}
+
+.myinfo-button {
+	height: 20px;
+	text-align: center;
+	background-color: #f8f9fa; /* 배경색 */
+	border: 1px solid #ced4da; /* 테두리 */
+	border-radius: 5px; /* 둥근 모서리 */
+	padding: 8px 16px; /* 내부 여백 */
+	font-size: 14px; /* 폰트 크기 */
+	cursor: pointer; /* 마우스 커서 모양 */
+	transition: background-color 0.3s ease; /* 배경색 변경 애니메이션 */
+	margin-top: 6px;
+	margin-bottom: 10px;
+}
+
+.owner-profile input[type="text"] { /* 소개글 입력 칸 스타일 */
+	border: none; /* 테두리 제거 */
+	padding: 10px; /* 내부 여백 */
+	font-size: 16px; /* 글꼴 크기 */
+	width: 90%; /* 넓이 100% */
+	border-radius: 5px; /* 모서리 둥글게 */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+	background-color: #f5f5f5; /* 옅은 회색 배경 */
+	color: #333; /* 어두운 회색 글씨 */
+	position: relative; /* 입력 칸에 position: relative 설정 */
+	z-index: 1; /* z-index 값을 설정 */
+}
+
+.owner-profile input[type="text"]:focus { /* 포커스 시 스타일 */
+	outline: none; /* 포커스 외곽선 제거 */
+	background-color: #e9e9e9; /* 약간 더 밝은 회색 */
+}
+
+.main-info {
+	margin-left: 200px;
+	margin-right: 200px;
+	text-align: center;
+	justify-content: center;
+	height: 350px;
+	position: relative; /* main-info를 기준으로 자식 요소 positioning */
+}
+
+.main-image {
+	position: absolute;
+	top: 50%; /* 위에서 50% 위치 */
+	left: 50%;
+	transform: translate(-50%, -50%); /* 가운데 정렬 */
+	width: 120px;
+	height: 120px;
+	border: 1px solid black;
+	border-radius: 50%;
+	overflow: hidden;
+	z-index: 1;
+}
+
+.profile-image {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 150px; /* profile-image 크기를 main-image보다 작게 조정 */
+	height: 150px;
+	border: 1px solid black;
+	border-radius: 50%;
+	overflow: hidden;
+	z-index: 2; /* profile-image를 main-image보다 위에 배치 */
+}
+
+.default-profile-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover; /* 이미지 비율 유지 */
+}
+
+.default-main-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* 마이페이지 소개 부분 */
+.myPageOwner {
+	background-image: url("/myPageImage/honey2.jpg");
+	background-size: 100% 100%; /* 가로 세로 모두 100%로 설정 */
+	background-repeat: no-repeat;
+	background-position: center;
+	width: auto; /* width를 auto로 설정하여 이미지 크기에 맞춤 */
+	margin-left: auto; /* 좌우 여백 자동 조정 */
+	margin-right: auto; /* 좌우 여백 자동 조정 */
+	display: flex;
+	flex-direction: row;
+	margin-left: 200px;
+	margin-right: 200px;
+	margin-top: auto;
+	margin-bottom: 3px;
+	background-color: white;
+	border: 1px solid #c49b4c;
+	border-radius: 5px;
+	padding: 20px;
+	box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+	text-align: center;
+}
+
+.owner-profile {
+	width: 70%;
+	justify-content: center;
+}
+
+.nickname-header {
+	display: flex;
+	flex-direction: row;
+	border-bottom: 1px solid rgba(255, 0, 0, 0.3);
+	width: 110%; /* 선의 길이를 50%로 줄임 */
+	height: 50px;
+}
+
+.nickname {
+	font-style: italic;
+	font-size: 20px;
+	color: black;
+	margin: 10px;
+}
+
+.intro-title {
+	text-align: left;
+	color: black;
+	margin-top: 20px;
+	margin-bottom: 10px;
+	margin-left: 10px;
+	font-size: 20px;
+}
+
+.introduce {
+	border: 1px solid #c49b4c; /* 테두리 색상: 꿀 색상 */
+	background-color: rgba(255, 255, 255, 0.8); /* 배경색: 반투명 흰색 */
+	border-radius: 8px; /* 둥근 모서리 */ text-align : left; color : #333;
+	/* 글자 색: 어두운 회색 */ line-height : 1.6; font-size : 14px; margin-left :
+	10px; margin-right : 30px; padding : 15px; /* 내부 여백 추가 */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	padding: 15px;
+	margin-right: 30px;
+	margin-left: 10px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: #333;
+	text-align: left; /* 그림자 효과 */
+}
+
+.owner-stats {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	color: black;
+	text-align: center;
+	font-size: 15px;
+	font-style: italic;
+	border-left: 1px solid rgba(255, 0, 0, 0.3);
+	width: 35%;
+	color: orange;
+	margin-top: 15px;
+	margin-left: 80px;
+	padding-left: 20px;
+}
+
+.owner-stats span { /* span 스타일 추가 */
+	border: 1px solid #c49b4c; /* 테두리 색상: 꿀 색상 */
+	background-color: rgba(255, 255, 255, 0.8); /* 배경색: 반투명 흰색 */
+	border-radius: 8px; /* 둥근 모서리 */
+	display: block; /* 각 span을 블록 요소로 변경 */
+	padding: 8px;
+	border-radius: 5px;
+	margin-bottom: 5px; /* 아래쪽 여백 추가 */
+	font-size: 16px;
+}
+
+.owner-stats a { /* 링크 스타일 추가 */
+	color: maroon; /* 검은색 텍스트 */
+	text-decoration: none; /* 밑줄 제거 */
+	font-weight: bold; /* 굵은 글씨 */
+}
+
+a.today_visitor {
+	transition: color 0.3s ease; /* 부드러운 전환 효과 추가 */
+	font-weight: normal;
+}
+
+.today_visitor:hover {
+	color: yellow; /* 마우스 호버 시 흰색으로 변경 */
+}
+
+.today_visitor:active {
+	color: #d9d9d9; /* 클릭 시 약간 어두운 흰색으로 변경 */
+}
+
+.myPageMain {
+	
+	margin-left: 200px;
+	margin-right: 200px;
+	display: flex;
+	flex-direction: row;
+	gap: 15px;
+}
+
+.ranking {
+	margin-top: 20px;
+	flex: 2; /* 순위 컨테이너가 나머지 공간을 차지하도록 */
+	position: sticky; /* 스크롤 시 고정 */
+	top: 10px; /* 상단에 고정 */
+	border: 1px solid #c49b4c;
+	border-radius: 10px;
+	margin-left: 5px;
+	padding: 20px;
+	background-color: #f5f5f5;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	max-height: 570px; /* 랭킹 박스 높이 조절 */
+}
+
+.ranking h2 {
+	color: #8B4513; /* 제목 색상 변경 */
+	text-align: center;
+	margin-bottom: 15px;
+}
+
+/* 테이블 스타일 */
+.ranking table {
+	width: 100%;
+	border-collapse: collapse; /* 테두리 간격 없애기 */
+}
+
+.ranking th {
+	background-color: #c49b4c; /* 헤더 배경색 변경 */
+	color: white;
+	padding: 10px;
+	text-align: center; /* 헤더 텍스트 가운데 정렬 */
+}
+
+.ranking td {
+	padding: 8px;
+	text-align: center;
+	border-bottom: 1px solid #ddd; /* 셀 아래쪽 경계선 추가 */
+}
+
+/* 닉네임 링크 스타일 */
+.nickname-link {
+	color: #007bff; /* 링크 색상 변경 */
+	text-decoration: none;
+}
+
+.nickname-link:hover {
+	color: yellow;
+}
+
+/* 오늘의 리뷰 스타일 */
+.random-review {
+	margin-top: 20px;
+	border-top: 2px dashed #c49b4c; /* 점선으로 변경 */
+	padding-top: 15px;
+}
+
+.random-review h3 {
+	color: #8B4513; /* 제목 색상 변경 */
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.random-review-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center; /* 이미지 및 텍스트 가운데 정렬 */
+}
+
+.restaurant-name {
+	font-weight: bold;
+	color: #007bff; /* 레스토랑 이름 색상 변경 */
+	text-decoration: none;
+	margin-bottom: 5px;
+}
+
+.restaurant_name:hover {
+  color: yellow; /* 마우스 오버 시 텍스트 색상을 노란색으로 변경 */
+}
+
+.image-box {
+	border: 2px solid #c49b4c; /* 테두리 색상 (꿀 색상) */
+	padding: 10px;
+	border-radius: 8px;
+	margin-bottom: 10px; /* 아래 여백 추가 */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+}
+.random-review p {
+	color: #888; /* 텍스트 색상 변경 */
+	text-align: center;
+	font-style: italic;
+}
+
+.random-review {
+	margin-top: 10px;
+	border-top: 1px solid #c49b4c;
+}
+
+
+.update-icon {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	border: 1px solid black;
+}
+
+/* 버튼 스타일 */
+/* 버튼 스타일 */
+.goUpdate-button {
+	/* 기존 스타일 유지 */
+	margin-top: 30px;
+	margin-bottom: 80px;
+	margin-left: 200px;
+	margin-right: 200px;
+	text-align: right;
+}
+
+.goUpdate-button button {
+	background-color: #FFE08C; /* 밝은 노란색 배경 */
+	color: brown; /* 갈색 글씨 */
+	border: 2px solid #8B4513; /* 진한 갈색 테두리 */
+	border-radius: 6px; /* 둥근 모서리 */
+	padding: 10px 20px; /* 넉넉한 패딩 */
+	font-size: 16px; /* 폰트 크기 */
+	cursor: pointer;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+	transition: background-color 0.3s ease; /* 호버 효과 */
+}
+
+.follow-button-wrapper {
+	display: flex;
+	flex-direction: row;
+}
+
+.follow-button {
+	background-color: grey;
+	color: white; /* 흰색 텍스트 */
+	border: none;
+	border-radius: 5px; /* 둥근 모서리 */
+	padding: 10px 20px;
+	cursor: pointer;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+	transition: background-color 0.3s ease; /* 호버 효과 */
+	margin-top: 5px;
+	margin-right: 8px;
+}
+
+.follow-button:hover {
+	background-color: #FFA500; /* 주황색 배경 */
+}
+
+.nofollow {
+	background-color: orange;
+	color: white; /* 흰색 텍스트 */
+	border: none;
+	border-radius: 5px; /* 둥근 모서리 */
+	padding: 10px 20px;
+	cursor: pointer;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+	transition: background-color 0.3s ease; /* 호버 효과 */
+	margin-top: 5px;
+	margin-right: 8px;
+}
+
+.nofollow:hover {
+	background-color: #FFA500; /* 주황색 배경 */
+}
+
+.no-login-follow {
+	margin-top: 15px;
+	font-size: 14px;
+}
+
+.follow-list {
+	background-color: #FFE08C; /* 밝은 노란색 배경 */
+	color: brown; /* 갈색 글씨 */
+	border: 2px solid #8B4513; /* 진한 갈색 테두리 */
+	border-radius: 6px; /* 둥근 모서리 */
+	padding: 6px 6px; /* 넉넉한 패딩 */
+	font-size: 13px; /* 폰트 크기 */
+	cursor: pointer;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+	transition: background-color 0.3s ease; /* 호버 효과 */
+	margin-right: 5px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.follow-list button:hover {
+	background-color: #FFA500; /* 주황색 배경 */
+}
+
+/*    리뷰    */
+.myPageReview {
+	display: flex;
+	flex: 8; /* 리뷰 컨테이너가 공간을 더 차지하도록 */
+	flex-wrap: wrap;
+	overflow-y: auto; /* 스크롤바 설정 */
+	gap: 15px;
+	justify-content: space-between;
+	margin-bottom: 200px;
+	margin-top: 20px;
+}
+
+.review-box {
+	border: 1px solid #c49b4c;
+	padding: 20px;
+	margin-bottom: 10px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	background-color: #F8F8F8;
+	width: 100%;
+}
+
+.restaurant_name_head {
+	border-bottom: 1px solid #c49b4c;
+	background-color: #FAFAFA;
+	padding: 10px;
+	border-radius: 5px; /* 둥근 테두리 */
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+	font-family: 'Arial Rounded MT Bold', sans-serif; /* 둥근 폰트 */
+	width: 97%; /* 너비 고정 */
+	max-height: 50px; /* 높이 고정 */
+}
+
+.review-date {
+	font-size: 14px; /* 글자 크기 설정 */
+	color: green; /* 회색 글자색 */
+	font-style: italic; /* 이탤릭체 적용 */
+}
+
+.review-under {
+	border-top: 1px solid rgba(0, 0, 0, 0.2); /* 검은색 20% 투명도 */
+	background-color: #f2f2f2; /* 박스 배경색 */
+	padding: 10px; /* 박스 여백 */
+	text-align: center; /* 글자 가운데 정렬 */
+}
+
+.review-under a {
+	color: #333; /* 글자 색상 */
+	font-weight: bold; /* 글자 굵게 */
+	text-decoration: none; /* 밑줄 제거 */
+}
+
+.review-under a:hover {
+	color: orange; /* 마우스 호버 시 글자 색상 */
+	text-decoration: underline; /* 밑줄 추가 */
+}
+
+.restaurant_name {
+	text-decoration: underline;
+	color: orange;
+	margin: 10px;
+	font-size: 1.25rem; /* 레스토랑 이름 크기 */
+	margin-bottom: 5px; /* 별점과의 간격 */
+	font-weight: bold;
+	text-shadow: 1px 1px 2px #000000;
+}
+
+a {
+	text-decoration: none;
+}
+
+.no-review {
+	display: flex;
+	flex: 8;
+	margin-top: 20px;
+	margin-bottom: 400px;
+	border: 1px soild black;
+	background-color: #F8F8F8;
+	border-radius: 10px;
+	box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+	font-size: 20px;
+	font-style: italic;
+	height: 400px;
+}
+
+.no-review-info {
+	margin-left: 300px;
+	margin-top: 100px;
+}
+
+.rating-stars {
+	margin: 10px;
+	display: inline-block;
+	margin-bottom: 10px; /* 리뷰 내용과의 간격 */
+}
+
+.rating-stars img {
+	width: 18px;
+	height: 18px;
+}
+
+.img-and-review {
+	padding: 10px;
+	display: flex;
+	flex-direction: row;
+}
+
+.review-comment {
+	padding-right: 10px;
+	margin: 15px;
+	margin-left: 20px;
+	margin-right: 0px;
+	border-top: 1px solid grey;
+	border-bottom: 1px solid grey;
+	border-radius: 20px;
+	font-size: 15px;
+	width: 530px;
+}
+
+.recommendItems {
+	margin-left: 10px;
+	margin-top: 13px;
+	font-weight: bold; /* 추천 메뉴 텍스트 굵게 */
+	color: orange; /* 추천 메뉴 텍스트 오렌지색 */
+}
+
+.review_content {
+	margin-left: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	line-height: 1.5; /* 줄 간격 */
+}
+
+.main-content {
+	flex: 3;
+	padding: 20px;
+}
+
+.update-form {
+	padding: 20px;
+	background-color: #fff;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.update-form h1 {
+	font-size: 30px;
+	color: #333;
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+.info {
+	margin-bottom: 20px;
+}
+
+.info h4 {
+	margin-bottom: 10px;
+	font-size: 18px;
+}
+
+.update-form button {
+	padding: 10px 20px;
+	font-size: 16px;
+	color: #fff;
+	background-color: #007bff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.update-form button:hover {
+	background-color: #0056b3;
+}
+
+
+#scrollToTopButton {
+	position: fixed;
+	right: 20px; /* 오른쪽 여백 */
+	bottom: 20px; /* 아래 여백 */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 40px; /* 버튼 크기 */
+	height: 40px; /* 버튼 크기 */
+	border-radius: 50%; /* 동그란 테두리 */
+	background-color: #fff; /* 배경 색상 */
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 1); /* 그림자 효과 */
+	cursor: pointer; /* 커서를 포인터로 변경 */
+	z-index: 100; /* 다른 요소 위에 표시 */
+}
+
+#scrollToTopButton:hover {
+	background-color: #ddd; /* 마우스 호버 시 배경 색상 변경 */
+}
+
+#scrollToTopButton svg {
+	width: 20px; /* SVG 크기 */
+	height: 20px; /* SVG 크기 */
+}
+
+.under-bar {
+	border: 1px solid black;
+	background-color: #343a40;
+	height: 70px;
+	display: flex; /* flexbox 사용 */
+	align-items: flex-end; /* 컨텐츠를 아래쪽으로 정렬 */
+	justify-content: flex-end; /* 컨텐츠를 오른쪽으로 정렬 */
+	padding: 10px; /* 여백 추가 */
+}
+
+.under-image {
+	display: flex;
+	margin-right: 10px; /* 이미지와 텍스트 사이 간격 */
+	height: 50px;
+	width: 50px;
+}
+
+.under-comment {
+	font-size: 20px;
+	font-weight: bold;
+	color: white;
+}
+
+.navbar {
+	background-color: #343a40;
+	color: white;
+	padding: 15px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.navbar .container {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	padding-left: 15%;
+}
+
+.navbar-brand-group {
+	display: flex;
+	align-items: center;
+	margin-right: 56.5%;
+}
+
+.navbar-brand {
+	font-size: 1.2rem;
+	text-decoration: none;
+	color: inherit;
+}
+
+.navbar-nav {
+	display: flex;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.nav-item {
+	margin-left: 20px;
+}
+
+.nav-link {
+	text-decoration: none;
+	color: inherit;
+}
+
+.nav-link:hover {
+	color: #FF6347;
+}
+
+.nav-link.active {
+	color: #FF6347;
+}
+
+.navbar-toggler {
+	background-color: transparent;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	display: none;
+	margin-left: 10px;
+}
+
+.navbar-toggler span {
+	display: block;
+	width: 25px;
+	height: 3px;
+	background-color: white;
+	margin: 5px 0;
+}
+
+.modal {
+	display: none;
+	position: fixed;
+	z-index: 10;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0, 0, 0, 0.4);
+}
+
+.follow-modal-content {
+	background-image: url("/myPageImage/honey3.jpg");
+	background-size: 100% 100%; /* 가로 세로 모두 100%로 설정 */
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: #fefefe;
+	margin: 15% auto;
+	padding: 20px;
+	border: 1px solid #888;
+	width: 30%; /* 모달 넓이 조절 */
+	border-radius: 10px; /* 모서리 둥글게 */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	margin: 15% auto; /* 그림자 효과 */
+}
+
+.follow-modal-content h3 {
+	text-align: center;
+	margin-bottom: 20px;
+	color: #333; /* 어두운 텍스트 색상 */
+	font-family: 'Arial Rounded MT Bold', sans-serif; /* 둥근 폰트 */
+}
+
+.follow-modal-content ul {
+	list-style: none;
+	padding: 0;
+}
+
+.follow-modal-content li {
+	padding: 10px;
+	border-bottom: 1px solid #ddd; /* 각 항목 사이 구분선 */
+	text-align: left;
+}
+
+.follow-modal-content li a {
+	text-align: center;
+	color: #333; /* 어두운 텍스트 색상 */
+	text-decoration: none; /* 밑줄 제거 */
+	font-weight: bold; /* 굵은 글씨 */
+	display: block; /* 링크를 전체 너비로 */
+}
+
+.follow-modal-content li a:hover {
+	text-decoration: underline; /* 마우스 호버 시 밑줄 */
+	color: #FFA500; /* 주황색 */
+}
+
+/* 오늘의 방문자 목록 모달 스타일 */
+.visit-modal-content {
+	background-image: url("/myPageImage/honey.jpg");
+	background-size: 100% 100%; /* 가로 세로 모두 100%로 설정 */
+	background-repeat: no-repeat;
+	background-position: center;
+	width: auto; /* width를 auto로 설정하여 이미지 크기에 맞춤 */
+	margin-left: auto; /* 좌우 여백 자동 조정 */
+	margin-right: auto; /* 좌우 여백 자동 조정 */
+	background-color: #fff;
+	margin: 15% auto;
+	padding: 20px;
+	border: 2px solid #FFA500; /* 주황색 테두리 추가 */
+	width: 30%;
+	border-radius: 12px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+	overflow-y: auto;
+	max-height: 400px;
+}
+
+.visit-modal-content h3 {
+	font-size: 1.2em;
+	margin-bottom: 15px;
+	color: #333;
+	text-align: center;
+	font-family: 'Arial Rounded MT Bold', sans-serif;
+	border-bottom: 1px solid #FFA500; /* 제목 아래 주황색 선 추가 */
+	padding-bottom: 10px; /* 제목 아래 여백 추가 */
+}
+
+.visit-modal-content ul {
+	list-style: none;
+	padding: 0;
+}
+
+.visit-modal-content li {
+	padding: 8px 0;
+	border-bottom: 1px solid #eee;
+	text-align: center;
+	background-color: #f9f9f9; /* 밝은 회색 배경 추가 */
+	margin-bottom: 5px; /* 아래쪽 여백 추가 */
+	border-radius: 5px; /* 둥근 모서리 추가 */
+}
+
+.visit-modal-content li:last-child {
+	border-bottom: none;
+	margin-bottom: 0; /* 마지막 항목 아래 여백 제거 */
+}
+
+.visit-modal-content a {
+	text-decoration: none;
+	color: #007bff;
+	transition: color 0.3s;
+	font-weight: bold;
+}
+
+.visit-modal-content a:hover {
+	color: #FFA500;
+}
+
+.form-container {
+	width: 350px;
+	height: 400px;
+	background-color: #fff;
+	box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 15px;
+	border-radius: 10px;
+	box-sizing: border-box;
+	padding: 20px 30px;
+	margin: 15% auto;
+}
+
+.title {
+	text-align: center;
+	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	margin: 10px 0 30px 0;
+	font-size: 28px;
+	font-weight: 800;
+}
+
+.form {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	margin-bottom: 15px;
+}
+
+.input {
+	border-radius: 20px;
+	border: 1px solid #c0c0c0;
+	outline: 0 !important;
+	box-sizing: border-box;
+	padding: 12px 15px;
+}
+
+.page-link {
+	text-decoration: underline;
+	margin: 0;
+	text-align: end;
+	color: #747474;
+	text-decoration-color: #747474;
+}
+
+.page-link-label {
+	cursor: pointer;
+	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	font-size: 9px;
+	font-weight: 700;
+}
+
+.page-link-label:hover {
+	color: #000;
+}
+
+.form-btn {
+	padding: 10px 15px;
+	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	border-radius: 20px;
+	border: 0 !important;
+	outline: 0 !important;
+	background: teal;
+	color: white;
+	cursor: pointer;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.form-btn:active {
+	box-shadow: none;
+}
+
+.sign-up-label {
+	margin: 0;
+	font-size: 10px;
+	color: #747474;
+	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	text-align: center;
+	margin-top: 5%;
+}
+
+.sign-up-link {
+	margin-left: 1px;
+	font-size: 11px;
+	text-decoration: underline;
+	text-decoration-color: teal;
+	color: teal;
+	cursor: pointer;
+	font-weight: 800;
+	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+.buttons-container {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	margin-top: 20px;
+	gap: 15px;
+}
+
+.more-button {
+	background-color: sliver; /* 버튼 배경색 */
+	color: black; /* 버튼 글자색 */
+	margin-left: 5px;
+	padding: 4px; /* 버튼 여백 */
+	height: 15;
+	text-align: center; /* 글자 가운데 정렬 */
+	text-decoration: none; /* 밑줄 제거 */
+	border: none;
+	display: inline-block; /* 인라인 블록 요소로 설정 */
+	border-radius: 5px; /* 둥근 모서리 */
+	font-size: 10px; /* 글자 크기 */
+	cursor: pointer; /* 마우스 커서 변경 */
+	transition: background-color 0.3s; /* 배경색 전환 효과 */
+}
+
+.more-button:hover {
+	background-color: orange; /* 오렌지색 배경 */
+}
+
+.google-login-button {
+	border-radius: 20px;
+	box-sizing: border-box;
+	padding: 10px 15px;
+	box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06)
+		0px 0px 0px 1px;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	font-size: 11px;
+	gap: 5px;
+	border: 2px solid #747474;
+}
+
+.google-icon {
+	font-size: 18px;
+	margin-bottom: 1px;
+}
+
+.close {
+	color: black;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.close:hover, .close:focus {
+	color: red;
+	text-decoration: none;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+/* 반응형 - 작은 화면에서 메뉴는 이전과 동일하게 동작 */
+@media ( max-width : 768px) {
+	.navbar .container {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+	.navbar-toggler {
+		display: block;
+	}
+	.navbar-nav {
+		flex-direction: column;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		background-color: #343a40;
+		width: 200px;
+		padding: 10px;
+		display: none;
+	}
+	.navbar-nav.show {
+		display: flex;
+	}
+	.intro-content {
+		flex-direction: column;
+		align-items: center;
+		transform: translateY(0);
+	}
+	.search-container, .restaurant-card {
+		width: 90%;
+		max-width: 100%;
+		margin: 10px 0;
+		transform: scale(1);
+	}
+}

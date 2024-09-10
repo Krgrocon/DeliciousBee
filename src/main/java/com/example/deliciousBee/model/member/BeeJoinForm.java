@@ -19,6 +19,7 @@ public class BeeJoinForm {
 	private String password;     //패스워드
 	
 	@NotBlank(message = "정확한 이름을 입력해주세요") //null, 빈값, 공백 허용 x
+	@Size(min = 2, max = 8, message = "2~8자로 입력해주세요")
 	private String nickname;         //이름
 	
 	@NotNull(message = "성별을 선택해주세요")  //null 불가 but 빈값, 공백 허용

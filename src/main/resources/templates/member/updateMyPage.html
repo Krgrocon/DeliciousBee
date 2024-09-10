@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="/myPage.css">
+<link rel="stylesheet" href="/css/myPage.css">
 <title>마이페이지</title>
 </head>
 <body>
@@ -164,11 +164,10 @@
 
 			</div>
 		</div>
-		<p class="noReview" th:unless="${!myPage.beeMember.review.isEmpty()}">
+		<div class="noReview" th:unless="${!myPage.beeMember.review.isEmpty()}">
 			<div class="no-review">작성된 리뷰가 없습니다ㅠ
-				<p><a href="rtlist.html">리뷰 작성하러 가기</a> 👉</p>
 			</div>
-		</p>
+		</div>
 	</div>
 	
 	<div class="goUpdate-button"

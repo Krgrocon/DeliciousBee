@@ -1,3 +1,4 @@
+/* 기본 스타일 */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -27,9 +28,8 @@ body {
     border-radius: 8px;
 }
 
-/* 사이드바 스타일 */
 .sidebar {
-    flex: 1;
+    flex: 0 0 200px; /* 사이드바 너비를 고정 */
     padding: 20px;
     background-color: #f8f8f8;
     border-right: 1px solid #ddd;
@@ -50,53 +50,41 @@ body {
     font-weight: bold;
 }
 
-.sidebar a.active {
-    color: yellow;
-    font-weight: bold;
-}
-
-/* 메인 콘텐츠 스타일 */
-.main {
-    flex: 3;
-    background-color: #fff;
+/* 컨텐츠 스타일 */
+.contents {
+    flex: 1;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center; /* 텍스트 가운데 정렬 */
 }
 
-.main h1 {
-    margin-top: 0;
+.title {
+    font-size: 24px;
+    margin-bottom: 20px;
     color: #333;
 }
 
-/* 게시글 리스트 스타일 */
-.post-list {
-    margin-top: 20px;
+.info {
+    margin-bottom: 20px;
 }
 
-.post-item {
-    background-color: #fafafa;
+.info input {
+    width: 100%;
+    padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    margin-bottom: 15px;
-    padding: 15px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
-.post-item h2 {
-    margin: 0 0 10px;
-    font-size: 18px;
-    color: #333;
-}
-
-.post-item p {
-    margin: 0;
-    color: #666;
+    box-sizing: border-box;
+    margin-bottom: 10px;
 }
 
 /* 버튼 스타일 */
-button {
-    background-color: #007bff;
+.buttons {
+    display: flex;
+    justify-content: center; /* 버튼 가운데 정렬 */
+    gap: 10px; /* 버튼 간 간격 */
+}
+
+.delete-button {
+    background-color: grey;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -104,9 +92,29 @@ button {
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s;
-    margin-top: 10px;
 }
 
-button:hover {
-    background-color: #0056b3;
+.delete-button:hover {
+    background-color: #333333;
+}
+
+.back-button {
+    background-color: #007bff; /* 파란색 */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    text-decoration: none; /* 밑줄 제거 */
+}
+
+.back-button:hover {
+    background-color: #0056b3; /* 파란색 짙게 */
+}
+
+.sidebar a.active {
+    color: yellow;
+    font-weight: bold;
 }

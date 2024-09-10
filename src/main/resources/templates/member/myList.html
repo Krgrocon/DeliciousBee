@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="/myList.css">
+<link rel="stylesheet" href="/css/myList.css">
 <title>내가 쓴글</title>
 </head>
 <body>
@@ -25,56 +25,20 @@
 		</nav>
 
 		<section class="main">
-			<h1>내가 쓴글</h1>
-			<div class="post-list">
-				<!-- 게시글 항목 예시 -->
-				<div class="post-item">
-					<div class="myPageMain">
-						<div th:if="${!myPage.beeMember.review.isEmpty()}"
-							class="myPageReview">
-							<div th:each="review : ${myPage.beeMember.review}"
-								class="review-box">
-
-								<div class="restaurant_name_head">
-									<span><img src="/image/bee.jpg" alt="벌 이미지"
-										style="width: 35px; height: 35px; object-fit: cover;"></span> <a
-										th:href="@{/restaurant/rtread(id=${review.restaurant.id})}"
-										title="식당 정보로 이동"> <span
-										th:text="${review.restaurant.name}" class="restaurant_name"></span>
-									</a>
-									<div class="rating-stars">
-										<span th:each="i : ${#numbers.sequence(1, 5)}"> <img
-											th:if="${review.rating >= i}" src="/image/full_star.png"
-											alt="꽉 찬 별"> <img th:unless="${review.rating >= i}"
-											src="/image/empty_star.png" alt="빈 별">
-										</span>
-									</div>
-									<span><a
-										th:href="@{/review/allreview/{restaurantId}(restaurantId=${review.restaurant.id})}">리뷰보기</a></span>
-								</div>
-								<div th:each="file : ${review.attachedFile}">
-									<div th:if="${file.saved_filename}">
-										<img
-											th:src="@{'/review/display?filename='+${file.saved_filename}}"
-											alt="Review Image"
-											style="width: 300px; height: 300px; object-fit: cover;">
-									</div>
-								</div>
-								<div th:text="'추천 메뉴 : ' + ${review.recommendItems}"
-									class="recommendItems"></div>
-								<div th:text="'리뷰 : ' + ${review.reviewContents}"
-									class="review_content"></div>
-
-							</div>
-						</div>
-						<p th:unless="${!myPage.beeMember.review.isEmpty()}">작성된 리뷰가
-							없습니다.</p>
-
-					</div>
-				</div>
-				<!-- 추가 게시글 항목은 위와 같은 형식으로 추가 -->
-			</div>
-		</section>
+            <h1>내가 쓴글</h1>
+            <div class="post-list">
+                <div th:if="${!myPage.beeMember.review.isEmpty()}" class="myPageReview">
+                    <div th:each="review : ${myPage.beeMember.review}" class="review-box">
+                        <div>
+                            <span class="restaurant-name" th:text="${review.restaurant.name}"></span>
+                        </div>
+                        <div th:text="${review.reviewContents}" class="review_content"></div>
+                        <a th:href="@{/review/allreview/{restaurantId}(restaurantId=${review.restaurant.id})}" class="detail-button">리뷰로가기</a>
+                    </div>
+                </div>
+                <p th:unless="${!myPage.beeMember.review.isEmpty()}">작성된 리뷰가 없습니다.</p>
+            </div>
+        </section>
 	</main>
 </body>
 </html>

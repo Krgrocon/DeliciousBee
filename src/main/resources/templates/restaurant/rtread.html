@@ -11,7 +11,7 @@
   
   <!-- Bootstrap CSS & Custom CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/rtread.css">
+  <link rel="stylesheet" href="/css/rtread.css">
 </head>
 <body>
   <input type="hidden" id="restaurant-latitude" th:value="${restaurant.latitude}">
@@ -81,7 +81,6 @@
         <h3>Restaurant Info</h3>
         <a class="card-text no-style-link" th:href="@{${restaurant.homepage_url}}" th:text="'웹사이트 방문'" target="_blank"></a>
         <p class="card-text" th:text="${restaurant.address}"></p>
-        
         <!-- restaurant-photo -->
         <hr>
         <h3><span class="restaurant-name">[[${restaurant.name}]]</span> of Photo</h3>
@@ -160,7 +159,7 @@
                   <!-- Menu Form -->
                   <hr class="Review-Write-hr">
                   <div class="form-group" th:each="menu : ${restaurant.menu_name}">
-                    <label for="recommendItems">추천 메뉴</label>
+                    <label>추천 메뉴</label>
                     <div class="form-check">
                       <input class="form-check-input" type="checkbox" id="flexCheckDefault">
                       <label class="form-check-label" for="flexCheckDefault" th:text="${menu}">Menu Name</label>

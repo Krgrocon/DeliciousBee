@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.model.board.CategoryType;
@@ -104,6 +105,8 @@ public class MyPageController {
 		model.addAttribute("todayVisitCount", myPageService.getTodayVisitCount(myPage.getId()));
 		List<MyPageVisit> visits = myPageService.getTodayMyPageVisits(myPage.getId()); // 오늘 방문 기록만 가져오도록 수정
 		model.addAttribute("visitors", visits);
+		List<MyPage> reviewCount = myPageRepository.findMyPagesOrderByReviewCountDesc(); // MyPageRepository를 직접 사용
+		model.addAttribute("reviewCount", reviewCount);
 		model.addAttribute("myPage", myPage);
 		// 로그인한 사용자의 팔로잉 목록 가져오기
 		if (loginMember != null) {
@@ -114,17 +117,40 @@ public class MyPageController {
 		 // 로그인한 사용자인지 확인
 	    boolean isOwner = loginMember != null && loginMember.getMyPage().getId().equals(myPage.getId());
 	    model.addAttribute("isOwner", isOwner); // isOwner 변수를 모델에 추가
+	    
+	    //리뷰 최신순
+	    
 		
 	}
+	@GetMapping("/random-review")
+	@ResponseBody // JSON 형태로 응답
+	public Map<String, String> getRandomReview() {
+	    List<Review> allReviews = reviewService.findAllReviews();
+	    Random random = new Random();
+	    Map<String, String> result = new HashMap<>();
 
-	// *************************방문자 목록*****************
-//	@GetMapping("myPageVisitors")
-//	public String myPageVisitors(@RequestParam("myPageId") Long myPageId, Model model) {
-//		List<MyPageVisit> visits = myPageService.getTodayMyPageVisits(myPageId); // 오늘 방문 기록만 가져오도록 수정
-//		model.addAttribute("visitors", visits);
-//		return "member/myPageVisitors";
-//	}
+	    if (!allReviews.isEmpty()) {
+	        List<Review> randomReviews = new ArrayList<>();
+	        for (Review review : allReviews) {
+	            if (review.getAttachedFile() != null && !review.getAttachedFile().isEmpty()) {
+	                randomReviews.add(review);
+	            }
+	        }
 
+	        if (!randomReviews.isEmpty()) {
+	            int randomIndex = random.nextInt(randomReviews.size());
+	            Review randomReview = randomReviews.get(randomIndex);
+	            result.put("restaurantName", randomReview.getRestaurant().getName());
+	            if (!randomReview.getAttachedFile().isEmpty()) { 
+	                result.put("imageUrl", "/review/display?filename=" + randomReview.getAttachedFile().get(0).getSaved_filename());
+	            }
+	        }
+	    }
+
+	    return result;
+	}
+
+	
 	// **********************마이페이지 수정하기 페이지 이동****************************
 	@GetMapping("updateMyPage")
 	public String goUpdateMyPage(@AuthenticationPrincipal BeeMember loginMember, Model model) {
