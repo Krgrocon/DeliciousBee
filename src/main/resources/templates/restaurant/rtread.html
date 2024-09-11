@@ -315,12 +315,19 @@
                 </div>
                 <!-- Category list-->
                 <div class="button-container">
+                  <!-- normal keyword -->
                   <div th:each="reviewKeyword : ${review.keywords}">
-                    <div class="review-keyword">
+                    <div class="review-keyword" th:if="${reviewKeyword.keyWord != null}">
                       <i class="review-keyword-icon"></i>
                       <span th:text="${reviewKeyword.keyWord.keywordName}">키워드 출력 부분</span>
                     </div>
+                    <div  class="review-keyword customKeyWord-style" th:if="${reviewKeyword.customKeyWordName != null}">
+                      <i class="review-keyword-icon customKeyWord-icon"></i>
+                      <span th:text="${reviewKeyword.customKeyWordName}">커스텀 키워드 출력 부분</span>
+                    </div>
                   </div>
+                  
+                  
                 </div>
                 
                 

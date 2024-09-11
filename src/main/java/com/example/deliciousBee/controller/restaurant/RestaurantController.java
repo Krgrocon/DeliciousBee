@@ -160,6 +160,7 @@ public class RestaurantController {
 		
 		// 카테고리 가져오기
 		Map<KeywordCategory, List<KeyWord>> keywordsByCategory = reviewKeyWordService.getKeywordsByCategory();
+		log.info("keywordsByCategory:{}", keywordsByCategory);
         model.addAttribute("keywordsByCategory", keywordsByCategory);
 		return "restaurant/rtread";
 	}
