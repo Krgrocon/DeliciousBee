@@ -58,10 +58,6 @@
     <div class="row">
       <!-- Main Content Area -->
       <div class="col-lg-8">
-        <a class="btn btn-outline-danger mr-2" 
-   th:href="@{/restaurant/rtupdate(id=${restaurant.id})}">
-    업데이트
-</a>
         <!-- Featured Restaurant -->
         <div class="card mb-4" th:object="${restaurant}">
         <div class="image-gallery">
@@ -181,22 +177,20 @@
                   <div class="form-group">
                     <label for="keywords">키워드 등록</label>
                     <div th:each="category : ${T(com.example.deliciousBee.model.keyWord.KeywordCategory).values()}">
-                      <label for="keywords" th:text="${category.key.name().replace('_', ' ')}"></label>
+                      <label for="keywords" th:text="${category.name().replace('_', ' ')}"></label>
                       <select class="form-control" multiple name="keywords">
-                        <option th:each="keyword : ${category.value}" th:value="${keyword.id}" th:text="${keyword.keywordName}">[[${keyword.keywordName}]]</option>
+                        <option th:each="keyword : ${keywordsByCategory.get(category)}" th:value="${keyword.id}" th:text="${keyword.keywordName}">[[${keyword.keywordName}]]</option>
                       </select>
-                      
-                      <!-- custom KeyWord Form -->
-                        <div class="form-check">
-                          <input class="form-check-input" type="checkbox" th:id="${category.name() + 'Checkbox'}" th:name="${category.name() + 'Checkbox'}">
-                          <label class="form-check-label-review-keyword" th:for="${category.name() + 'Checkbox'}" th:text="'존재하지 않은 ' + ${category} + ' 키워드를 작성해주세요'"></label>
-                        </div>
-                          <input type="text" class="form-control" id="customMenuInput" name="customMenuInput" disabled>
-                          <input type="hidden" id="customMenuName" name="customMenuName">
                     </div>
                     
+                      <!-- custom KeyWord Form -->
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="customKeywordCheckbox" name="customKeywordCheckbox">
+                        <label class="form-check-label-review-keyword" for="customKeywordCheckbox">존재하지 않은 키워드를 작성해주세요</label>
+                      </div>
+                      <input type="text" class="form-control" id="customKeywordInput" name="customKeywordInput" disabled>
+                      <input type="hidden" id="customKeywordName" name="customKeywordName">
                   </div>
-  	
                   
                   <hr class="Review-Write-hr">
                   <div class="form-group">
@@ -379,33 +373,52 @@
 
 
   document.addEventListener('DOMContentLoaded', function() {
-	  setStarRatings();
-      initMap();
-	  $('#reportModal').on('show.bs.modal', function (event) {
-	    const button = $(event.relatedTarget); 
-	    const reviewId = button.data('review-id');
-	    $(this).data('review-id', reviewId); 
-	  });
-      
-	})
+    setStarRatings();
+    initMap();
+    $('#reportModal').on('show.bs.modal', function (event) {
+      const button = $(event.relatedTarget); 
+      const reviewId = button.data('review-id');
+      $(this).data('review-id', reviewId); 
+      });
+  })
 	
 	$(document).ready(function() {
-    $('#customMenuCheckbox').change(function() {
-      const customInput = $('#customMenuInput');
-      if ($(this).is(':checked')) {
-    	  customInput.prop('disabled', false);
-        } else {
-          customInput.prop('disabled', false);
-          customInput.val('');
-          $('#customMenuName').val('');
-          
-        }
-      });
-    
-    $('#customMenuInput').on('input', function() {
-        $('#customMenuName').val($(this).val()); 
-      });
-    });
+
+  $('#customMenuCheckbox').change(function() {
+    const customInput = $('#customMenuInput');
+    if ($(this).is(':checked')) {
+      customInput.prop('disabled', false);
+    } else {
+      customInput.prop('disabled', true);
+      customInput.val('');
+      $('#customMenuName').val('');
+    }
+  });
+
+  $('#customMenuInput').on('input', function() {
+    $('#customMenuName').val($(this).val());
+  });
+
+  // 커스텀 키워드 처리
+  $('#customKeywordCheckbox').change(function() {
+    console.log('hello world');
+    const customInput = $('#customKeywordInput');
+    if ($(this).is(':checked')) {
+      customInput.prop('disabled', false);
+    } else {
+      customInput.prop('disabled', true);
+      customInput.val('');
+      $('#customKeywordName').val('');
+    }
+  });
+
+  $('#customKeywordInput').on('input', function() {
+    $('#customKeywordName').val($(this).val());
+  });
+
+  });
+
+  
 	
 
     function editReviewWithModal(button) {
@@ -561,8 +574,6 @@
         }
       });
     }
-    
-    
     
   </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap" async defer></script>

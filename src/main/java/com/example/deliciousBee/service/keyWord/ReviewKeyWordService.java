@@ -45,7 +45,6 @@ public class ReviewKeyWordService {
 
 	public void save(ReviewKeyWord reviewKeyWord) {
 		reviewKeyWordRepository.save(reviewKeyWord);
-
 	}
 
 }

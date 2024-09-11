@@ -131,16 +131,26 @@ public class ReviewController {
 		if (selectedKeywords != null) {
 	        selectedKeywords.forEach(keywordId -> {
 	            KeyWord keyword = reviewKeyWordService.findById(keywordId);
-	            // 여기서 널은 커스텀키워드부분
 	            ReviewKeyWord reviewKeyWord = new ReviewKeyWord(review, keyword, null); 
 	            reviewKeyWordService.save(reviewKeyWord);
-	            
-	            // 키워드 -> 리뷰
+	
 	            List<ReviewKeyWord> existingkeywords = review.getKeywords();
 	            existingkeywords.add(reviewKeyWord);
 	            review.setKeywords(existingkeywords);
 	        });
 	    }
+		
+		if(reviewWriteForm.getCustomKeywordName() != null && !reviewWriteForm.getCustomKeywordName().isEmpty()) {
+
+            ReviewKeyWord reviewKeyWord = new ReviewKeyWord(review, null, reviewWriteForm.getCustomKeywordName()); 
+            reviewKeyWordService.save(reviewKeyWord);
+
+            List<ReviewKeyWord> existingKeywords = review.getKeywords();
+            existingKeywords.add(reviewKeyWord);
+            review.setKeywords(existingKeywords);
+			
+		}
+		
 		return "redirect:/restaurant/rtread/" + restaurant_id;
 	}
 

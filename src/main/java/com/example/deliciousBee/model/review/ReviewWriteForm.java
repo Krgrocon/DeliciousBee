@@ -37,4 +37,6 @@ public class ReviewWriteForm {
 	// 유저가 등록한 ReviewMenu
 	private String customMenuName;
 	
+	// 유저가 등록한 ReviewKeyword
+	private String customKeywordName;
 }
