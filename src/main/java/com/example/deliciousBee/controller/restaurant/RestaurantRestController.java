@@ -66,7 +66,7 @@ public class RestaurantRestController {
     @PostMapping("create")
     public ResponseEntity<Restaurant> createRestaurant(@AuthenticationPrincipal BeeMember loginMember,
                                                        @RequestParam("name") String name,
-                                                       @RequestParam("address") String address,
+                                                       @RequestParam("true-address") String address,
                                                        @RequestParam("phone_number") String phoneNumber,
                                                        @RequestParam("description") String description,
                                                        @RequestParam("categories") String categories,

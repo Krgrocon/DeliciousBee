@@ -457,13 +457,22 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function() {
-        let currentPage = 1;
+        let currentPage = 0;
+        let isLoading = false;
         let totalPages = 1;
         let currentKeyword = $('#searchText').val();
         let currentSortBy = "default";
         let userLatitude = null;
         let userLongitude = null;
 
+
+        $(window).scroll(function() {
+            if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+                if(!isLoading) {
+                    loadMoreRestaurants();
+                }
+            }
+        });
         // 쿠키에서 위치 정보 가져오기
         const userLocation = getCookie("userLocation");
         if (userLocation) {
@@ -501,65 +510,79 @@
         getUserLocation();
         loadFilters();
 
-        // 검색 입력 이벤트
+
+
+// 검색 입력 이벤트
         $('#searchText').on('keyup', function(e) {
             if (e.key === 'Enter') {
                 currentKeyword = $(this).val();
-                currentPage = 1;
-                loadRestaurants();
+                currentPage = 0;  // 페이지 번호 초기화
+                $('#restaurantList').empty();  // 기존 목록 비우기
+                loadRestaurants(false);  // 새로운 검색 결과 로드
             }
         });
 
-        // 정렬 버튼 클릭 이벤트
+// 정렬 버튼 클릭 이벤트
         $('#sort-distance').click(function() {
             currentSortBy = "distance";
-            loadRestaurants();
+            currentPage = 0;  // 페이지 번호 초기화
+            $('#restaurantList').empty();  // 기존 목록 비우기
+            loadRestaurants(false);  // 새로운 정렬 결과 로드
         });
 
         $('#sort-rating').click(function() {
             currentSortBy = "rating";
-            loadRestaurants();
+            currentPage = 0;  // 페이지 번호 초기화
+            $('#restaurantList').empty();  // 기존 목록 비우기
+            loadRestaurants(false);  // 새로운 정렬 결과 로드
         });
 
-        // 레스토랑 데이터 로드 함수
-        function loadRestaurants() {
+        function loadRestaurants(append = false) {
+            if (isLoading) return;
+            isLoading = true;
+
             $.ajax({
                 url: '/api/restaurants/search',
                 type: 'GET',
                 data: {
                     keyword: currentKeyword,
-                    page: currentPage - 1,
+                    page: currentPage,
+                    size: 10,
                     sortBy: currentSortBy,
                     latitude: userLatitude,
                     longitude: userLongitude
                 },
                 success: function(data) {
-                    console.log(data); // 응답 데이터 구조를 확인하기 위해 로그 출력
-
                     if (data && data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
-                        renderRestaurants(data);
-                        renderPagination(data.page.totalPages, data.page.number + 1);
+                        renderRestaurants(data, append);
+                        if (append) {
+                            currentPage++;  // 추가 모드일 때만 페이지 번호 증가
+                        }
                     } else {
                         console.error("Invalid response data: ", data);
                     }
+                    isLoading = false;
                 },
                 error: function(error) {
                     console.error("Error loading restaurants:", error);
+                    isLoading = false;
                 }
             });
         }
-
-
+        // 추가 레스토랑 데이터 로드 함수
+        function loadMoreRestaurants() {
+            loadRestaurants(true);  // true를 전달하여 추가 모드로 설정
+        }
      // 레스토랑 렌더링 함수
-        function renderRestaurants(data) {
-            if (data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
-                let restaurants = data._embedded.restaurantDtoList;
-                let html = '';
+    function renderRestaurants(data, append = false) {
+        if (data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
+            let restaurants = data._embedded.restaurantDtoList;
+            let html = '';
 
                 restaurants.forEach(function(restaurant) {
                     let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
                         ? `/restaurant/display?filename=${restaurant.imageUrls[0]}`
-                        : 'default_image_url.jpg'; // 기본 이미지 URL을 설정할 수 있습니다.
+                        : 'default_image_url.jpg';
 
                     html += `
             <div class="col-12 mb-4">
@@ -569,9 +592,9 @@
                              alt="Restaurant Image" class="card-img-left">
                     </a>
                     <div class="card-body">
-                    	<a href="/restaurant/rtread?id=${restaurant.id}">
-                    	<h2 class="card-title">${restaurant.name}</h2>
-                		</a>
+                        <a href="/restaurant/rtread?id=${restaurant.id}">
+                        <h2 class="card-title">${restaurant.name}</h2>
+                        </a>
                         <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
                         <h4 class="text">${restaurant.address}</h4>
                         <small class="text-muted">${restaurant.description}</small>
@@ -585,7 +608,11 @@
             `;
                 });
 
-                $('#restaurantList').html(html);
+                if(append) {
+                    $('#restaurantList').append(html);
+                } else {
+                    $('#restaurantList').html(html);
+                }
             } else {
                 console.error("Invalid data structure: ", data);
             }
@@ -596,22 +623,6 @@
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
-
-        // 페이지네이션 렌더링 함수
-        function renderPagination(totalPages, currentPage) {
-            let html = '';
-            for (let i = 1; i <= totalPages; i++) {
-                html += `<a href="#" class="page-link" data-page="${i}">${i}</a>`;
-            }
-            $('#pagination').html(html);
-        }
-
-        // 페이지네이션 클릭 이벤트
-        $('#pagination').on('click', '.page-link', function(e) {
-            e.preventDefault();
-            currentPage = $(this).data('page');
-            loadRestaurants();
-        });
 
         // 필터 데이터 로드 함수
         function loadFilters() {
@@ -661,12 +672,12 @@
 
                 // 필터링 로직 적용
                 $('.card').each(function() {
-                    let cardCategory = $(this).data('maincategory'); 
+                    let cardCategory = $(this).data('maincategory');
 
                     if (selectedCategories.length === 0 || selectedCategories.includes(cardCategory)) {
-                        $(this).show(); 
+                        $(this).show();
                     } else {
-                        $(this).hide(); 
+                        $(this).hide();
                     }
                 });
             }
@@ -678,8 +689,8 @@
 
             // 필터 초기화
             filterRestaurants();
-        
-  
+
+
 </script>
 </body>
 </html>
