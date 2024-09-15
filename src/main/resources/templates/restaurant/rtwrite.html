@@ -55,8 +55,9 @@ function geocodeAddress() {
 	geocoder.geocode({ 'address': address }, function(results, status) {
 		if (status === 'OK') {
 			const location = results[0].geometry.location;
+			const formattedAddress = results[0].formatted_address; // 주소 정보 가져오기
 			map.setCenter(location);
-			map.setZoom(18); // 검색 후 줌을 18로 설정합니다.
+			map.setZoom(18);
 			const marker = new google.maps.Marker({
 				map: map,
 				position: location
@@ -65,24 +66,27 @@ function geocodeAddress() {
 			// 경도와 위도 필드에 값 설정
 			document.getElementById('latitude').value = location.lat();
 			document.getElementById('longitude').value = location.lng();
+			// 주소 필드에 값 설정
+			document.getElementById('true-address').value = formattedAddress; // 주소 정보를 addressField 에 표시
 		} else {
 			alert('Geocode was not successful for the following reason: ' + status);
 		}
 	});
 }
+
 function submitRestaurant() {
 	const form = document.getElementById('restaurantForm');
 	const formData = new FormData(form);
 
-    // 선택된 상세 카테고리들을 배열로 저장
-    const selectedCategories = [];
-    const checkboxes = document.querySelectorAll('input[name="category[]"]:checked');
-    checkboxes.forEach(checkbox => {
-        selectedCategories.push(checkbox.value);
-    });
+	// 선택된 상세 카테고리들을 배열로 저장
+	const selectedCategories = [];
+	const checkboxes = document.querySelectorAll('input[name="category[]"]:checked');
+	checkboxes.forEach(checkbox => {
+		selectedCategories.push(checkbox.value);
+	});
 
-    // 쉼표로 구분된 문자열로 변환하여 FormData에 추가
-    formData.append('categories', selectedCategories.join(',')); 
+	// 쉼표로 구분된 문자열로 변환하여 FormData에 추가
+	formData.append('categories', selectedCategories.join(','));
 
 	fetch('/api/restaurants/create', {
 		method: 'POST',
@@ -99,7 +103,7 @@ function submitRestaurant() {
 			});
 }
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap" async defer></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap" async defer></script>
 <style>
 body {
 	background: linear-gradient(135deg, #f5f5f5 0%, #d9d9d9 100%);
@@ -246,7 +250,7 @@ h1 {
 	<form id="restaurantForm" enctype="multipart/form-data">
 		<input type="text" id="latitude" name="latitude" class="hidden-field">
 		<input type="text" id="longitude" name="longitude" class="hidden-field">
-
+		<input type="text" id="true-address" name="true-address" class="hidden-field">
 		<div class="form-group">
 			<label for="name">맛집 이름</label>
 			<input type="text" class="form-control" id="name" name="name" required>

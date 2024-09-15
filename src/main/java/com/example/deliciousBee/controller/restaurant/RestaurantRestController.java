@@ -39,7 +39,6 @@ import java.util.Set;
 public class RestaurantRestController {
 
     private final RestaurantService restaurantService;
-    private final PagedResourcesAssembler<RestaurantDto> assembler;
     private final BeeMemberService beeMemberService;
     private final FileService fileService;
     private final RestaurantFileService restaurantFileService;
@@ -50,7 +49,8 @@ public class RestaurantRestController {
             Pageable pageable,
             @RequestParam(value = "sortBy", required = false, defaultValue = "default") String sortBy,
             @RequestParam(value = "latitude", required = false) Double userLatitude,
-            @RequestParam(value = "longitude", required = false) Double userLongitude) {
+            @RequestParam(value = "longitude", required = false) Double userLongitude
+    ,PagedResourcesAssembler<RestaurantDto> assembler) {
 
         Page<RestaurantDto> restaurants;
 
@@ -66,7 +66,7 @@ public class RestaurantRestController {
     @PostMapping("create")
     public ResponseEntity<Restaurant> createRestaurant(@AuthenticationPrincipal BeeMember loginMember,
                                                        @RequestParam("name") String name,
-                                                       @RequestParam("address") String address,
+                                                       @RequestParam("true-address") String address,
                                                        @RequestParam("phone_number") String phoneNumber,
                                                        @RequestParam("description") String description,
                                                        @RequestParam("categories") String categories,

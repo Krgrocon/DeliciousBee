@@ -7,36 +7,59 @@
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.stereotype.Component;
 //
+//import java.util.Arrays;
+//import java.util.List;
 //import java.util.Random;
 //import java.util.stream.IntStream;
 //
 //@Component
 //public class DataLoader {
 //
+//    private static final List<String> RESTAURANT_NAMES = Arrays.asList(
+//            "강남면옥", "한추", "고갯마루", "봉피양", "평양면옥",
+//            "우래옥", "을밀대", "피양옥", "진미평양냉면", "을지면옥",
+//            "필동면옥", "정인면옥", "낙원면옥", "부원면옥", "오장동흥남집",
+//            "오장동함흥냉면", "신창면옥", "동아냉면", "깃대봉냉면", "해주냉면",
+//            "황해도만두집", "강서면옥", "사리원", "능라도", "배꼽집",
+//            "벽제갈비", "삼원가든", "대도식당", "투뿔등심", "창고43",
+//            "본앤브레드", "모퉁이우", "한와담", "경천애인", "우진가"
+//    );
+//
+//    private static final List<String> ADDRESSES = Arrays.asList(
+//            "서울 강남구", "서울 서초구", "서울 송파구", "서울 강동구",
+//            "서울 용산구", "서울 마포구", "서울 서대문구", "서울 은평구",
+//            "서울 종로구", "서울 중구", "서울 성동구", "서울 광진구",
+//            "서울 동대문구", "서울 중랑구", "서울 성북구", "서울 강북구",
+//            "서울 도봉구", "서울 노원구", "서울 양천구", "서울 강서구",
+//            "서울 구로구", "서울 금천구", "서울 영등포구", "서울 동작구",
+//            "서울 관악구", "서울 서초구", "경기 고양시", "경기 성남시",
+//            "경기 용인시", "경기 수원시", "경기 화성시", "경기 안산시"
+//    );
+//
 //    @Bean
 //    public CommandLineRunner loadData(RestaurantRepository restaurantRepository) {
 //        return args -> {
 //            Random random = new Random();
 //
-//            IntStream.range(0, 10000).forEach(i -> {
+//            IntStream.range(0, 1000).forEach(i -> {
 //                Restaurant restaurant = new Restaurant();
-//                restaurant.setName("Restaurant " + (random.nextInt(9) + 1)); // 1~9 사이의 무작위 숫자
-//                restaurant.setDescription("Description for restaurant " + i);
+//                restaurant.setName(RESTAURANT_NAMES.get(random.nextInt(RESTAURANT_NAMES.size())));
+//                restaurant.setDescription("맛있는 밥집 " + restaurant.getName());
 //                restaurant.setLongitude(126.9780 + (random.nextDouble() * 0.1)); // 대략적인 서울 경도 근처
 //                restaurant.setLatitude(37.5665 + (random.nextDouble() * 0.1));   // 대략적인 서울 위도 근처
-//                restaurant.setCategory(CategoryType.values()[random.nextInt(CategoryType.values().length)]); // CategoryType 중 하나 선택
-//                restaurant.setAddress("Address " + i);
-//                restaurant.setPhone_number(10000000000L + random.nextInt(999999999)); // 무작위 전화번호 생성
-//                restaurant.setOpening_hours("09:00 AM - 10:00 PM");
-//                restaurant.setMenu_name("Menu " + i);
-//                restaurant.setPrice_range("$" + (random.nextInt(20) + 10) + " - $" + (random.nextInt(50) + 30));
-//                restaurant.setHomepage_url("http://www.restaurant" + i + ".com");
-//                restaurant.setVerificationStatus(VerificationStatus.values()[random.nextInt(VerificationStatus.values().length)]); // 무작위 인증 상태
+//                restaurant.setCategories(CategoryType.백반.name());
+//                restaurant.setAddress(ADDRESSES.get(random.nextInt(ADDRESSES.size())) + " " + (random.nextInt(100) + 1) + "번지");
+//                restaurant.setPhone_number(null);
+//                restaurant.setOpening_hours("11:00 AM - 09:00 PM");
+//                restaurant.setMenu_name(restaurant.getName() + " 대표 메뉴");
+//                restaurant.setPrice_range("10,000원 - 30,000원");
+//                restaurant.setHomepage_url("http://www." + restaurant.getName() + ".com");
+//                restaurant.setVerificationStatus(VerificationStatus.valueOf("APPROVED"));
 //
 //                restaurantRepository.save(restaurant);
 //            });
 //
-//            System.out.println("1만 개의 레스토랑 더미 데이터를 생성했습니다.");
+//            System.out.println("1천 개의 한국 유명 밥집 더미 데이터를 생성했습니다.");
 //        };
 //    }
 //}

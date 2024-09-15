@@ -198,18 +198,20 @@
                         <option th:each="keyword : ${keywordsByCategory.get(category)}" th:value="${keyword.id}"
                           th:text="${keyword.keywordName}">[[${keyword.keywordName}]]</option>
                       </select>
+
+                      <!-- custom KeyWord Form -->
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" th:id="${category.name() + 'Checkbox'}"
+                          th:name="${category.name() + 'Checkbox'}">
+                        <label class="form-check-label-review-keyword" th:for="${category.name() + 'Checkbox'}"
+                          th:text="'존재하지 않은 ' + ${category} + ' 키워드를 작성해주세요'"></label>
+                      </div>
+                      <input type="text" class="form-control" id="customMenuInput" name="customMenuInput" disabled>
+                      <input type="hidden" id="customMenuName" name="customMenuName">
                     </div>
 
-                    <!-- custom KeyWord Form -->
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="customKeywordCheckbox"
-                        name="customKeywordCheckbox">
-                      <label class="form-check-label-review-keyword" for="customKeywordCheckbox">존재하지 않은 키워드를
-                        작성해주세요</label>
-                    </div>
-                    <input type="text" class="form-control" id="customKeywordInput" name="customKeywordInput" disabled>
-                    <input type="hidden" id="customKeywordName" name="customKeywordName">
                   </div>
+
 
                   <hr class="Review-Write-hr">
                   <div class="form-group">
@@ -341,45 +343,44 @@
                 </div>
                 <!-- Category list-->
                 <div class="button-container">
-                  <!-- normal keyword -->
                   <div th:each="reviewKeyword : ${review.keywords}">
-                    <div class="review-keyword" th:if="${reviewKeyword.keyWord != null}">
+                    <div class="review-keyword">
                       <i class="review-keyword-icon"></i>
                       <span th:text="${reviewKeyword.keyWord.keywordName}">키워드 출력 부분</span>
                     </div>
-                    <div class="review-keyword customKeyWord-style" th:if="${reviewKeyword.customKeyWordName != null}">
-                      <i class="review-keyword-icon customKeyWord-icon"></i>
-                      <span th:text="${reviewKeyword.customKeyWordName}">커스텀 키워드 출력 부분</span>
-                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <!-- Review Paging -->
-          <th:block th:if="${reviewsByRestaurant.size() > 0}">
-            <nav aria-label="Page navigation example" class="nav-review-paging">
-              <ul class="pagination" id="review-pagination">
-                <li class="page-item" id="previous-page">
-                  <a class="page-link" href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                  </a>
-                </li>
-                <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}">
-                  <a class="page-link"
-                    th:href="@{/allreview/{restaurant_id}/sort/(restaurant_id=${restaurant.id}, page=${page - 1}, sortBy=${sortBy})}"
-                    th:text="${page}"></a>
-                </li>
-                <li class="page-item" id="next-page">
-                  <a class="page-link" href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </th:block>
 
+
+              </div>
+
+            </div>
+            <!-- Review Paging -->
+            <th:block th:if="${reviewsByRestaurant.size() > 0}">
+              <nav aria-label="Page navigation example" class="nav-review-paging">
+                <ul class="pagination" id="review-pagination">
+                  <li class="page-item" id="previous-page">
+                    <a class="page-link" href="#" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                  <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}">
+                    <a class="page-link"
+                      th:href="@{/allreview/{restaurant_id}/sort/(restaurant_id=${restaurant.id}, page=${page - 1}, sortBy=${sortBy})}"
+                      th:text="${page}"></a>
+                  </li>
+                  <li class="page-item" id="next-page">
+                    <a class="page-link" href="#" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </th:block>
+
+          </div>
         </div>
+
       </div>
 
       <div class="col-lg-4">
@@ -430,46 +431,26 @@
         const reviewId = button.data('review-id');
         $(this).data('review-id', reviewId);
       });
-      reviewPaging();
+
     })
 
     $(document).ready(function () {
-
       $('#customMenuCheckbox').change(function () {
         const customInput = $('#customMenuInput');
         if ($(this).is(':checked')) {
           customInput.prop('disabled', false);
         } else {
-          customInput.prop('disabled', true);
+          customInput.prop('disabled', false);
           customInput.val('');
           $('#customMenuName').val('');
+
         }
       });
 
       $('#customMenuInput').on('input', function () {
         $('#customMenuName').val($(this).val());
       });
-
-      // 커스텀 키워드 처리
-      $('#customKeywordCheckbox').change(function () {
-        console.log('hello world');
-        const customInput = $('#customKeywordInput');
-        if ($(this).is(':checked')) {
-          customInput.prop('disabled', false);
-        } else {
-          customInput.prop('disabled', true);
-          customInput.val('');
-          $('#customKeywordName').val('');
-        }
-      });
-
-      $('#customKeywordInput').on('input', function () {
-        $('#customKeywordName').val($(this).val());
-      });
-
     });
-
-
 
 
     function editReviewWithModal(button) {
@@ -568,7 +549,6 @@
 
     function latestList(sortBy) {
       const restaurantId = /*[[${restaurant.id}]]*/ '';
-
       $.ajax({
         url: '/review/allreview/' + restaurantId + '/sort/',
         type: 'GET',
@@ -578,73 +558,22 @@
           const reviewsContainer = $('.restaurantCard');
           reviewsContainer.empty();
           response.forEach(function (review) {
-            // 첨부파일 작업
             let attachedFileHTML = '';
             if (review.attachedFile && review.attachedFile.length > 0) {
               review.attachedFile.forEach(function (file) {
                 attachedFileHTML += `
                   <div>
-                    <img src="/review/display?filename=${file.saved_filename}" alt="Review Image" class="card-img-top"> 
+                	<img src="/review/display?filename=${file.saved_filename}" alt="Review Image" class="card-img-top">
                   </div>
                 `;
               });
             }
-            // 리뷰 메뉴작업
-            let reviewMenuHTML = '';
-            if (review.reviewMenuList && review.reviewMenuList.length > 0) {
-              review.reviewMenuList.forEach(function (menu) {
-                if (menu.customMenuName != null) {
-                  reviewMenuHTML += `
-                    <span>Menu : </span>
-                    <button class="btn menu-button" name="menu-button">
-                      <span>${menu.customMenuName}</span>
-                    </button><br>
-                  `;
-                }
-                else {
-                  reviewMenuHTML += `
-                    <span>Menu : </span>
-                    <button class="btn menu-button" name="menu-button">
-                      <span>${menu.menu.name}</span>
-                    </button><br> 
-                  `;
-                }
-
-              })
-
-            }
-
-            // 키워드 작업
-            let reviewKeywordHTML = '';
-            if (review.keywords && review.keywords.length > 0) {
-              review.keywords.forEach(function (keyword) {
-                reviewKeywordHTML += `
-                <div class="review-keyword customKeyWord-style">`;
-                if (keyword.customKeyWordName != null) {
-                  reviewKeywordHTML += `
-                    <span class="review-keyword-icon customKeyWord-icon"></span>
-                    <span>${keyword.customKeyWordName}</span>
-                  `;
-                }
-                else {
-                  reviewKeywordHTML += `
-                    <span class="review-keyword-icon"></span>
-                    <span>${keyword.keyWord.keywordName}</span>
-                  `
-                }
-
-                reviewKeywordHTML += '</div>';
-              });
-            }
-
-            // 정렬 페이징 렌더링
             const reviewHTML = `
               <div class="col-lg-12">
                 <div class="card mb-4">
                   <div class="card-header">
+                    User Info
                     <h3>${review.userName}</h3>
-                    <hr>
-                    ${reviewMenuHTML}
                   </div>
                   ${attachedFileHTML}
                   <div class="card-body">
@@ -653,7 +582,7 @@
                     <div class="rating" data-review-id="${review.id}">
                       <div class="stars" data-rating="${review.rating}"></div>
                     </div>
-                    <div class="button-container"> 
+                    <div class="button-container">
                       <input type="hidden" class="review-id" value="${review.id}">
                       <button type="button" class="btn btn-success mr-2 like-button" onclick="likeReview(this)" data-review-id="${review.id}">
                         좋아요 <span class="like-count">${review.likeCount}</span>
@@ -682,68 +611,7 @@
       });
     }
 
-    // 페이징 스크립트
-    function reviewPaging() {
-      const pagination = document.getElementById('review-pagination');
-      const previousPageButton = document.getElementById('previous-page');
-      const nextPageButton = document.getElementById('next-page');
-      const pageItems = pagination.querySelectorAll('.page-item[data-page]');
 
-      let currentPage = 1; // 현재 페이지 번호를 Thymeleaf에서 가져옴
-      let totalPages =  /*[[${reviewsByRestaurant.totalPages}]]*/ 1; // 총 페이지 수를 Thymeleaf에서 가져옴
-
-      function loadPage(page) {
-        if (page < 1 || page > totalPages) return;
-        currentPage = page;
-
-        $.ajax({
-          url: `/allreview/${restaurant.id}/sort/`, // API 엔드포인트 (수정 필요)
-          type: 'GET',
-          data: { page: page, sortBy: /*[[${sortBy}]]*/ 'likeCount' }, // sortBy 값을 Thymeleaf에서 가져옴
-          success: function (response) {
-            // 리뷰 목록 업데이트
-            const reviewsContainer = $('.restaurantCard');
-            reviewsContainer.empty(); // 기존 리뷰 목록 삭제
-            response.forEach(function (review) {
-              // 리뷰 HTML 생성 (기존 코드 참조)
-              // ...
-              reviewsContainer.append(reviewHTML);
-            });
-
-            // 페이징 UI 업데이트
-            updatePagination();
-          },
-          error: function (xhr, status, error) {
-            console.error('AJAX 요청 실패:', status, error);
-          }
-        });
-      }
-
-      // 페이징 UI 업데이트 함수
-      function updatePagination() {
-        pageItems.forEach((item, index) => {
-          item.classList.toggle('active', index + 1 === currentPage);
-        });
-        previousPageButton.classList.toggle('disabled', currentPage === 1);
-        nextPageButton.classList.toggle('disabled', currentPage === totalPages);
-      }
-
-      // 이벤트 리스너 설정
-      pagination.addEventListener('click', (event) => {
-        if (event.target.closest('.page-item')) {
-          const page = parseInt(event.target.closest('.page-item').querySelector('.page-link').textContent, 10);
-          loadPage(page);
-        }
-      });
-
-      previousPageButton.addEventListener('click', () => {
-        loadPage(currentPage - 1);
-      });
-
-      nextPageButton.addEventListener('click', () => {
-        loadPage(currentPage + 1);
-      });
-    }
 
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap"
