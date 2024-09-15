@@ -1,7 +1,7 @@
 package com.example.deliciousBee.model.menu;
 
 import com.example.deliciousBee.model.review.Review;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +26,7 @@ public class ReviewMenu {
 
     @ManyToOne
     @JoinColumn(name = "review_id")
-    @JsonIgnore
+    @JsonBackReference
     private Review review;
 
     @ManyToOne

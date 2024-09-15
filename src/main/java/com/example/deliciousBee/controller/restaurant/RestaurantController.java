@@ -8,6 +8,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
@@ -50,7 +52,6 @@ public class RestaurantController {
 	@Value("${spring.cloud.gcp.storage.bucket}")
 	private String bucketName;
 
-
 	private String uploadPath = "C:\\upload\\";
 
 	private final RestaurantService restaurantService;
@@ -58,16 +59,14 @@ public class RestaurantController {
 	private final ReviewKeyWordService reviewKeyWordService;
 
 	@GetMapping("newfile")
-	public String newfile(@AuthenticationPrincipal BeeMember loginMember
-			, Model model) {
-		
-		
+	public String newfile(@AuthenticationPrincipal BeeMember loginMember, Model model) {
+
 		return "restaurant/newfile";
 	}
+
 	@GetMapping("rtwrite")
-	public String rtwriteForm(@AuthenticationPrincipal BeeMember loginMember
-			, Model model) {
-		if(loginMember == null) {
+	public String rtwriteForm(@AuthenticationPrincipal BeeMember loginMember, Model model) {
+		if (loginMember == null) {
 			return "redirect:/member/login";
 		}
 		model.addAttribute("restaurantForm", new Restaurant());
@@ -106,12 +105,10 @@ public class RestaurantController {
 //		return "redirect:/";
 //	}
 
-
-	//검색
+	// 검색
 	@GetMapping("/search")
 	public String searchRestaurants(@RequestParam(value = "keyword", required = false) String keyword,
-									@PageableDefault(page = 0, size = 10) Pageable pageable,
-									Model model) {
+			@PageableDefault(page = 0, size = 10) Pageable pageable, Model model) {
 
 //		Page<Restaurant> restaurants;
 //		if (keyword == null || keyword.isEmpty()) {
@@ -138,40 +135,43 @@ public class RestaurantController {
 	}
 
 	@GetMapping("/rtread/{restaurant_id}")
-	public String read(@AuthenticationPrincipal BeeMember loginMember
-			,@PathVariable("restaurant_id") Long restaurant_id
-			,Model model) {
-		
-		if(loginMember == null) {
+	public String read(@AuthenticationPrincipal BeeMember loginMember,
+			@PathVariable("restaurant_id") Long restaurant_id, Model model,
+			@RequestParam(name = "page", defaultValue = "0") int page) { // 페이징 처리를 위한 page 파라미터 추가
+
+		if (loginMember == null) {
 			return "redirect:/member/login";
 		}
 
 		// 레스토랑 정보 가져오기
 		Restaurant restaurant = restaurantService.findRestaurant(restaurant_id);
-		if(restaurant == null) {
+		if (restaurant == null) {
 			return "redirect:/shop/index";
 		}
 		model.addAttribute("restaurant", restaurant);
 
 		// 리뷰 정보 가져오기
 		String memberId = loginMember.getMember_id();
-		List<Review> reviewsByRestaurant = reviewService.getReviewsByRestaurantIdWithFiles(restaurant_id, memberId);
-		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant);
-		
+		Pageable pageable = PageRequest.of(page, 5); // 페이지당 5개 리뷰로 설정
+		Page<Review> reviewsByRestaurant = reviewService.getReviewsByRestaurantIdWithFiles(restaurant_id, memberId, pageable);
+		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant.getContent()); 
+		model.addAttribute("currentPage", page); 
+		model.addAttribute("totalPages", reviewsByRestaurant.getTotalPages()); 
+
 		// 카테고리 가져오기
 		Map<KeywordCategory, List<KeyWord>> keywordsByCategory = reviewKeyWordService.getKeywordsByCategory();
 		log.info("keywordsByCategory:{}", keywordsByCategory);
-        model.addAttribute("keywordsByCategory", keywordsByCategory);
+		model.addAttribute("keywordsByCategory", keywordsByCategory);
 		return "restaurant/rtread";
 	}
 
 	@GetMapping("rtdelete")
 	public String remove(@AuthenticationPrincipal BeeMember loginMember,
-						 @RequestParam(name="id", required = false) Long id) {
+			@RequestParam(name = "id", required = false) Long id) {
 
 		Restaurant restaurant = restaurantService.findRestaurant(id);
 
-		if(restaurant == null || !restaurant.getMember().getMember_id().equals(loginMember.getMember_id())) {
+		if (restaurant == null || !restaurant.getMember().getMember_id().equals(loginMember.getMember_id())) {
 			return "redirect:/";
 		}
 
@@ -181,10 +181,10 @@ public class RestaurantController {
 	}
 
 	@GetMapping("rtupdate")
-	public String rtUpdate(@AuthenticationPrincipal BeeMember loginMember,
-						   @RequestParam(name = "id") Long id, Model model) {
+	public String rtUpdate(@AuthenticationPrincipal BeeMember loginMember, @RequestParam(name = "id") Long id,
+			Model model) {
 		log.info("{}", loginMember);
-		if(loginMember == null) {
+		if (loginMember == null) {
 			return "redirect:/member/login";
 		}
 		Restaurant findRestaurant = restaurantService.findRestaurant(id);
@@ -196,7 +196,6 @@ public class RestaurantController {
 		model.addAttribute("restaurantForm", findRestaurant);
 		return "restaurant/rtupdate";
 	}
-
 
 //	@PostMapping("rtupdates")
 //	public String update(@Validated @ModelAttribute("restaurantForm") Restaurant update
@@ -219,13 +218,11 @@ public class RestaurantController {
 	public ResponseEntity<Resource> display(@RequestParam("filename") String filename) {
 		try {
 			// Google Cloud Storage 키 파일 설정
-			String keyFileName = "deliciousbee-acb114448e3c.json";  // GCP 서비스 계정 키 파일명
+			String keyFileName = "deliciousbee-acb114448e3c.json"; // GCP 서비스 계정 키 파일명
 			InputStream keyFile = getClass().getResourceAsStream("/" + keyFileName);
 
 			// Google Cloud Storage 클라이언트 생성
-			Storage storage = StorageOptions.newBuilder()
-					.setCredentials(GoogleCredentials.fromStream(keyFile))
-					.build()
+			Storage storage = StorageOptions.newBuilder().setCredentials(GoogleCredentials.fromStream(keyFile)).build()
 					.getService();
 
 			// 파일을 GCS에서 가져오기
@@ -249,9 +246,5 @@ public class RestaurantController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
-
-
-
 
 }

@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -74,9 +78,9 @@ public class ReviewService {
 		restaurantRepository.save(restaurant);
 	}
 
-	public List<Review> getReviewsByRestaurantIdWithFiles(Long restaurantId, String memberId) {
+	public Page<Review> getReviewsByRestaurantIdWithFiles(Long restaurantId, String memberId, Pageable pageable) {
 
-		List<Review> reviews = reviewRepository.findByRestaurantId(restaurantId);
+		Page<Review> reviews = reviewRepository.findByRestaurantId(restaurantId, pageable);
 		List<Long> reportedReviewIds = reportRepository.findReportedReviewId(memberId);
 
 		List<Review> filteredReviews = reviews.stream().filter(review -> !reportedReviewIds.contains(review.getId()))
@@ -86,7 +90,11 @@ public class ReviewService {
 			List<AttachedFile> files = fileRepository.findFilesByReviewId(review.getId());
 			review.setAttachedFile(files);
 		}
-		return filteredReviews;
+
+		// filteredReviews를 Page<Review>로 변환
+		Page<Review> pageFilteredReviews = new PageImpl<>(filteredReviews, pageable, reviews.getTotalElements());
+
+		return pageFilteredReviews; // 변환된 Page<Review> 객체 반환
 	}
 
 	// 좋아요 로직
@@ -198,48 +206,36 @@ public class ReviewService {
 	}
 
 	// 리뷰 정렬 로직
-	public List<Review> sortReview(String sort, Long restaurantId, String memberId) {
+	public Page<Review> sortReview(String sort, Long restaurantId, String memberId, Pageable pageable) {
 		List<Long> reportedReviewIds = reportRepository.findReportedReviewId(memberId);
-		List<Review> reviews = switch (sort) {
-		case "rating" -> reviewRepository.findAllByRestaurant_IdOrderByRatingDesc(restaurantId); // 특정 식당 ID로 필터링
-		case "visitDate" -> reviewRepository.findAllByRestaurant_IdOrderByVisitDateDesc(restaurantId);
-		case "likeCount" -> reviewRepository.findAllByRestaurant_IdOrderByLikeCountDesc(restaurantId);
-		default -> getReviewsByRestaurantIdWithFiles(restaurantId, memberId);
+		Page<Review> reviews = switch (sort) {
+		case "rating" -> reviewRepository.findAllByRestaurant_IdOrderByRatingDesc(restaurantId, pageable); // 특정 식당 ID로
+		// 필터링
+		case "visitDate" -> reviewRepository.findAllByRestaurant_IdOrderByVisitDateDesc(restaurantId, pageable);
+		case "likeCount" -> reviewRepository.findAllByRestaurant_IdOrderByLikeCountDesc(restaurantId, pageable);
+		default -> getReviewsByRestaurantIdWithFiles(restaurantId, memberId, pageable);
 		};
 
-		// 모든 경우에 신고된 리뷰를 필터링
-		reviews = reviews.stream().filter(review -> !reportedReviewIds.contains(review.getId()))
+		List<Review> filteredReviews = reviews.stream().filter(review -> !reportedReviewIds.contains(review.getId()))
 				.collect(Collectors.toList());
 
-		for (Review review : reviews) {
+		for (Review review : filteredReviews) {
 			review.setAttachedFile(fileRepository.findAllByReview(review));
 			review.setCanEdit(memberId.equals(review.getBeeMember().getMember_id()));
 		}
-		return reviews;
+
+		// filteredReviews를 Page<Review>로 변환
+		Page<Review> pageFilteredReviews = new PageImpl<>(filteredReviews, pageable, reviews.getTotalElements());
+
+		return pageFilteredReviews;
 	}
 
 	public List<Review> findAllReviews() {
 		return reviewRepository.findAll();
 	}
 
-
-
-//	public List<Review> getRandomReviewsByCategory(CategoryType category) {
-//		// 1. 해당 카테고리의 모든 리뷰를 가져옵니다.
-//		List<Review> reviews = reviewRepository.findByRestaurantCategoryContaining(category); // 수정된 메서드 호출
-//
-//		// 2. 리뷰가 없는 경우 빈 리스트를 반환합니다.
-//		if (reviews.isEmpty()) {
-//			return Collections.emptyList();
-//		}
-//
-//		// 3. 랜덤 리뷰를 여러 개 선택합니다. (예: 3개)
-//		Collections.shuffle(reviews); // 리스트를 랜덤하게 섞습니다.
-//		int numberOfReviews = Math.min(3, reviews.size()); // 최대 3개 또는 리뷰 개수만큼 선택합니다.
-//		List<Review> randomReviews = reviews.subList(0, numberOfReviews);
-//
-//		// 4. 랜덤 리뷰를 반환합니다.
-//		return randomReviews;
-//	}
+	public Page<Review> findAll(Pageable pageable) {
+		return reviewRepository.findAll(pageable);
+	}
 
 }

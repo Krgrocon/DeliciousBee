@@ -41,15 +41,6 @@ body {
 	border-color: #dc3545;
 }
 
-.pagination .page-link {
-	color: #dc3545;
-}
-
-.pagination .page-item.active .page-link {
-	background-color: #dc3545;
-	border-color: #dc3545;
-}
-
 .card-header {
 	background-color: #61686c !important;
 	color: white;
@@ -222,13 +213,13 @@ body {
 }
 
 .review-keyword-icon {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin-bottom: 1px;
-  border-radius: 50%; 
-  border: 2px solid #505050;
-  position: relative; 
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	margin-bottom: 1px;
+	border-radius: 50%; 
+	border: 2px solid #505050;
+	position: relative; 
 }
 
 .form-check {
@@ -237,4 +228,7 @@ body {
 
 .form-check-label-review-keyword{
 	font-size: 14px;
+}
+
+.nav-review-paging {
 }

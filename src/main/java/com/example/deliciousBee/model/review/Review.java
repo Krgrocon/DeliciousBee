@@ -82,6 +82,7 @@ public class Review {
     private boolean canEdit;
     
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ReviewMenu> reviewMenuList;
     
 	@OneToMany(mappedBy = "review", fetch = FetchType.EAGER)
@@ -89,6 +90,7 @@ public class Review {
 	private List<AttachedFile> attachedFile;
 	
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
     private List<ReviewKeyWord> keywords = new ArrayList<>();;
 	
 	@ManyToOne

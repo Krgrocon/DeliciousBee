@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -8,11 +8,12 @@
   <meta name="author" content="">
   <title>Delicious Bee</title>
   <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-  
+
   <!-- Bootstrap CSS & Custom CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/rtread.css">
 </head>
+
 <body>
   <input type="hidden" id="restaurant-latitude" th:value="${restaurant.latitude}">
   <input type="hidden" id="restaurant-longitude" th:value="${restaurant.longitude}">
@@ -23,7 +24,7 @@
       <div class="navbar-brand-group">
         <a class="navbar-brand" href="/">Delicious Bee</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
       </div>
@@ -37,7 +38,7 @@
             <a class="nav-link" id="loginButton" href="#">로그인</a>
           </li>
           <li class="nav-item tooltip-container" sec:authorize="isAuthenticated()">
-            <a href="/member/myPage" class="nav-link text">내 정보</a> 
+            <a href="/member/myPage" class="nav-link text">내 정보</a>
             <div class="tooltip-content">
               <div class="infos">
                 <a href="#" class="info" th:href="@{/logout}">
@@ -60,13 +61,14 @@
       <div class="col-lg-8">
         <!-- Featured Restaurant -->
         <div class="card mb-4" th:object="${restaurant}">
-        <div class="image-gallery">
-          <div th:each="file : ${restaurant.attachedFile}">
-            <a href="#!">
-              <img class="card-img-top" th:src="@{'/restaurant/display?filename='+${file.saved_filename}}" alt="Featured Restaurant" />
-            </a>
+          <div class="image-gallery">
+            <div th:each="file : ${restaurant.attachedFile}">
+              <a href="#!">
+                <img class="card-img-top" th:src="@{'/restaurant/display?filename='+${file.saved_filename}}"
+                  alt="Featured Restaurant" />
+              </a>
+            </div>
           </div>
-        </div>  
           <div class="card-body">
             <div class="small text-muted" th:text="${restaurant.create_at}">January 1, 2023</div>
             <h2 class="card-title" th:text="${restaurant.name}">Featured Post Title</h2>
@@ -75,34 +77,42 @@
         </div>
         <hr>
         <h3>Restaurant Info</h3>
-        <a class="card-text no-style-link" th:href="@{${restaurant.homepage_url}}" th:text="'웹사이트 방문'" target="_blank"></a>
+        <a class="card-text no-style-link" th:href="@{${restaurant.homepage_url}}" th:text="'웹사이트 방문'"
+          target="_blank"></a>
         <p class="card-text" th:text="${restaurant.address}"></p>
         <!-- restaurant-photo -->
         <hr>
         <h3><span class="restaurant-name">[[${restaurant.name}]]</span> of Photo</h3>
         <div class="col-lg-12">
-        <div class="restaurant-photos">
-          <div class="restaurant-photo-item" th:each="review : ${reviewsByRestaurant}" th:if="${review.attachedFile != null && review.attachedFile.size() > 0}">
-            <div th:each="file, fileStat : ${review.attachedFile}" th:if="${fileStat.index < 6}">
-              <img class="restaurant-photo-img" th:src="@{'/review/display?filename='+${file.saved_filename}}" alt="Review" />
+          <div class="restaurant-photos">
+            <div class="restaurant-photo-item" th:each="review : ${reviewsByRestaurant}"
+              th:if="${review.attachedFile != null && review.attachedFile.size() > 0}">
+              <div th:each="file, fileStat : ${review.attachedFile}" th:if="${fileStat.index < 6}">
+                <img class="restaurant-photo-img" th:src="@{'/review/display?filename='+${file.saved_filename}}"
+                  alt="Review" />
+              </div>
             </div>
           </div>
         </div>
-        </div>
-        
+
         <hr>
         <div class="d-flex">
-          <h3 style="margin-right: auto;">Review List</h3> 
+          <h3 style="margin-right: auto;">Review List</h3>
           <div class="d-flex-magin" style="display: flex;">
-            <button type="button" class="btn btn-secondary btn-sm ml-2" th:onclick="latestList('likeCount')">좋아요 많은순</button>
-            <button type="button" class="btn btn-secondary btn-sm ml-2" th:onclick="latestList('rating')">평점 많은순</button>
-            <button type="button" class="btn btn-secondary btn-sm ml-2" th:onclick="latestList('visitDate')">최신순</button>
-            <button type="button" class="btn btn-dark ml-2" data-toggle="modal" data-target="#reviewModal">Write Review</button>
+            <button type="button" class="btn btn-secondary btn-sm ml-2" th:onclick="latestList('likeCount')">좋아요
+              많은순</button>
+            <button type="button" class="btn btn-secondary btn-sm ml-2" th:onclick="latestList('rating')">평점
+              많은순</button>
+            <button type="button" class="btn btn-secondary btn-sm ml-2"
+              th:onclick="latestList('visitDate')">최신순</button>
+            <button type="button" class="btn btn-dark ml-2" data-toggle="modal" data-target="#reviewModal">Write
+              Review</button>
           </div>
         </div>
-        
+
         <!-- Review Modal -->
-        <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
+        <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel"
+          aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
               <div class="modal-header">
@@ -112,21 +122,25 @@
                 </button>
               </div>
               <div class="modal-body">
-                <form th:action="@{/review/write/{restaurant_id}(restaurant_id=${restaurant_id})}" method="POST" th:object="${writeForm}" enctype="multipart/form-data">
+                <form th:action="@{/review/write/{restaurant_id}(restaurant_id=${restaurant_id})}" method="POST"
+                  th:object="${writeForm}" enctype="multipart/form-data">
                   <div class="form-group">
                     <label for="reviewContents">리뷰 내용</label>
-                    <textarea class="form-control" id="reviewContents" name="reviewContents" rows="4" required></textarea>
+                    <textarea class="form-control" id="reviewContents" name="reviewContents" rows="4"
+                      required></textarea>
                   </div>
-                  
+
                   <!-- Rating Form -->
                   <hr class="Review-Write-hr">
                   <div class="form-group">
                     <label for="rating">전체 평점</label>
-                    <input type="number" class="form-control" id="rating" name="rating" min="1" max="5" step="1" required>
+                    <input type="number" class="form-control" id="rating" name="rating" min="1" max="5" step="1"
+                      required>
                   </div>
                   <div class="form-group">
                     <label for="tasteRating">음식 평점</label>
-                    <input type="range" class="form-control-range" id="tasteRating" name="tasteRating" min="1" max="3" step="1" onclick="detailRating(this)">
+                    <input type="range" class="form-control-range" id="tasteRating" name="tasteRating" min="1" max="3"
+                      step="1" onclick="detailRating(this)">
                     <div class="detail-Rating-labels">
                       <span>나쁨</span>
                       <span>보퉁</span>
@@ -135,7 +149,8 @@
                   </div>
                   <div class="form-group">
                     <label for="priceRating">가격 평점</label>
-                    <input type="range" class="form-control-range" id="priceRating" name="priceRating" min="1" max="3" step="1" onclick="detailRating(this)">
+                    <input type="range" class="form-control-range" id="priceRating" name="priceRating" min="1" max="3"
+                      step="1" onclick="detailRating(this)">
                     <div class="detail-Rating-labels">
                       <span>나쁨</span>
                       <span>보퉁</span>
@@ -144,34 +159,35 @@
                   </div>
                   <div class="form-group">
                     <label for="kindRating">친절 평점</label>
-                    <input type="range" class="form-control-range" id="kindRating" name="kindRating" min="1" max="3" step="1" onclick="detailRating(this)">
+                    <input type="range" class="form-control-range" id="kindRating" name="kindRating" min="1" max="3"
+                      step="1" onclick="detailRating(this)">
                     <div class="detail-Rating-labels">
                       <span>나쁨</span>
                       <span>보퉁</span>
                       <span>좋음</span>
                     </div>
                   </div>
-                  
+
                   <!-- Menu Form -->
                   <hr class="Review-Write-hr">
                   <div class="form-group">
-                  <label for="recommendItems">추천 메뉴</label>
-                  <div th:each="menu : ${restaurant.menuList}">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" th:value="${menu.id}" name="reviewMenuList">
-                      <label class="form-check-label" th:text="${menu.name}">Menu Name</label>
-                      <span th:text="'    ' +${menu.price} + '원'" ></span>
+                    <label for="recommendItems">추천 메뉴</label>
+                    <div th:each="menu : ${restaurant.menuList}">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" th:value="${menu.id}" name="reviewMenuList">
+                        <label class="form-check-label" th:text="${menu.name}">Menu Name</label>
+                        <span th:text="'    ' +${menu.price} + '원'"></span>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div class="form-check">
+
+                    <div class="form-check">
                       <input class="form-check-input" type="checkbox" id="customMenuCheckbox" name="customMenuCheckbox">
                       <label class="form-check-label" for="customMenuCheckbox">기타</label>
+                    </div>
+                    <input type="text" class="form-control" id="customMenuInput" name="customMenuInput" disabled>
+                    <input type="hidden" id="customMenuName" name="customMenuName">
                   </div>
-                  <input type="text" class="form-control" id="customMenuInput" name="customMenuInput" disabled>
-                  <input type="hidden" id="customMenuName" name="customMenuName">
-                  </div>
-                  
+
                   <!-- KeyWord Form -->
                   <hr class="Review-Write-hr">
                   <div class="form-group">
@@ -179,19 +195,22 @@
                     <div th:each="category : ${T(com.example.deliciousBee.model.keyWord.KeywordCategory).values()}">
                       <label for="keywords" th:text="${category.name().replace('_', ' ')}"></label>
                       <select class="form-control" multiple name="keywords">
-                        <option th:each="keyword : ${keywordsByCategory.get(category)}" th:value="${keyword.id}" th:text="${keyword.keywordName}">[[${keyword.keywordName}]]</option>
+                        <option th:each="keyword : ${keywordsByCategory.get(category)}" th:value="${keyword.id}"
+                          th:text="${keyword.keywordName}">[[${keyword.keywordName}]]</option>
                       </select>
                     </div>
-                    
-                      <!-- custom KeyWord Form -->
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="customKeywordCheckbox" name="customKeywordCheckbox">
-                        <label class="form-check-label-review-keyword" for="customKeywordCheckbox">존재하지 않은 키워드를 작성해주세요</label>
-                      </div>
-                      <input type="text" class="form-control" id="customKeywordInput" name="customKeywordInput" disabled>
-                      <input type="hidden" id="customKeywordName" name="customKeywordName">
+
+                    <!-- custom KeyWord Form -->
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="customKeywordCheckbox"
+                        name="customKeywordCheckbox">
+                      <label class="form-check-label-review-keyword" for="customKeywordCheckbox">존재하지 않은 키워드를
+                        작성해주세요</label>
+                    </div>
+                    <input type="text" class="form-control" id="customKeywordInput" name="customKeywordInput" disabled>
+                    <input type="hidden" id="customKeywordName" name="customKeywordName">
                   </div>
-                  
+
                   <hr class="Review-Write-hr">
                   <div class="form-group">
                     <label for="visitDate">방문 시기</label>
@@ -202,7 +221,7 @@
                     <input type="file" class="form-control-file" id="file" name="file" multiple>
                   </div>
                   <input type="hidden" name="restaurant_id" th:value="${restaurant_id}">
-                  
+
                   <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">작성</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
@@ -214,7 +233,8 @@
         </div>
 
         <!-- Report Modal -->
-        <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel"
+          aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
               <div class="modal-header">
@@ -244,9 +264,9 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Review List -->
-        <div class="row restaurantCard"> 
+        <div class="row restaurantCard">
           <div class="col-lg-12">
             <div class="card mb-4" th:each="review : ${reviewsByRestaurant}">
               <div class="card-header">
@@ -255,18 +275,19 @@
                 <div th:each="menu : ${review.reviewMenuList}">
                   <span>Menu : </span>
                   <button type="button" class="btn menu-button" name="menu-button">
-                  <span th:if="${menu.menu != null}">[[${menu.menu.name}]]</span> 
-                  <span th:if="${menu.customMenuName != null}">[[${menu.customMenuName}]]</span>
+                    <span th:if="${menu.menu != null}">[[${menu.menu.name}]]</span>
+                    <span th:if="${menu.customMenuName != null}">[[${menu.customMenuName}]]</span>
                   </button>
                 </div>
               </div>
               <!-- Review Images -->
               <div class="review-gallery">
-              <div th:each="file : ${review.attachedFile}">
-                <div th:if="${file.saved_filename}">
-                  <img class="card-img-top" th:src="@{'/review/display?filename='+${file.saved_filename}}" alt="Review" />
+                <div th:each="file : ${review.attachedFile}">
+                  <div th:if="${file.saved_filename}">
+                    <img class="card-img-top" th:src="@{'/review/display?filename='+${file.saved_filename}}"
+                      alt="Review" />
+                  </div>
                 </div>
-              </div>
               </div>
               <!-- Review Content -->
               <div class="card-body">
@@ -275,42 +296,47 @@
                 <div class="rating" data-review-id="[[${review.id}]]">
                   <div class="stars" th:attr="data-rating=${review.rating}"></div>
                 </div>
-                
+
                 <div>
-                <span th:switch="${review.kindRating}">
-                <span th:case="1">응대 : 나쁨 / </span>
-                <span th:case="2">응대 : 보통 / </span>
-                <span th:case="3">응대 : 좋음 / </span>
-                <span th:case="*">평점 없음 / </span> 
-                </span>
-                <span th:switch="${review.priceRating}">
-                <span th:case="1">가격 : 나쁨 / </span>
-                <span th:case="2">가격 : 보통 / </span>
-                <span th:case="3">가격 : 좋음 / </span>
-                <span th:case="*">평점 없음 / </span> 
-                </span>
-                <span th:switch="${review.tasteRating}">
-                <span th:case="1">음식 : 나쁨</span>
-                <span th:case="2">음식 : 보통</span>
-                <span th:case="3">음식 : 좋음</span>
-                <span th:case="*">평점 없음</span> 
-                </span>
-                
+                  <span th:switch="${review.kindRating}">
+                    <span th:case="1">응대 : 나쁨 / </span>
+                    <span th:case="2">응대 : 보통 / </span>
+                    <span th:case="3">응대 : 좋음 / </span>
+                    <span th:case="*">평점 없음 / </span>
+                  </span>
+                  <span th:switch="${review.priceRating}">
+                    <span th:case="1">가격 : 나쁨 / </span>
+                    <span th:case="2">가격 : 보통 / </span>
+                    <span th:case="3">가격 : 좋음 / </span>
+                    <span th:case="*">평점 없음 / </span>
+                  </span>
+                  <span th:switch="${review.tasteRating}">
+                    <span th:case="1">음식 : 나쁨</span>
+                    <span th:case="2">음식 : 보통</span>
+                    <span th:case="3">음식 : 좋음</span>
+                    <span th:case="*">평점 없음</span>
+                  </span>
+
                 </div>
                 <!-- Action Buttons -->
                 <div class="button-container">
                   <input type="hidden" class="review-id" th:value="${review.id}">
-                  <button type="button" class="btn btn-success mr-2 like-button" th:onclick="likeReview(this)" th:data-review-id="${review.id}">
+                  <button type="button" class="btn btn-success mr-2 like-button" th:onclick="likeReview(this)"
+                    th:data-review-id="${review.id}">
                     좋아요 <span class="like-count">[[${review.likeCount}]]</span>
                   </button>
-                  
+
                   <input type="hidden" class="review-id" th:value="${review.id}">
-                  <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal" data-target="#reportModal" th:data-review-id="${review.id}">신고</button> 
-                  
-                  <div sec:authorize="isAuthenticated() and #authentication.principal.member_id == #vars.review.beeMember.member_id">
-                    <a class="btn btn-outline-secondary mr-1" th:href="@{/review/update/{reviewId}(reviewId=${review.id})}">수정</a>
+                  <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal"
+                    data-target="#reportModal" th:data-review-id="${review.id}">신고</button>
+
+                  <div
+                    sec:authorize="isAuthenticated() and #authentication.principal.member_id == #vars.review.beeMember.member_id">
+                    <a class="btn btn-outline-secondary mr-1"
+                      th:href="@{/review/update/{reviewId}(reviewId=${review.id})}">수정</a>
                     <input type="hidden" class="review-id" th:value="${review.id}">
-                    <button type="button" class="btn btn-outline-danger mr-2" data-bs-toggle="button" th:onclick="deleteReview(this)">삭제</button>
+                    <button type="button" class="btn btn-outline-danger mr-2" data-bs-toggle="button"
+                      th:onclick="deleteReview(this)">삭제</button>
                   </div>
                 </div>
                 <!-- Category list-->
@@ -321,22 +347,39 @@
                       <i class="review-keyword-icon"></i>
                       <span th:text="${reviewKeyword.keyWord.keywordName}">키워드 출력 부분</span>
                     </div>
-                    <div  class="review-keyword customKeyWord-style" th:if="${reviewKeyword.customKeyWordName != null}">
+                    <div class="review-keyword customKeyWord-style" th:if="${reviewKeyword.customKeyWordName != null}">
                       <i class="review-keyword-icon customKeyWord-icon"></i>
                       <span th:text="${reviewKeyword.customKeyWordName}">커스텀 키워드 출력 부분</span>
                     </div>
                   </div>
-                  
-                  
                 </div>
-                
-                
               </div>
-              
             </div>
           </div>
+          <!-- Review Paging -->
+          <th:block th:if="${reviewsByRestaurant.size() > 0}">
+            <nav aria-label="Page navigation example" class="nav-review-paging">
+              <ul class="pagination" id="review-pagination">
+                <li class="page-item" id="previous-page">
+                  <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}">
+                  <a class="page-link"
+                    th:href="@{/allreview/{restaurant_id}/sort/(restaurant_id=${restaurant.id}, page=${page - 1}, sortBy=${sortBy})}"
+                    th:text="${page}"></a>
+                </li>
+                <li class="page-item" id="next-page">
+                  <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </th:block>
+
         </div>
-        
       </div>
 
       <div class="col-lg-4">
@@ -356,7 +399,7 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-  
+
   <!-- JavaScript -->
   <script th:inline="javascript">
     function initMap() {
@@ -379,54 +422,55 @@
     }
 
 
-  document.addEventListener('DOMContentLoaded', function() {
-    setStarRatings();
-    initMap();
-    $('#reportModal').on('show.bs.modal', function (event) {
-      const button = $(event.relatedTarget); 
-      const reviewId = button.data('review-id');
-      $(this).data('review-id', reviewId); 
+    document.addEventListener('DOMContentLoaded', function () {
+      setStarRatings();
+      initMap();
+      $('#reportModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        const reviewId = button.data('review-id');
+        $(this).data('review-id', reviewId);
       });
-  })
-	
-	$(document).ready(function() {
+      reviewPaging();
+    })
 
-  $('#customMenuCheckbox').change(function() {
-    const customInput = $('#customMenuInput');
-    if ($(this).is(':checked')) {
-      customInput.prop('disabled', false);
-    } else {
-      customInput.prop('disabled', true);
-      customInput.val('');
-      $('#customMenuName').val('');
-    }
-  });
+    $(document).ready(function () {
 
-  $('#customMenuInput').on('input', function() {
-    $('#customMenuName').val($(this).val());
-  });
+      $('#customMenuCheckbox').change(function () {
+        const customInput = $('#customMenuInput');
+        if ($(this).is(':checked')) {
+          customInput.prop('disabled', false);
+        } else {
+          customInput.prop('disabled', true);
+          customInput.val('');
+          $('#customMenuName').val('');
+        }
+      });
 
-  // 커스텀 키워드 처리
-  $('#customKeywordCheckbox').change(function() {
-    console.log('hello world');
-    const customInput = $('#customKeywordInput');
-    if ($(this).is(':checked')) {
-      customInput.prop('disabled', false);
-    } else {
-      customInput.prop('disabled', true);
-      customInput.val('');
-      $('#customKeywordName').val('');
-    }
-  });
+      $('#customMenuInput').on('input', function () {
+        $('#customMenuName').val($(this).val());
+      });
 
-  $('#customKeywordInput').on('input', function() {
-    $('#customKeywordName').val($(this).val());
-  });
+      // 커스텀 키워드 처리
+      $('#customKeywordCheckbox').change(function () {
+        console.log('hello world');
+        const customInput = $('#customKeywordInput');
+        if ($(this).is(':checked')) {
+          customInput.prop('disabled', false);
+        } else {
+          customInput.prop('disabled', true);
+          customInput.val('');
+          $('#customKeywordName').val('');
+        }
+      });
 
-  });
+      $('#customKeywordInput').on('input', function () {
+        $('#customKeywordName').val($(this).val());
+      });
 
-  
-	
+    });
+
+
+
 
     function editReviewWithModal(button) {
       const reviewId = card.querySelector('.review-id').value;
@@ -435,7 +479,7 @@
     }
 
     function setStarRatings() {
-      document.querySelectorAll('.card').forEach(function(card) {
+      document.querySelectorAll('.card').forEach(function (card) {
         let starsElement = card.querySelector('.stars');
         if (starsElement) {
           let rating = parseFloat(starsElement.getAttribute('data-rating'));
@@ -448,30 +492,30 @@
     }
 
     function likeReview(button) {
-    	  const reviewId = $(button).data('review-id');
-    	  const isLiked = $(button).hasClass('liked'); // 좋아요 상태 확인
-    	  console.log(reviewId);
-    	  console.log(isLiked);
+      const reviewId = $(button).data('review-id');
+      const isLiked = $(button).hasClass('liked'); // 좋아요 상태 확인
+      console.log(reviewId);
+      console.log(isLiked);
 
-    	  $.ajax({
-    	    url: isLiked ? "/review/"+ reviewId +"/unlike" : "/review/"+ reviewId +"/like" , 
-    	    type: "POST",
-    	    contentType: "application/json",
-    	    data: JSON.stringify({ "reviewId": reviewId }),
-    	    success: function(data) {
-    	      if (data.success) {
-    	        const likeCountElement = button.querySelector('.like-count');
-    	        likeCountElement.textContent = data.likeCount;
-    	        $(button).toggleClass('liked');
-    	      } else {
-    	        alert('좋아요 처리에 실패했습니다.');
-    	      }
-    	    },
-    	    error: function(xhr) {
-    	      console.error('AJAX 요청 실패:', xhr);
-    	    }
-    	  });
-    	}
+      $.ajax({
+        url: isLiked ? "/review/" + reviewId + "/unlike" : "/review/" + reviewId + "/like",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ "reviewId": reviewId }),
+        success: function (data) {
+          if (data.success) {
+            const likeCountElement = button.querySelector('.like-count');
+            likeCountElement.textContent = data.likeCount;
+            $(button).toggleClass('liked');
+          } else {
+            alert('좋아요 처리에 실패했습니다.');
+          }
+        },
+        error: function (xhr) {
+          console.error('AJAX 요청 실패:', xhr);
+        }
+      });
+    }
 
     function deleteReview(button) {
       const card = button.closest('.card');
@@ -480,20 +524,20 @@
       $.ajax({
         url: "/review/delete/" + reviewId,
         type: "POST",
-        success: function(response) {
+        success: function (response) {
           if (response.success) {
             alert('리뷰가 성공적으로 삭제되었습니다.');
             location.reload();
           }
         },
-        error: function(xhr) {
+        error: function (xhr) {
           console.error('AJAX 요청 실패:', xhr);
         }
       });
     }
 
     function showReportReasons(button) {
-    	$('#reportModal').modal('show');
+      $('#reportModal').modal('show');
     }
 
     function submitReport() {
@@ -505,50 +549,102 @@
         type: 'POST',
         contentType: "application/json",
         data: JSON.stringify({ "reason": reason }),
-        success: function(data) {
+        success: function (data) {
           if (data.success) {
             alert('신고가 제출되었습니다');
             location.reload();
           } else {
             alert('신고 제출에 실패했습니다.');
           }
-          $('#reportModal').modal('hide'); 
+          $('#reportModal').modal('hide');
         },
-        error: function(xhr) {
+        error: function (xhr) {
           console.error('AJAX 통신 실패', xhr);
           alert('신고 제출에 실패했습니다.');
-          $('#reportModal').modal('hide'); 
+          $('#reportModal').modal('hide');
         }
       });
     }
 
     function latestList(sortBy) {
       const restaurantId = /*[[${restaurant.id}]]*/ '';
+
       $.ajax({
         url: '/review/allreview/' + restaurantId + '/sort/',
         type: 'GET',
         data: { sortBy: sortBy },
-        success: function(response) {
+        success: function (response) {
           console.log(response);
-          const reviewsContainer = $('.restaurantCard'); 
+          const reviewsContainer = $('.restaurantCard');
           reviewsContainer.empty();
-          response.forEach(function(review) {
+          response.forEach(function (review) {
+            // 첨부파일 작업
             let attachedFileHTML = '';
             if (review.attachedFile && review.attachedFile.length > 0) {
-              review.attachedFile.forEach(function(file) {
+              review.attachedFile.forEach(function (file) {
                 attachedFileHTML += `
                   <div>
-                	<img src="/review/display?filename=${file.saved_filename}" alt="Review Image" class="card-img-top"> 
+                    <img src="/review/display?filename=${file.saved_filename}" alt="Review Image" class="card-img-top"> 
                   </div>
                 `;
               });
             }
+            // 리뷰 메뉴작업
+            let reviewMenuHTML = '';
+            if (review.reviewMenuList && review.reviewMenuList.length > 0) {
+              review.reviewMenuList.forEach(function (menu) {
+                if (menu.customMenuName != null) {
+                  reviewMenuHTML += `
+                    <span>Menu : </span>
+                    <button class="btn menu-button" name="menu-button">
+                      <span>${menu.customMenuName}</span>
+                    </button><br>
+                  `;
+                }
+                else {
+                  reviewMenuHTML += `
+                    <span>Menu : </span>
+                    <button class="btn menu-button" name="menu-button">
+                      <span>${menu.menu.name}</span>
+                    </button><br> 
+                  `;
+                }
+
+              })
+
+            }
+
+            // 키워드 작업
+            let reviewKeywordHTML = '';
+            if (review.keywords && review.keywords.length > 0) {
+              review.keywords.forEach(function (keyword) {
+                reviewKeywordHTML += `
+                <div class="review-keyword customKeyWord-style">`;
+                if (keyword.customKeyWordName != null) {
+                  reviewKeywordHTML += `
+                    <span class="review-keyword-icon customKeyWord-icon"></span>
+                    <span>${keyword.customKeyWordName}</span>
+                  `;
+                }
+                else {
+                  reviewKeywordHTML += `
+                    <span class="review-keyword-icon"></span>
+                    <span>${keyword.keyWord.keywordName}</span>
+                  `
+                }
+
+                reviewKeywordHTML += '</div>';
+              });
+            }
+
+            // 정렬 페이징 렌더링
             const reviewHTML = `
               <div class="col-lg-12">
-                <div class="card mt-3">
+                <div class="card mb-4">
                   <div class="card-header">
-                    User Info
-                    <h3>${review.userName}</h3> 
+                    <h3>${review.userName}</h3>
+                    <hr>
+                    ${reviewMenuHTML}
                   </div>
                   ${attachedFileHTML}
                   <div class="card-body">
@@ -560,14 +656,18 @@
                     <div class="button-container"> 
                       <input type="hidden" class="review-id" value="${review.id}">
                       <button type="button" class="btn btn-success mr-2 like-button" onclick="likeReview(this)" data-review-id="${review.id}">
-                      좋아요 <span class="like-count">${review.likeCount}</span>
-                    </button>
+                        좋아요 <span class="like-count">${review.likeCount}</span>
+                      </button>
                       <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal" data-target="#reportModal" th:data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button>
                       ${review.canEdit ? `
                         <a class="btn btn-outline-secondary mr-2" href="/review/update/${review.id}">수정</a>
                         <button type="button" class="btn btn-outline-secondary mr-2" data-bs-toggle="button" onclick="deleteReview(this)">삭제</button>
                       ` : ''}
                     </div>
+                    <div class="button-container">
+                      ${reviewKeywordHTML}
+                    </div>
+
                   </div>
                 </div>
               </div>
@@ -576,14 +676,79 @@
             setStarRatings();
           });
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error('AJAX 요청 실패:', status, error);
         }
       });
     }
-    
+
+    // 페이징 스크립트
+    function reviewPaging() {
+      const pagination = document.getElementById('review-pagination');
+      const previousPageButton = document.getElementById('previous-page');
+      const nextPageButton = document.getElementById('next-page');
+      const pageItems = pagination.querySelectorAll('.page-item[data-page]');
+
+      let currentPage = 1; // 현재 페이지 번호를 Thymeleaf에서 가져옴
+      let totalPages =  /*[[${reviewsByRestaurant.totalPages}]]*/ 1; // 총 페이지 수를 Thymeleaf에서 가져옴
+
+      function loadPage(page) {
+        if (page < 1 || page > totalPages) return;
+        currentPage = page;
+
+        $.ajax({
+          url: `/allreview/${restaurant.id}/sort/`, // API 엔드포인트 (수정 필요)
+          type: 'GET',
+          data: { page: page, sortBy: /*[[${sortBy}]]*/ 'likeCount' }, // sortBy 값을 Thymeleaf에서 가져옴
+          success: function (response) {
+            // 리뷰 목록 업데이트
+            const reviewsContainer = $('.restaurantCard');
+            reviewsContainer.empty(); // 기존 리뷰 목록 삭제
+            response.forEach(function (review) {
+              // 리뷰 HTML 생성 (기존 코드 참조)
+              // ...
+              reviewsContainer.append(reviewHTML);
+            });
+
+            // 페이징 UI 업데이트
+            updatePagination();
+          },
+          error: function (xhr, status, error) {
+            console.error('AJAX 요청 실패:', status, error);
+          }
+        });
+      }
+
+      // 페이징 UI 업데이트 함수
+      function updatePagination() {
+        pageItems.forEach((item, index) => {
+          item.classList.toggle('active', index + 1 === currentPage);
+        });
+        previousPageButton.classList.toggle('disabled', currentPage === 1);
+        nextPageButton.classList.toggle('disabled', currentPage === totalPages);
+      }
+
+      // 이벤트 리스너 설정
+      pagination.addEventListener('click', (event) => {
+        if (event.target.closest('.page-item')) {
+          const page = parseInt(event.target.closest('.page-item').querySelector('.page-link').textContent, 10);
+          loadPage(page);
+        }
+      });
+
+      previousPageButton.addEventListener('click', () => {
+        loadPage(currentPage - 1);
+      });
+
+      nextPageButton.addEventListener('click', () => {
+        loadPage(currentPage + 1);
+      });
+    }
+
   </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap" async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap"
+    async defer></script>
 
 </body>
+
 </html>

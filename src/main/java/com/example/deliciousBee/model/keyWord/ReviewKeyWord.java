@@ -1,6 +1,7 @@
 package com.example.deliciousBee.model.keyWord;
 
 import com.example.deliciousBee.model.review.Review;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -26,6 +27,7 @@ public class ReviewKeyWord {
 	
 	@ManyToOne
     @JoinColumn(name = "review_id")
+	@JsonBackReference
     private Review review;
 	
 	@ManyToOne

@@ -12,9 +12,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -127,7 +129,6 @@ public class ReviewController {
 		reviewService.saveReview(review, attachedFiles);
 		
 		// 카테고리 처리
-//		log.info("******selectedKeywords:{}", selectedKeywords);
 		if (selectedKeywords != null) {
 	        selectedKeywords.forEach(keywordId -> {
 	            KeyWord keyword = reviewKeyWordService.findById(keywordId);
@@ -281,19 +282,22 @@ public class ReviewController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/allreview/{restaurant_id}/sort/")
+	@GetMapping("/allreview/{restaurant_id}/sort")
 	@ResponseBody
-	public List<Review> getSortAllReview(
-			@RequestParam(required = false, defaultValue = "modifiedAt", value = "sortBy") String sortBy,
-			@PathVariable("restaurant_id") Long restaurant_id, @AuthenticationPrincipal BeeMember loginMember) {
+	public Page<Review> getSortAllReview(
+			 @PathVariable("restaurant_id") Long restaurant_id
+			,@RequestParam(required = false, defaultValue = "modifiedAt", value = "sortBy") String sortBy
+			,@AuthenticationPrincipal BeeMember loginMember
+			,@RequestParam(defaultValue = "0") int page) {
 		try {
 			String memberId = loginMember.getMember_id();
-			log.info("정상적으로 처리가 되었습니다.");
-			return reviewService.sortReview(sortBy, restaurant_id, memberId);
+			PageRequest pageble = PageRequest.of(page, 5);
+			return reviewService.sortReview(sortBy, restaurant_id, memberId, pageble);
 		} catch (Exception e) {
 			log.error("서버 처리 중 오류 발생", e);
-			return Collections.emptyList();
+			return null;
 		}
 
 	}
+	
 }
