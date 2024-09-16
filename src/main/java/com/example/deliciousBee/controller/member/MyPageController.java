@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.springframework.web.bind.annotation.RequestHeader;
+import com.example.deliciousBee.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -65,37 +67,30 @@ public class MyPageController {
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final ReviewService reviewService;
 	private final FollowService followService;
+	private final JwtTokenProvider jwtTokenProvider;
+
 
 	@Autowired
 	private MemberFileService memberFileService; // fileStore 주입 받음.
 
 	// **************마이페이지 이동******************
 	@GetMapping("myPage")
-	public String myPage(@AuthenticationPrincipal BeeMember loginMember,
-			@RequestParam(name = "id", required = false) Long id, Model model) {
-		MyPage myPage = null;
-
-		// 로그인한 경우
-		if (loginMember != null) {
-			if (id == null) {
-				myPage = myPageRepository.findMyPageWithVisitsByMemberId(loginMember.getMember_id());
-			} else {
-				myPage = myPageService.findById(id); // 다른 사용자의 마이페이지
-			}
-			model.addAttribute("loginMember", loginMember);
-		} else {
-			// 로그인하지 않은 경우
-			if (id != null) {
-				myPage = myPageService.findById(id); // 다른 사용자의 마이페이지만 조회 가능
-			} else {
-				return "redirect:/login"; // 자신의 마이페이지를 보려면 로그인 필요
-			}
+	public String myPage(@RequestHeader("Authorization") String token, Model model) {
+		if (token == null || !token.startsWith("Bearer ")) {
+			return "redirect:/member/login";
 		}
 
-		handleMyPageAccess(myPage, loginMember, model);
+		// JWT 토큰에서 사용자 정보 추출
+		String jwt = token.substring(7); // "Bearer " 부분 제거
+		String memberId = jwtTokenProvider.getMemberIdFromJWT(jwt);
 
-		return "member/myPage";
+		// 데이터베이스에서 최신 회원 정보 가져오기
+		BeeMember updatedMember = beeMemberService.findMemberById(memberId);
+		model.addAttribute("loginMember", updatedMember); // 최신 회원 정보 전달
+
+		return "member/myPage"; // 마이페이지로 이동
 	}
+
 
 	private void handleMyPageAccess(MyPage myPage, BeeMember loginMember, Model model) {
 		myPageService.increaseHitCount(myPage.getId(), loginMember); // 조회수 증가
