@@ -1,6 +1,7 @@
 package com.example.deliciousBee.security;
 
 import com.example.deliciousBee.service.member.BeeMemberService;
+import com.example.deliciousBee.service.member.SocialLoginService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -39,12 +40,14 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final BeeMemberService beeMemberService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final SocialLoginService socialLoginService;
 
     @Autowired
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, BeeMemberService beeMemberService, JwtTokenProvider jwtTokenProvider) {
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, BeeMemberService beeMemberService, JwtTokenProvider jwtTokenProvider , SocialLoginService socialLoginService) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.beeMemberService = beeMemberService;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.socialLoginService = socialLoginService;
     }
 
     @Bean
@@ -89,7 +92,7 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/member/login")
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                        .successHandler(new JwtOAuth2AuthenticationSuccessHandler(jwtTokenProvider, beeMemberService))
+                        .successHandler(new JwtOAuth2AuthenticationSuccessHandler(jwtTokenProvider, beeMemberService , socialLoginService))
                         .failureHandler((request, response, exception) -> {
                             System.out.println("OAuth2 Authentication failed: " + exception.getMessage());
                             exception.printStackTrace(); // 스택 트레이스 출력

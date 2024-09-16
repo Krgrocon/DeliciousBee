@@ -1,11 +1,14 @@
 package com.example.deliciousBee.service.member;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import com.example.deliciousBee.model.file.AttachedFile;
+import com.example.deliciousBee.model.member.Role;
 import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.repository.FileRepository;
 import com.example.deliciousBee.repository.MyPageRepository;
+import com.example.deliciousBee.security.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -97,7 +100,23 @@ public class BeeMemberService implements UserDetailsService {
 		beeMemberRepository.deleteById(member_id);
 
 	}
+	// BeeMember 찾기 또는 생성
+	@Transactional
+	public BeeMember findOrCreateBeeMember(OAuthAttributes attributes) {
+		return beeMemberRepository.findByEmail(attributes.getEmail())
+				.orElseGet(() -> {
+					BeeMember newBeeMember = BeeMember.builder()
+							.member_id(UUID.randomUUID().toString())
+							.password(UUID.randomUUID().toString()) // 비밀번호는 필요 없을 경우 null로 설정
+							.email(attributes.getEmail())
+							.nickname(attributes.getName())
+							.isSocialUser(true)
+							.role(Role.USER)
+							.build();
 
+					return beeMemberRepository.save(newBeeMember);
+				});
+	}
 
 
 

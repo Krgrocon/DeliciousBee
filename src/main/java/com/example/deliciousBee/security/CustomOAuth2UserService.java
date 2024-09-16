@@ -8,6 +8,8 @@ import java.util.UUID;
 import com.example.deliciousBee.model.member.Role;
 import com.example.deliciousBee.repository.BeeMemberRepository;
 import com.example.deliciousBee.repository.SocialLoginRepository;
+import com.example.deliciousBee.service.member.BeeMemberService;
+import com.example.deliciousBee.service.member.SocialLoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -24,8 +26,8 @@ import com.example.deliciousBee.model.member.SocialLogin;
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final BeeMemberRepository beeMemberRepository;
-    private final SocialLoginRepository socialLoginRepository;
+    private final BeeMemberService beeMemberService;
+    private final SocialLoginService socialLoginService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -57,8 +59,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         OAuthAttributes oAuthAttributes = OAuthAttributes.of(registrationId, userNameAttributeName, attributes);
 
-        SocialLogin socialLogin = saveOrUpdate(oAuthAttributes);
-        BeeMember beeMember = findOrCreateBeeMember(oAuthAttributes);
+        // SocialLogin 저장 또는 업데이트는 SocialLoginService로 위임
+        socialLoginService.saveOrUpdate(oAuthAttributes);
+
+        // BeeMember 찾기 또는 생성은 BeeMemberService로 위임
+        BeeMember beeMember = beeMemberService.findOrCreateBeeMember(oAuthAttributes);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(beeMember.getRoleKey())),
@@ -67,33 +72,5 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         );
     }
 
-    // BeeMember 찾기 또는 생성
-    private BeeMember findOrCreateBeeMember(OAuthAttributes attributes) {
-        return beeMemberRepository.findByEmail(attributes.getEmail())
-                .orElseGet(() -> {
-                    BeeMember newBeeMember = BeeMember.builder()
-                            .member_id(UUID.randomUUID().toString())
-                            .password(UUID.randomUUID().toString()) // 비밀번호는 필요 없을 경우 null로 설정
-                            .email(attributes.getEmail())
-                            .nickname(attributes.getName())
-                            .isSocialUser(true)
-                            .role(Role.USER)
-                            .build();
 
-                    return beeMemberRepository.save(newBeeMember);
-                });
-    }
-
-    // SocialLogin 저장 또는 업데이트
-    private SocialLogin saveOrUpdate(OAuthAttributes attributes) {
-        SocialLogin user = socialLoginRepository.findByEmail(attributes.getEmail())
-                .map(entity -> entity.update(attributes.getName(), attributes.getPicture())) // 기존 사용자 업데이트
-                .orElseGet(() -> {
-                    SocialLogin newUser = attributes.toEntity();
-                    newUser.setProvider(attributes.getProvider());  // provider 필드 설정
-                    return newUser;
-                });
-
-        return socialLoginRepository.save(user);
-    }
 }
