@@ -46,6 +46,11 @@ public class BeeMemberService implements UserDetailsService {
 		return member.orElse(null); //찾았는데 없으면 null 찾았는데 있으면 그 id값 리턴
 	}
 
+	public BeeMember findMemberByEmail(String string) {
+		Optional<BeeMember> member =  beeMemberRepository.findByEmail(string);
+		return member.orElse(null); //찾았는데 없으면 null 찾았는데 있으면 그 id값 리턴
+	}
+
 	//*********************세션 업데이트*******************
 	public BeeMember updateSessionMember(String member_id) {
 	    return findMemberById(member_id); // 이 메서드는 DB에서 최신 BeeMember 정보를 가져오는 메서드
@@ -93,17 +98,26 @@ public class BeeMemberService implements UserDetailsService {
 
 	}
 
-	
 
+
+
+//	@Override
+//	public UserDetails loadUserByUsername(String member_id) throws UsernameNotFoundException {
+//		Optional<BeeMember> beeMember = beeMemberRepository.findByMemberid(member_id);
+//		if (beeMember.isPresent()) {
+//			return beeMember.get();
+//		} else {
+//			throw new UsernameNotFoundException("User not found with username: " + member_id);
+//		}
+//	}
 
 	@Override
-	public UserDetails loadUserByUsername(String member_id) throws UsernameNotFoundException {
-		Optional<BeeMember> beeMember = beeMemberRepository.findByMemberid(member_id);
-		if (beeMember.isPresent()) {
-			return beeMember.get();
-		} else {
-			throw new UsernameNotFoundException("User not found with username: " + member_id);
-		}
+	public UserDetails loadUserByUsername(String memberId) throws UsernameNotFoundException {
+		BeeMember beeMember = beeMemberRepository.findByMemberid(memberId)
+				.orElseThrow(() -> new UsernameNotFoundException("User not found with member_id: " + memberId));
+
+		return beeMember;
 	}
+
 
 }

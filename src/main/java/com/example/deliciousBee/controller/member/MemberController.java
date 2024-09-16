@@ -6,6 +6,7 @@ import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.member.*;
 import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.repository.MyPageVisitRepository;
+import com.example.deliciousBee.security.JwtTokenProvider;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.MyPageService;
 
@@ -18,11 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,6 +27,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+
+
 
 @Slf4j
 @Controller // 응답 html
@@ -42,6 +41,9 @@ public class MemberController {
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final MyPageService myPageService;
 	private final MyPageVisitRepository myPageVisitRepository;
+	private final JwtTokenProvider jwtTokenProvider;
+
+
 
 	@Autowired
 	private FileService fileService; // fileStore 주입 받음.
@@ -117,36 +119,30 @@ public class MemberController {
 	// *******로그아웃 처리
 	@GetMapping("logout")
 	public String logout(HttpServletResponse response, HttpServletRequest request) {
-		// 쿠키 로그아웃
-		// 쿠키삭제는 새로운걸 덮어씌우는 방식밖에없다,-> 전과 같은 이름을 만들어서 값을 null로 대체
-//					Cookie cookie = new Cookie("cookieLoginId", null);
-//					cookie.setPath("/");
-//					cookie.setMaxAge(0); //쿠기 살아있는 시간 0-> 만들자마자 사라짐
-//					response.addCookie(cookie);
-
-		// 세션 로그아웃(2가지방법)
-		HttpSession session = request.getSession();
-		// 1.쿠키처럼 업는걸덮어씌우기
-		session.setAttribute("loginMember", null);
-		// 2.일괄적으로 세션값을 리셋
-		session.invalidate();
-
-		return "redirect:/"; // 보내도 쿠키가 살아있음
+		// JWT 기반 로그아웃은 클라이언트 측에서 로컬에 저장된 토큰을 삭제하는 것이 일반적
+		// 서버 측에서는 세션을 사용하지 않으므로, 세션 무효화는 불필요
+		// 클라이언트에서 로그아웃을 처리하도록 안내
+		return "redirect:/";
 	}
 
 	// ***************@@@@내정보 이동@@@********************
 	@GetMapping("myInfo")
-	public String myInfo(@AuthenticationPrincipal BeeMember loginMember, Model model) {
-		if (loginMember == null) {
+	public String myInfo(@RequestHeader("Authorization") String token, Model model) {
+		if (token == null || !token.startsWith("Bearer ")) {
 			return "redirect:/member/login";
 		}
 
-	
+		// JWT 토큰에서 사용자 정보 추출
+		String jwt = token.substring(7); // "Bearer " 부분 제거
+		String memberId = jwtTokenProvider.getMemberIdFromJWT(jwt);
+
 		// 데이터베이스에서 최신 회원 정보 가져오기
-	    BeeMember updatedMember = beeMemberService.findMemberById(loginMember.getMember_id());
-		model.addAttribute("loginMember", updatedMember); // LoginForm()의 빈객체를 담아 보내줌, 필드를 활용하려고
-		return "member/myInfo";
+		BeeMember updatedMember = beeMemberService.findMemberById(memberId);
+		model.addAttribute("loginMember", updatedMember); // 최신 회원 정보 전달
+
+		return "member/myInfo"; // 마이페이지로 이동
 	}
+
 
 	// **************@@@@내정보 수정페이지 이동@@@@**************
 	@GetMapping("updateMyInfo")
@@ -157,10 +153,11 @@ public class MemberController {
 	}
 
 	// ***************@@@@내정보 수정페이지에서 수정@@@@*****************
+// ***************@@@@내정보 수정페이지에서 수정@@@@*****************
 	@PostMapping("updateMyInfo")
 	public String update(@AuthenticationPrincipal BeeMember loginMember,
-			@Validated @ModelAttribute BeeUpdateForm beeUpdateForm, BindingResult result,
-			RedirectAttributes redirectAttributes, HttpServletRequest request, Model model) {
+						 @Validated @ModelAttribute BeeUpdateForm beeUpdateForm, BindingResult result,
+						 RedirectAttributes redirectAttributes, HttpServletRequest request, Model model) {
 
 		// 회원 정보 업데이트
 		BeeMember updatedMember = BeeUpdateForm.toBeeMember(beeUpdateForm);
@@ -169,11 +166,12 @@ public class MemberController {
 		updatedMember.setGender(loginMember.getGender());
 		beeMemberService.updateMember(updatedMember); // 서비스 호출하여 업데이트 수행
 
-		// 세션 업데이트
-	    request.getSession().setAttribute("loginMember", beeMemberService.findMemberById(loginMember.getMember_id())); 
-	    	
+		// 세션 업데이트 제거 (JWT 사용 시 불필요)
+		// request.getSession().setAttribute("loginMember", beeMemberService.findMemberById(loginMember.getMember_id()));
+
 		return "redirect:/member/myInfo"; // 수정 완료 후 프로필 페이지로 리다이렉트
 	}
+
 
 	// *******************비밀번호 변경페이지 이동****************
 	@GetMapping("passwordChange")
@@ -185,26 +183,21 @@ public class MemberController {
 	}
 
 	// ********************비밀번호 변경페이지에서 변경***************
+// ********************비밀번호 변경페이지에서 변경***************
 	@PostMapping("passwordChange")
 	public String passwordChange(@AuthenticationPrincipal BeeMember loginMember,
-			@Validated @ModelAttribute PasswordChange passwordChange, BindingResult result,
-			RedirectAttributes redirectAttributes, HttpServletRequest request, Model model) {
+								 @Validated @ModelAttribute PasswordChange passwordChange, BindingResult result,
+								 RedirectAttributes redirectAttributes, HttpServletRequest request, Model model) {
+
 		if (result.hasErrors()) {
 			// 검증 오류가 있는 경우 수정 페이지로 돌아가서 오류 메시지를 표시
 			model.addAttribute("loginMember", loginMember);
-			return "member/updateMyInfo"; // 수정 페이지로 돌아가기
+			return "member/passwordChange";
 		}
 
 		// 비밀번호 확인(바꿀 비밀번호와 비밀번호 확인이 같은지)
 		if (!passwordChange.getPassword().equals(passwordChange.getConfirmPassword())) {
 			result.rejectValue("confirmPassword", "error.confirmPassword", "비밀번호가 서로 다릅니다.");
-			model.addAttribute("loginMember", loginMember);
-			return "member/passwordChange";
-		}
-
-		// 비밀번호 길이 검증
-		if (passwordChange.getPassword().length() < 4 || passwordChange.getPassword().length() > 20) {
-			result.rejectValue("password", "error.passwordLength", "비밀번호는 4~20자여야 합니다.");
 			model.addAttribute("loginMember", loginMember);
 			return "member/passwordChange";
 		}
@@ -222,10 +215,8 @@ public class MemberController {
 
 		beeMemberService.updatePassword(updatedMember);
 
-		// 세션에서 현재 사용자 정보를 업데이트 (비밀번호만 변경되므로 ID는 동일)
-		HttpSession session = request.getSession();
-		BeeMember updatedUser = beeMemberService.findMemberById(loginMember.getMember_id());
-		session.setAttribute("loginMember", updatedUser);
+		// JWT 기반 인증에서는 토큰을 갱신할 필요가 있음
+		// 클라이언트가 재로그인하도록 유도하거나 JWT를 갱신하는 방식으로 처리
 
 		return "redirect:/member/myInfo";
 	}
@@ -265,10 +256,10 @@ public class MemberController {
 	}
 
 	// *************************회원탈퇴하기*****************************
+// *************************회원탈퇴하기*****************************
 	@PostMapping("deleteMember")
 	public String deleteMember(@AuthenticationPrincipal BeeMember loginMember,
-			@RequestParam("password") String password, HttpServletRequest request,
-			RedirectAttributes redirectAttributes) {
+							   @RequestParam("password") String password, RedirectAttributes redirectAttributes) {
 
 		// 비밀번호 확인
 		if (!passwordEncoder.matches(password, loginMember.getPassword())) {
@@ -277,19 +268,17 @@ public class MemberController {
 		}
 
 		// 회원 삭제 전에 관련된 방문 기록 삭제
-	    myPageVisitRepository.deleteByVisitor(loginMember);
-		
+		myPageVisitRepository.deleteByVisitor(loginMember);
+
 		// 회원 삭제
 		beeMemberService.deleteMember(loginMember.getMember_id());
 
-		// 세션 무효화
-		HttpSession session = request.getSession(false);
-		if (session != null) {
-			session.invalidate();
-		}
+		// 세션 무효화 대신 클라이언트 측에서 토큰 삭제 안내
+		// 클라이언트 측에서 로컬 스토리지의 JWT 토큰 삭제 유도
 
 		return "redirect:/";
 	}
+
 
 
 
