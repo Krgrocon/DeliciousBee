@@ -1,0 +1,71 @@
+<!-- fragments/navbar-login.html -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" th:fragment="navbar">
+  <div class="nav-container">
+    <div class="navbar-brand-group">
+      <a class="navbar-brand" href="/">Delicious Bee</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item admin-page" style="display: none;">
+          <a href="#" onclick="location.href='/admin'" >관리자 페이지</a>
+        </li>
+        <li class="nav-item restaurant-write" style="display: none;">
+          <a href="#" class="nav-link" onclick="location.href='/restaurant/rtwrite'">맛집등록</a>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
+
+        <div class="tooltip-container logged-in-menu" style="display: none;">
+          <div class="button-content">
+            <span class="text">내 정보</span>
+          </div>
+          <div class="tooltip-content">
+            <div class="infos">
+              <a href="#" id="myPageLink" class="info">
+                <p>마이페이지</p>
+              </a>
+              <a href="#" class="info" id="logoutButton">
+                <p>로그아웃</p>
+              </a>
+            </div>
+          </div>
+        </div>
+        <li class="nav-item logged-out-menu" style="display: block;">
+          <a class="nav-link" id="loginButton" href="#">로그인</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- 로그인 모달 -->
+<div id="loginModal" class="modal" th:fragment="loginModal">
+  <div class="form-container">
+    <span class="close" onclick="closeModal()">×</span>
+    <p class="title">DeliciousBee</p>
+    <form action="/member/login" method="post" class="form">
+      <input type="text" name="member_id" class="input" placeholder="아이디">
+      <input type="password" name="password" class="input" placeholder="비밀번호">
+      <p class="page-link">
+        <span class="page-link-label">Forgot Password?</span>
+      </p>
+      <button class="form-btn" type="submit">Log in</button>
+    </form>
+    <div class="buttons-container">
+      <div class="google-login-button">
+        <svg class="google-icon" stroke="currentColor" fill="currentColor" stroke-width="0" version="1.1" viewBox="0 0 48 48">
+          <path fill="#FFC107" d="..."></path>
+          <path fill="#FF3D00" d="..."></path>
+          <path fill="#4CAF50" d="..."></path>
+          <path fill="#1976D2" d="..."></path>
+        </svg>
+        <a href="/oauth2/authorization/google" class="google-text">Login with Google</a>
+        <a href="/oauth2/authorization/line">Line으로 로그인</a>
+      </div>
+    </div>
+    <p class="sign-up-label">Don't have an account?<a href="member/join" class="sign-up-link">회원가입</a></p>
+  </div>
+</div>
