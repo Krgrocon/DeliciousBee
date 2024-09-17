@@ -3,60 +3,51 @@ package com.example.deliciousBee.service.member;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-    private static final String senderEmail= "delibe25@gmail.com";
-    private static int number;
+    private static final String SENDER_EMAIL = "delibe25@gmail.com";
+    private static final Logger logger = LoggerFactory.getLogger(MailService.class);
 
-    // 랜덤으로 숫자 생성
-    public static void createNumber() {
-        number = (int)(Math.random() * (90000)) + 100000; //(int) Math.random() * (최댓값-최소값+1) + 최소값
+    // 랜덤으로 6자리 숫자 생성
+    public int generateVerificationCode() {
+        Random random = new Random();
+        return 100000 + random.nextInt(900000); // 100000 ~ 999999
     }
 
-    public MimeMessage CreateMail(String mail) {
-        createNumber();
-        System.out.println("확인용1");
+    // 이메일 생성
+    public MimeMessage createMail(String recipientEmail, int verificationCode) throws MessagingException {
+        logger.info("Creating email for: {}", recipientEmail);
         MimeMessage message = javaMailSender.createMimeMessage();
-        System.out.println("확인용1");
 
-        try {
-            System.out.println("확인용1");
-            message.setFrom(senderEmail);
-            message.setRecipients(MimeMessage.RecipientType.TO, mail);
-            System.out.println("수신자 이메일 주소: " + mail); // 디버깅 로그 추가
-            System.out.println("확인용1");
-            message.setSubject("이메일 인증");
-            String body = "";
-            body += "<h3>" + "요청하신 인증 번호입니다." + "</h3>";
-            body += "<h1>" + number + "</h1>";
-            body += "<h3>" + "감사합니다." + "</h3>";
-            message.setText(body,"UTF-8", "html");
-            System.out.println("확인용1");
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        message.setFrom(SENDER_EMAIL);
+        message.setRecipients(MimeMessage.RecipientType.TO, recipientEmail);
+        message.setSubject("DeliciousBee 회원가입 인증번호");
+
+        String body = "<h3>요청하신 인증 번호입니다.</h3>"
+                + "<h1>" + verificationCode + "</h1>"
+                + "<h3>감사합니다.</h3>";
+
+        message.setText(body, "UTF-8", "html");
+        logger.info("Email created successfully for: {}", recipientEmail);
 
         return message;
     }
 
-    public int sendMail(String mail) {
-        System.out.println("sendMail 메서드의 mail 변수: " + mail);
-        MimeMessage message = CreateMail(mail);
-        System.out.println("확인용2");
-        try {
-            javaMailSender.send(message);
-            System.out.println("확인용2"); // 성공하면 출력됩니다.
-        } catch (Exception e) {
-            System.err.println("이메일 전송 오류: " + e.getMessage());
-            e.printStackTrace(); // 자세한 내용은 스택 트레이스를 출력합니다.
-        }
-
-        return number;
+    // 이메일 전송
+    public void sendMail(String recipientEmail, int verificationCode) throws MessagingException {
+        logger.info("Sending email to: {}", recipientEmail);
+        MimeMessage message = createMail(recipientEmail, verificationCode);
+        javaMailSender.send(message);
+        logger.info("Email sent successfully to: {}", recipientEmail);
     }
 }

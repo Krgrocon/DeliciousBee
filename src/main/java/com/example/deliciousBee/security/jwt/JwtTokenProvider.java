@@ -15,12 +15,15 @@ public class JwtTokenProvider {
 
     private final Key key;
     private final long jwtExpirationInMs;
+    private final long emailVerificationExpirationInMs;
 
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expiration}") long jwtExpirationInMs) {
+            @Value("${jwt.expiration}") long jwtExpirationInMs,
+            @Value("${jwt.emailVerificationExpiration}") long emailVerificationExpirationInMs) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
         this.jwtExpirationInMs = jwtExpirationInMs;
+        this.emailVerificationExpirationInMs = emailVerificationExpirationInMs;
     }
 
     // JWT 토큰 생성
@@ -81,5 +84,42 @@ public class JwtTokenProvider {
             System.out.println("JWT claims string is empty or invalid: " + e.getMessage());
         }
         return false;
+    }
+
+
+    // 이메일 인증용 JWT 토큰 생성
+    public String generateEmailVerificationToken(String email, int verificationCode) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + emailVerificationExpirationInMs); // 5분 후 만료
+
+        return Jwts.builder()
+                .setSubject(email)
+                .claim("verificationCode", verificationCode)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // 이메일 인증용 토큰에서 인증 코드 추출
+    public Integer getVerificationCodeFromJWT(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("verificationCode", Integer.class);
+    }
+
+    // 이메일 인증용 토큰에서 이메일 추출
+    public String getEmailFromJWT(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
     }
 }

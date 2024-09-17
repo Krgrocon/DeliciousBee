@@ -107,7 +107,6 @@
 
 
 
-
 <div class="signup-form">
 	<h2>델리비 회원가입</h2>
 	<form action="join" method="POST" th:object="${member}" onsubmit="return formCheck()">
@@ -126,7 +125,7 @@
 
 		<div class="radio-group">
 			<th:block th:each="gender : ${T(com.example.deliciousBee.model.member.GenderType).values()}">
-				<label th:for ="${#ids.next('gender')}" th:text="${gender.description}"></label>
+				<label th:for="${#ids.next('gender')}" th:text="${gender.description}"></label>
 				<input type="radio" th:field="*{gender}" th:value="${gender}">
 			</th:block>
 		</div>
@@ -142,7 +141,7 @@
 		</div>
 
 		<!-- 인증 발송 버튼 -->
-		<div>
+		<div id="emailsend1">
 			<input type="email" id="email" th:field="*{email}" placeholder="이메일">
 			<div th:errors="*{email}" class="error"></div>
 			<button type="button" onclick="sendEmail()">인증발송</button>
@@ -150,19 +149,27 @@
 
 		<!-- 인증번호 입력 & 확인 -->
 		<div id="verificationSection" style="display: none;">
-			<input type="text" id="userNumber" placeholder="인증번호 입력">
+			<input type="text" id="userNumber" th:field="*{verificationCode}" placeholder="인증번호 입력">
 			<button type="button" onclick="verifyCode()">인증번호 확인</button>
+			<div class="timer" id="countdownTimer"></div>
 		</div>
 
-		<input type="submit" value="가입하기">
+		<!-- 인증 토큰을 저장할 숨겨진 필드 -->
+		<input type="hidden" name="token" id="token">
+
+		<input type="submit" value="가입하기" id="submitBtn" disabled>
 	</form>
 </div>
 
 <script th:inline="javascript">
+	let verificationToken = null;
+	let isVerified = false;
+	let countdownInterval = null;
+
 	function sendEmail() {
 		let email = $("#email").val().trim();
 
-		if (email.trim() === "") {
+		if (email === "") {
 			alert("이메일을 입력해주세요.");
 			return;
 		}
@@ -172,9 +179,19 @@
 			type: "POST",
 			data: { email: email },
 			success: function(response) {
-				alert("인증 메일이 발송되었습니다.");
-				// 인증번호 입력 섹션 보이기
-				$("#verificationSection").show();
+				if (response.success) {
+					alert("인증 메일이 발송되었습니다.");
+					// 인증번호 입력 섹션 보이기
+					$("#verificationSection").show();
+					$("#emailsend1").hide();
+					// 토큰 저장
+					verificationToken = response.token;
+					$("#token").val(verificationToken);
+					// 타이머 시작
+					startTimer(300); // 5분 (300초)
+				} else {
+					alert("메일 발송에 실패했습니다: " + response.error);
+				}
 			},
 			error: function(xhr, status, error) {
 				alert("메일 발송에 실패했습니다.");
@@ -183,24 +200,78 @@
 	}
 
 	function verifyCode() {
-		let userNumber = $("#userNumber").val();
+		let userNumber = $("#userNumber").val().trim();
+
+		if (userNumber === "") {
+			alert("인증번호를 입력해주세요.");
+			return;
+		}
+
+		if (!verificationToken) {
+			alert("먼저 인증 메일을 발송해주세요.");
+			return;
+		}
 
 		$.ajax({
 			url: "mailCheck",
-			type: "GET",
-			data: { userNumber: userNumber },
+			type: "POST",
+			data: {
+				verificationCode: userNumber,
+				token: verificationToken
+			},
 			success: function(response) {
-				if (response) {
+				if (response.success) {
 					alert("인증번호가 일치합니다.");
-					// 인증 성공 후 처리 (예: 가입 버튼 활성화)
+					isVerified = true;
+					// 가입 버튼 활성화
+					$("#submitBtn").prop("disabled", false);
+					// 타이머 중지 및 초기화
+					stopTimer();
 				} else {
-					alert("인증번호가 일치하지 않습니다.");
+					alert("인증번호가 일치하지 않습니다: " + response.error);
 				}
 			},
 			error: function(xhr, status, error) {
 				alert("인증번호 확인에 실패했습니다.");
 			}
 		});
+	}
+
+	function formCheck() {
+		if (!isVerified) {
+			alert("이메일 인증을 완료해주세요.");
+			return false;
+		}
+		return true;
+	}
+
+	function startTimer(duration) {
+		let timer = duration, minutes, seconds;
+		$("#countdownTimer").text("인증 만료까지 " + formatTime(timer));
+
+		countdownInterval = setInterval(function () {
+			timer--;
+			if (timer < 0) {
+				clearInterval(countdownInterval);
+				$("#countdownTimer").text("인증 시간이 만료되었습니다.");
+				alert("인증 시간이 만료되었습니다. 다시 인증해주세요.");
+				$("#submitBtn").prop("disabled", true);
+				isVerified = false;
+			} else {
+				$("#countdownTimer").text("인증 만료까지 " + formatTime(timer));
+			}
+		}, 1000);
+	}
+
+	function stopTimer() {
+		clearInterval(countdownInterval);
+		$("#countdownTimer").text("");
+	}
+
+	function formatTime(seconds) {
+		let mins = Math.floor(seconds / 60);
+		let secs = seconds % 60;
+		return `${mins < 10 ? '0' + mins : mins}:${secs < 10 ? '0' + secs : secs}`;
 	}
 
 	function formCheck() {

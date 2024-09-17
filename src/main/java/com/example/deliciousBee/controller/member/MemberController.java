@@ -11,6 +11,7 @@ import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.MyPageService;
 
 import com.example.deliciousBee.util.FileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -55,17 +56,41 @@ public class MemberController {
 
 	}
 
-	// *************회원가입***************
-	@PostMapping("join") // @ModelAttribute("member") : 담을때 "member"라고담아라, 안그러면 MemberJoinFOrm으로 담아서
-	// joinForm에서 못찾음
-	public String join(@Validated @ModelAttribute("member") BeeJoinForm beeJoinForm // 사용자가 회원가입할 정보 :member 로 날려옴,
-	// @Validated: member를 유효성체크 하겠다
-			, BindingResult result) throws IOException { // BindingResult result: try catch 처럼 예외 잡아줌 예외가발생했어도 프로그램계속되라
-		// @Validated를 쓸꺼면 BindingResult같이 써야됨
-		if (result.hasErrors()) {
-			// 예외 발생
+	@PostMapping("join")
+	public String join(
+			@Valid @ModelAttribute("member") BeeJoinForm beeJoinForm,
+			BindingResult result) throws IOException {
 
-			return "/member/joinForm"; // 회원가입 폼으로 다시보낸다
+		// 이메일 인증 확인
+		if (beeJoinForm.getToken() == null || beeJoinForm.getToken().isEmpty()) {
+			result.reject("tokenError", "인증 토큰이 필요합니다.");
+			return "/member/joinForm";
+		}
+
+		if (!jwtTokenProvider.validateToken(beeJoinForm.getToken())) {
+			result.reject("tokenError", "유효하지 않거나 만료된 인증 토큰입니다.");
+			return "/member/joinForm";
+		}
+
+		String emailFromToken = jwtTokenProvider.getEmailFromJWT(beeJoinForm.getToken());
+		Integer verificationCodeFromToken = jwtTokenProvider.getVerificationCodeFromJWT(beeJoinForm.getToken());
+
+		// 클라이언트에서 전달된 인증 번호와 토큰 내의 인증 번호를 비교
+		String userVerificationCode = beeJoinForm.getVerificationCode();
+		if (verificationCodeFromToken == null || !verificationCodeFromToken.toString().equals(userVerificationCode)) {
+			result.reject("verificationError", "인증 번호가 일치하지 않습니다.");
+			return "/member/joinForm";
+		}
+
+		// 이메일을 폼에서 가져온 이메일과 토큰에서 가져온 이메일이 일치하는지 확인
+		if (!emailFromToken.equals(beeJoinForm.getEmail())) {
+			result.reject("emailError", "이메일이 일치하지 않습니다.");
+			return "/member/joinForm";
+		}
+
+		// 유효성 검사 오류 처리
+		if (result.hasErrors()) {
+			return "/member/joinForm";
 		}
 
 		// Email 체크 *reject : 좀더 제한을 주고싶을때
@@ -82,27 +107,19 @@ public class MemberController {
 
 		// id 체크(안하면 동일한ID가있는데 다시 쓰면 덮어씌어버림)
 		BeeMember findMember = beeMemberService.findMemberById(beeMember.getMember_id());
-		log.info("findMember() 실행: {}", findMember);
+		System.out.println("findMember() 실행: " + findMember);
 
 		// id 중복
 		if (findMember != null) { // id가 있더라(중복)
-			result.reject("duplicate", "이이디가 중복되었습니다");
+			result.reject("duplicate", "아이디가 중복되었습니다");
 			return "/member/joinForm"; // 회원가입 성공후 list로 보내는데 url에 안남기고
 		}
 
 		// 회원가입 진행
-
-		beeMember.setRole(Role.USER);// 회원가입시 기본권한
+		beeMember.setRole(Role.USER); // 회원가입시 기본권한
 		beeMember.setPassword(passwordEncoder.encode(beeMember.getPassword())); // 비밀번호 암호화
 
-		// MyPage 객체 생성 및 저장
-		MyPage myPage = new MyPage();
-		myPage.setBeeMember(beeMember);
-		beeMember.setMyPage(myPage); // BeeMember에 MyPage 설정
-
 		beeMemberService.saveMember(beeMember);
-		
-		
 
 		return "redirect:/"; // redirect:/url에 안남기고
 	}

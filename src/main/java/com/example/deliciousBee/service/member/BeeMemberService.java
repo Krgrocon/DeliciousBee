@@ -37,8 +37,12 @@ public class BeeMemberService implements UserDetailsService {
 //		beeMember.setPassword(passwordEncoder.encode(beeMember.getPassword()));
 		beeMemberRepository.save(beeMember);  // 저장
 
-	}
 
+
+	}
+	public boolean existsByEmail(String email) {
+		return beeMemberRepository.existsByEmail(email);
+	}
 	public BeeMember findMemberById(String string) {
 		Optional<BeeMember> member =  beeMemberRepository.findById(string);
 		return member.orElse(null); //찾았는데 없으면 null 찾았는데 있으면 그 id값 리턴
