@@ -1,4 +1,4 @@
-package com.example.deliciousBee.security;
+package com.example.deliciousBee.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

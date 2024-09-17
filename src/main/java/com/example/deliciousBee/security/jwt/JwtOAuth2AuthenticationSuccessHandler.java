@@ -1,6 +1,7 @@
-package com.example.deliciousBee.security;
+package com.example.deliciousBee.security.jwt;
 
 import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.dto.member.OAuthAttributes;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.SocialLoginService;
 import jakarta.servlet.ServletException;

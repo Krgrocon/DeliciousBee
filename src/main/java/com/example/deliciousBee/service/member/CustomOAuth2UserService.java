@@ -1,15 +1,10 @@
-package com.example.deliciousBee.security;
+package com.example.deliciousBee.service.member;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-import com.example.deliciousBee.model.member.Role;
-import com.example.deliciousBee.repository.BeeMemberRepository;
-import com.example.deliciousBee.repository.SocialLoginRepository;
-import com.example.deliciousBee.service.member.BeeMemberService;
-import com.example.deliciousBee.service.member.SocialLoginService;
+import com.example.deliciousBee.dto.member.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -20,7 +15,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.example.deliciousBee.model.member.BeeMember;
-import com.example.deliciousBee.model.member.SocialLogin;
 
 @RequiredArgsConstructor
 @Service

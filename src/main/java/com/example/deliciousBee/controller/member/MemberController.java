@@ -6,7 +6,7 @@ import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.member.*;
 import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.repository.MyPageVisitRepository;
-import com.example.deliciousBee.security.JwtTokenProvider;
+import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.MyPageService;
 
@@ -25,7 +25,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 

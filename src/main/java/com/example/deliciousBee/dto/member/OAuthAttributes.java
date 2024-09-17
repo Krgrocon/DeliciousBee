@@ -1,4 +1,4 @@
-package com.example.deliciousBee.security;
+package com.example.deliciousBee.dto.member;
 
 import java.util.Map;
 

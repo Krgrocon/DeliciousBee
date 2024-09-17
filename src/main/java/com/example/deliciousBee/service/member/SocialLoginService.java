@@ -2,7 +2,7 @@ package com.example.deliciousBee.service.member;
 
 import com.example.deliciousBee.model.member.SocialLogin;
 import com.example.deliciousBee.repository.SocialLoginRepository;
-import com.example.deliciousBee.security.OAuthAttributes;
+import com.example.deliciousBee.dto.member.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

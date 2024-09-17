@@ -904,6 +904,7 @@ input:hover {
     font-size: 11px;
     gap: 5px;
     border: 2px solid #747474;
+    height: 40px;
 }
 
 .google-icon {

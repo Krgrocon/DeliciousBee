@@ -3,19 +3,14 @@ package com.example.deliciousBee.service.member;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.member.Role;
-import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.repository.FileRepository;
 import com.example.deliciousBee.repository.MyPageRepository;
-import com.example.deliciousBee.security.OAuthAttributes;
+import com.example.deliciousBee.dto.member.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.deliciousBee.repository.BeeMemberRepository;
