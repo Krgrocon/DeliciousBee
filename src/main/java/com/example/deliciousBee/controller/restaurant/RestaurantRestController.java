@@ -49,19 +49,15 @@ public class RestaurantRestController {
             Pageable pageable,
             @RequestParam(value = "sortBy", required = false, defaultValue = "default") String sortBy,
             @RequestParam(value = "latitude", required = false) Double userLatitude,
-            @RequestParam(value = "longitude", required = false) Double userLongitude
-    ,PagedResourcesAssembler<RestaurantDto> assembler) {
+            @RequestParam(value = "longitude", required = false) Double userLongitude,
+            @RequestParam(value = "radius", required = false, defaultValue = "0.5") Double radius, // 반경 추가 (기본값 0.5km)
+            PagedResourcesAssembler<RestaurantDto> assembler) {
 
-        Page<RestaurantDto> restaurants;
-
-        if (keyword == null || keyword.isEmpty()) {
-            restaurants = restaurantService.searchRestaurants(null, pageable, sortBy, userLatitude, userLongitude);
-        } else {
-            restaurants = restaurantService.searchRestaurants(keyword, pageable, sortBy, userLatitude, userLongitude);
-        }
+        Page<RestaurantDto> restaurants = restaurantService.searchRestaurants(keyword, pageable, sortBy, userLatitude, userLongitude, radius);
 
         return ResponseEntity.ok(assembler.toModel(restaurants));
     }
+
 
     @PostMapping("create")
     public ResponseEntity<Restaurant> createRestaurant(@AuthenticationPrincipal BeeMember loginMember,

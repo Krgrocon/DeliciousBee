@@ -155,18 +155,30 @@ public class RestaurantService {
         return restaurantRepository.searchByNameOrMenuName(keyword, pageable);
     }
 
-    public Page<RestaurantDto> searchRestaurants(String keyword, Pageable pageable, String sortBy, Double userLatitude, Double userLongitude) {
+    public Page<RestaurantDto> searchRestaurants(String keyword, Pageable pageable, String sortBy,
+                                                 Double userLatitude, Double userLongitude,
+                                                 Double radius) {
         Page<Restaurant> restaurants;
+
+        // 기본 반경 값 설정 (500m)
+        if (radius == null) {
+            radius = 0.5; // 반경을 km 단위로 설정 (0.5km = 500m)
+        }
 
         if (keyword == null || keyword.isEmpty()) {
             // 검색어가 없는 경우 전체 레스토랑 목록 조회
-            if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null) {
+            if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius > 0) {
+                restaurants = restaurantRepository.findAllWithinRadius(userLatitude, userLongitude, radius, pageable);
+            } else if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius <= 0) {
                 restaurants = restaurantRepository.findAllSortedByDistance(userLatitude, userLongitude, pageable);
             } else {
                 restaurants = restaurantRepository.findAll(pageable);
             }
         } else {
-            if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null) {
+            // 키워드가 있는 경우: 검색된 레스토랑 조회
+            if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius > 0) {
+                restaurants = restaurantRepository.searchByNameOrMenuNameWithinRadius(keyword, userLatitude, userLongitude, radius, pageable);
+            } else if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius <= 0) {
                 restaurants = restaurantRepository.searchByNameOrMenuNameSortedByDistance(keyword, userLatitude, userLongitude, pageable);
             } else {
                 restaurants = restaurantRepository.searchByNameOrMenuName(keyword, pageable);
@@ -175,7 +187,7 @@ public class RestaurantService {
 
         // DTO로 변환
         return restaurants.map(restaurant -> {
-            RestaurantDto dto = new RestaurantDto(restaurant); // RestaurantDto가 이미지 리스트를 처리
+            RestaurantDto dto = new RestaurantDto(restaurant);
             if (userLatitude != null && userLongitude != null) {
                 double distance = calculateDistance(userLatitude, userLongitude, restaurant.getLatitude(), restaurant.getLongitude());
                 dto.setDistance(distance);
@@ -183,6 +195,8 @@ public class RestaurantService {
             return dto;
         });
     }
+
+
 
 
     private Double calculateDistance(double lat1, double lon1, double lat2, double lon2) {

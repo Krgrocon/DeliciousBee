@@ -9,9 +9,9 @@
 </head>
 <body>
 <!-- 네비게이션 바 삽입 -->
-<th:block th:replace="fragments/navbar-login :: navbar"></th:block>
+<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>
 <!-- 로그인 모달 삽입 -->
-<th:block th:replace="fragments/navbar-login :: loginModal"></th:block>
+<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>
 <main>
     <div class="content">
         <div class="search-section">

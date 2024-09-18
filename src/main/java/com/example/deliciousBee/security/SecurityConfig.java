@@ -81,7 +81,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/restaurant/rtwrite", "/comments/save").hasRole("USER")
-                        .requestMatchers("/", "/member/login", "/member/mailSend", "/member/mailCheck","/member/join", "/css/**", "images/**", "/js/**", "/login/**", "/logout/**", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**", "/restaurant/display/**", "/image/**", "/restaurant/search", "/api/restaurants/search", "/member/api/check-auth", "/oauth2/**").permitAll() // 인증 없이 접근 가능
+                        .requestMatchers("/", "/member/login", "/member/mailSend", "/member/mailCheck","/member/join", "/css/**", "images/**", "/js/**", "/login/**", "/logout/**", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**", "/restaurant/display/**", "/image/**", "/restaurant/search", "/api/restaurants/search", "/restaurant/rtread/**","/member/api/check-auth", "/oauth2/**").permitAll() // 인증 없이 접근 가능
                         .anyRequest().authenticated() // 그 외의 요청은 인증 필요
                 )
                 .exceptionHandling(exceptions -> exceptions
@@ -92,7 +92,7 @@ public class SecurityConfig {
                             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
                         })
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // 세션 설정 변경
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 설정 변경
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/member/login")
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))

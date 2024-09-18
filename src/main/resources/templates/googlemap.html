@@ -1,18 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>레스토랑 위치 검색</title>
+    <style>
+        /* 지도 크기 설정 */
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+        /* 검색 폼 스타일링 */
+        #search-form {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
 <h1>레스토랑 위치 검색</h1>
+
+<!-- 검색 폼 -->
+<div id="search-form">
+    <label for="keyword">키워드:</label>
+    <input type="text" id="keyword" name="keyword" placeholder="예: 피자">
+
+    <label for="radius">반경 (km):</label>
+    <input type="number" id="radius" name="radius" value="0.5" step="0.1" min="0.1">
+
+    <button onclick="searchRestaurants()">검색</button>
+</div>
+
+<!-- 지도 표시 영역 -->
 <div id="map"></div>
 
 <script>
+    let map;
+
     function initMap() {
-        // 초기 지도 중심 설정 (필요에 따라 변경)
+        // 초기 지도 중심 설정 (서울 시청 위치)
         const initialCenter = { lat: 37.5665, lng: 126.9780 };
-        const map = new google.maps.Map(document.getElementById("map"), {
+        map = new google.maps.Map(document.getElementById("map"), {
             zoom: 15,
             center: initialCenter,
         });
@@ -27,41 +53,132 @@
                     // 지도 중심을 사용자 위치로 변경
                     map.setCenter({ lat: userLatitude, lng: userLongitude });
 
-                    // 레스토랑 데이터 가져오기
-                    fetch(`/api/restaurants?latitude=${userLatitude}&longitude=${userLongitude}&radius=500&keyword=피자`)
-                        .then(response => response.json())
-                        .then(restaurants => {
-                            // 레스토랑 마커 표시
-                            restaurants.forEach(restaurant => {
-                                const marker = new google.maps.Marker({
-                                    map: map,
-                                    position: { lat: restaurant.latitude, lng: restaurant.longitude },
-                                    title: restaurant.name
-                                });
+                    // 사용자 위치 마커 추가
+                    new google.maps.Marker({
+                        position: { lat: userLatitude, lng: userLongitude },
+                        map: map,
+                        title: "사용자 위치",
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 8,
+                            fillColor: "#00F",
+                            fillOpacity: 0.8,
+                            strokeColor: "#00F",
+                            strokeWeight: 2
+                        }
+                    });
 
-                                const infowindow = new google.maps.InfoWindow({
-                                    content: `<h3>${restaurant.name}</h3><p>${restaurant.category}</p><p>거리: ${restaurant.distance.toFixed(2)} km</p>`
-                                });
-                                marker.addListener("click", () => {
-                                    infowindow.open(map, marker);
-                                });
-                            });
-                        });
+                    // 초기 검색 수행
+                    searchRestaurants(userLatitude, userLongitude, 0.5, "피자");
                 },
                 (error) => {
                     console.error("위치 정보를 가져올 수 없습니다.", error);
-                    // 위치 정보를 가져올 수 없는 경우 처리 (예: 기본 위치 사용)
+                    // 위치 정보를 가져올 수 없는 경우 기본 위치에서 검색
+                    searchRestaurants(initialCenter.lat, initialCenter.lng, 0.5, "피자");
                 }
             );
         } else {
             console.error("위치 정보를 지원하지 않는 브라우저입니다.");
-            // 위치 정보를 지원하지 않는 브라우저 처리 (예: 기본 위치 사용)
+            // 위치 정보를 지원하지 않는 브라우저 처리 (기본 위치에서 검색)
+            searchRestaurants(initialCenter.lat, initialCenter.lng, 0.5, "피자");
         }
     }
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=myMap"></script>
 
+    // 레스토랑 검색 함수
+    function searchRestaurants(userLatitude, userLongitude, radius, keyword) {
+        // 반경을 km 단위로 변환 (기본값 0.5km)
+        radius = radius || 0.5;
+        keyword = keyword || "";
+
+        // 백엔드 API 요청
+        fetch(`/search?latitude=${userLatitude}&longitude=${userLongitude}&radius=${radius}&keyword=${encodeURIComponent(keyword)}&sortBy=distance`)
+            .then(response => response.json())
+            .then(data => {
+                // 기존 마커 삭제
+                clearMarkers();
+
+                // 레스토랑 마커 표시
+                data.content.forEach(entity => {
+                    const restaurant = entity.content; // EntityModel의 content 필드 접근
+                    const marker = new google.maps.Marker({
+                        map: map,
+                        position: { lat: restaurant.latitude, lng: restaurant.longitude },
+                        title: restaurant.name
+                    });
+
+                    // 인포윈도우 생성
+                    const infowindow = new google.maps.InfoWindow({
+                        content: `<h3>${restaurant.name}</h3><p>카테고리: ${restaurant.category}</p><p>거리: ${(restaurant.distance * 1000).toFixed(2)} m</p>`
+                    });
+
+                    // 마커 클릭 시 인포윈도우 열기
+                    marker.addListener("click", () => {
+                        infowindow.open(map, marker);
+                    });
+
+                    // 마커 저장
+                    markers.push(marker);
+                });
+            })
+            .catch(error => {
+                console.error("레스토랑 데이터를 가져오는 중 오류 발생:", error);
+            });
+    }
+
+    // 마커 관리
+    let markers = [];
+
+    // 기존 마커 삭제 함수
+    function clearMarkers() {
+        markers.forEach(marker => marker.setMap(null));
+        markers = [];
+    }
+
+    // 검색 폼 제출 처리
+    function searchRestaurantsForm() {
+        const keyword = document.getElementById("keyword").value;
+        const radius = parseFloat(document.getElementById("radius").value);
+
+        if (!navigator.geolocation) {
+            alert("위치 정보를 지원하지 않는 브라우저입니다.");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLatitude = position.coords.latitude;
+                const userLongitude = position.coords.longitude;
+                searchRestaurants(userLatitude, userLongitude, radius, keyword);
+            },
+            (error) => {
+                console.error("위치 정보를 가져올 수 없습니다.", error);
+                alert("위치 정보를 가져올 수 없습니다.");
+            }
+        );
+    }
+
+    // 검색 버튼 클릭 시 검색 수행
+    function searchRestaurantsButton() {
+        searchRestaurantsForm();
+    }
+
+    // 버튼 클릭 이벤트 연결
+    function setupSearchButton() {
+        document.querySelector("#search-form button").addEventListener("click", (e) => {
+            e.preventDefault();
+            searchRestaurantsForm();
+        });
+    }
+
+    // 초기화 함수 실행
+    window.onload = () => {
+        initMap();
+        setupSearchButton();
+    };
+</script>
+
+<!-- Google Maps API 로드 및 초기화 함수 설정 -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=Map"></script>
 
 </body>
-
 </html>
