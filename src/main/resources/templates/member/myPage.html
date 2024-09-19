@@ -80,14 +80,13 @@
 			th:unless="${myPage.mainImage == null}"
 			th:src="'/myPageImage/' + ${myPage.mainImage.savedFilename}"
 			alt="메인 이미지" class="main-image">
-
 		<!-- 프로필 이미지 -->
 		<div class="profile-image">
 			<img th:if="${myPage.beeMember.profileImage == null}"
-				src="/image/bee.jpg" alt="기본 이미지" class="default-main-image">
+				src="/myPageImage/no-profil.png" alt="기본 이미지" class="default-profile-image">
 			<img th:unless="${myPage.beeMember.profileImage == null}"
 				th:src="'/myPageImage/' + ${myPage.profileImage.savedFilename}"
-				alt="메인 이미지" class="main-image">
+				alt="메인 이미지" class="profile-image">
 		</div>
 	</div>
 
@@ -161,6 +160,7 @@
 
 		<div class="owner-stats">
 			<span th:text="'리뷰한수 : ' + ${myPage.beeMember.review.size()}"></span>
+			<span th:text="'평균 별점 : (' + ${averageRating} + '/5.0)'"></span>
 			<span th:text="'조회수: ' + ${myPage.hit}"></span> <span
 				th:text="'오늘 방문자 수: ' + ${todayVisitCount}"></span> <a
 				class="today_visitor" onclick="showVisitorsModal()">오늘의 방문자보기</a>
@@ -180,26 +180,37 @@
 		</div>
 
 	</div>
+	<div class="review-sort-container">
+		<select id="reviewSort" class="sort-select" onchange="sortReviews()">
+			<option value="createDate">리뷰 작성 날짜순</option>
+			<option value="visitDate">방문 날짜순</option>
+		</select>
+	</div>
 	<div class="myPageMain">
-		<div th:if="${!myPage.beeMember.review.isEmpty()}"
+		<div id="reviewListContainer" th:if="${!reviews.isEmpty()}"
 			class="myPageReview">
-			<div th:each="review, status : ${myPage.beeMember.review}"
-				class="review-box" th:id="'reviewBox' + ${status.index}">
+			<div th:each="review, status : ${reviews}" class="review-box"
+				th:id="'reviewBox' + ${status.index}">
 				<div class="restaurant_name_head">
 					<span><img src="/image/bee.jpg" alt="벌 이미지"
 						style="width: 35px; height: 35px; object-fit: cover;"></span> <a
 						th:href="@{/restaurant/rtread(id=${review.restaurant.id})}"
-						title="식당 정보로 이동" > <span th:text="${review.restaurant.name}"
-						class="restaurant_name" style="text-decoration: none;  "></span>
+						title="식당 정보로 이동"> <span th:text="${review.restaurant.name}"
+						class="restaurant_name" style="text-decoration: none;"></span>
 					</a>
 					<div class="rating-stars">
 						<span th:each="i : ${#numbers.sequence(1, 5)}"> <img
-							th:if="${review.rating >= i}" src="/image/full_star.png"
+							th:if="${review.rating >= i}" src="/myPageImage/full_star.png"
 							alt="꽉 찬 별"> <img th:unless="${review.rating >= i}"
-							src="/image/empty_star.png" alt="빈 별">
+							src="/myPageImage/empty_star.png" alt="빈 별">
 						</span>
 					</div>
-					<span class="review-date" th:text="${review.createDate}"></span>
+					<span class="review-date"
+						th:text="'방문 날짜 :   ' + ${review.visitDate}"></span> <span
+						class="go-review"> <a
+						th:href="@{/restaurant/rtread/{restaurantId}(restaurantId=${review.restaurant.id}, reviewId=${review.id})}">리뷰보러
+							가기</a>
+					</span>
 				</div>
 				<div class="img-and-review">
 					<div class="image-box"
@@ -209,35 +220,54 @@
 								<img
 									th:src="@{'/review/display?filename='+${file.saved_filename}}"
 									alt="Review Image"
-									style="width: 200px; height: 200px; object-fit: cover;">
+									style="width: 160px; height: 160px; object-fit: cover;">
 							</div>
 						</div>
 					</div>
 					<div class="image-box"
 						th:unless="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
 						<img src="/myPageImage/no-review-img.jpg" alt="No Review Image"
-							style="width: 200px; height: 200px; object-fit: cover;">
+							style="width: 160px; height: 160px; object-fit: cover;">
 					</div>
-					<div class="review-comment">
-						<div th:text="'추천 메뉴 : ' + ${review.recommendItems}"
-							class="recommendItems"></div>
-						<div class="review_content" th:id="'reviewContent' + ${review.id}"
-							th:data-short-content="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) : review.reviewContents}"
-							th:data-full-content="	${review.reviewContents}">
-							<span th:if="${review.reviewContents.length() > 100}"
-								th:text="${review.reviewContents.substring(0, 100)} + '...'">
-							</span> <span th:unless="${review.reviewContents.length() > 100}"
-								th:text="${review.reviewContents}"> </span>
-							<button th:if="${review.reviewContents.length() > 100}"
-								th:id="'moreButton' + ${review.id}" class="more-button"
-								th:attr="onclick=|toggleReview(this, '${review.id}')|">더보기</button>
+					<div class="review-main">
+						<div class="review-rating">
+							<p>
+								친절 포인트: <span class="gauge-container"> <span
+									class="gauge"
+									th:style="'width:' + ${review.kindRating * 33.33} + '%'"></span>
+								</span> 맛 포인트: <span class="gauge-container"> <span
+									class="gauge"
+									th:style="'width:' + ${review.tasteRating * 33.33} + '%'"></span>
+								</span> 가격 포인트: <span class="gauge-container"> <span
+									class="gauge"
+									th:style="'width:' + ${review.priceRating * 33.33} + '%'"></span>
+								</span>
+							</p>
+						</div>
+						<div class="review-comment">
+							<div class="recommendItems">
+								<span>추천 메뉴: </span> <span
+									th:each="reviewMenu, iterStat : ${review.reviewMenuList}"
+									th:text="${reviewMenu?.menu?.name 
+                  					 ?: reviewMenu?.customMenuName 
+                   					?: ''} + ${!iterStat.last ? ', ' : ''}"></span>
+							</div>
+							<div class="review_content"
+								th:id="'reviewContent' + ${review.id}"
+								th:data-short-content="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) : review.reviewContents}"
+								th:data-full-content="	${review.reviewContents}">
+								<span th:if="${review.reviewContents.length() > 100}"
+									th:text="${review.reviewContents.substring(0, 100)} + '...'">
+								</span> <span th:unless="${review.reviewContents.length() > 100}"
+									th:text="${review.reviewContents}"> </span>
+								<button th:if="${review.reviewContents.length() > 100}"
+									th:id="'moreButton' + ${review.id}" class="more-button"
+									th:attr="onclick=|toggleReview(this, '${review.id}')|">더보기</button>
+							</div>
+							<div class="review-create-date"
+								th:text="'리뷰 작성 날짜 : '+ ${review.createDate}"></div>
 						</div>
 					</div>
-				</div>
-				<div class="review-under">
-					<span><a
-						th:href="@{/review/allreview/{restaurantId}(restaurantId=${review.restaurant.id})}">리뷰보러
-							가기</a></span>
 				</div>
 			</div>
 		</div>
@@ -301,7 +331,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="goUpdate-button"
 		th:if="${loginMember != null and loginMember.member_id == myPage.beeMember.member_id}">
 		<button onclick="location.href='/member/updateMyPage'">수정하기</button>
@@ -325,7 +355,7 @@
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
 		// 로그인 모달 제어
 		document
@@ -418,14 +448,14 @@ function toggleReview(button, reviewId) {
     const moreButton = document.getElementById('moreButton' + reviewId);
 
     if (moreButton.textContent === '더보기') {
-        // 전체 내용 표시
         contentElement.innerHTML = contentElement.getAttribute('data-full-content');
-        moreButton.textContent = '접기'; // 더보기 버튼을 접기로 변경
+        moreButton.textContent = '접기'; 
+        // expanded 클래스 관련 코드 제거
     } else {
-        // 축약된 내용 표시
         const shortContent = contentElement.getAttribute('data-short-content');
         contentElement.innerHTML = '리뷰: ' + shortContent + '...';
-        moreButton.textContent = '더보기'; // 접기 버튼을 더보기로 변경
+        moreButton.textContent = '더보기';
+        // expanded 클래스 관련 코드 제거
     }
 }
 
@@ -478,6 +508,39 @@ $(document).ready(function() {
     // 5초마다 반복 실행
     setInterval(updateRandomReview, 5000); 
 });
+
+//리뷰로 이동
+ function scrollToReview(reviewId) {
+    if (reviewId) {
+      const reviewElement = document.getElementById('review-' + reviewId);
+      if (reviewElement) {
+        reviewElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+      }
+    }
+  }
+
+// 정렬 순서 바꾸기
+ function sortReviews() {
+    var sort = document.getElementById("reviewSort").value;
+    var url = new URL(window.location.href);
+    var params = new URLSearchParams(url.search);
+
+    params.set('sort', sort);
+    url.search = params.toString();
+
+    // AJAX를 사용하여 서버에 새로운 데이터 요청
+    $.ajax({
+        url: url.toString(), 
+        type: 'GET',
+        success: function(data) {
+            // 서버에서 받아온 HTML에서 리뷰 목록 부분만 추출하여 업데이트
+            $('#reviewListContainer').html($(data).find('#reviewListContainer').html()); 
+        },
+        error: function(error) {
+            console.error('AJAX 요청 실패:', error);
+        }
+    });
+}
 	</script>
 
 </body>

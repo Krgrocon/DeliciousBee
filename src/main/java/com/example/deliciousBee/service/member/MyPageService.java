@@ -78,11 +78,11 @@ public class MyPageService implements UserDetailsService {
 	}
 
 	// **V4 첨부파일 찾기 attachedfile_id가아니라 Board_id로 찾기
-	public MemberAttachedFile findFileByMyPageId(MyPage myPage) {
-		// 쿼리 메서드
-		MemberAttachedFile memberAttachedFile = memberFileRepository.findByMyPage(myPage);
-		return memberAttachedFile;
-	}
+//	public MemberAttachedFile findFileByMyPageId(MyPage myPage) {
+//		// 쿼리 메서드
+//		MemberAttachedFile memberAttachedFile = memberFileRepository.findByMyPage(myPage);
+//		return memberAttachedFile;
+//	}
 
 	@Override
 	public UserDetails loadUserByUsername(String member_id) throws UsernameNotFoundException {

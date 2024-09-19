@@ -26,9 +26,18 @@
 			<form action="/member/updateMyInfo" method="POST"
 				onsubmit="return formCheck()">
 				<div class="info">
+					<label for="profileImageInput" class="profile-image-label"
+						data-hover-text="프로필 이미지 변경"> <img
+						id="profileImagePreview" src="/myPageImage/no-profil.png"
+						alt="프로필 이미지 미리보기" class="profile-photo">
+					</label> <input type="file" name="profileImage" id="profileImageInput"
+						accept="image/*" style="display: none;">
+				</div>
+				<div class="info">
 					<h4>닉네임(2~8자)</h4>
-					<input type="text" name="nickname" th:value="${loginMember.nickname}"
-						required pattern=".{2,8}" title="닉네임은 2자에서 8자 사이로 입력해주세요.">
+					<input type="text" name="nickname"
+						th:value="${loginMember.nickname}" required pattern=".{2,8}"
+						title="닉네임은 2자에서 8자 사이로 입력해주세요.">
 				</div>
 				<div class="info">
 					<span>아이디</span> <span class="infoWarninng">변경불가</span>
@@ -58,28 +67,39 @@
 				<button type="submit">저장하기</button>
 			</form>
 		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		function formCheck() {
 
-		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-		<script>
-    function formCheck() {
-    	  	 
-        let email = $("input[name='email']").val().trim();
-        if (email === "") {
-            alert("이메일을 입력해주세요.");
-            email.focus();
-            return false;
-        }
+			let email = $("input[name='email']").val().trim();
+			if (email === "") {
+				alert("이메일을 입력해주세요.");
+				email.focus();
+				return false;
+			}
 
-        
-        if (confirm("정보를 수정하시겠습니까?")) {
-        	
-            return true;
-        } else {
-            return false;
-        }
+			if (confirm("정보를 수정하시겠습니까?")) {
+
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		//이미지 미리보기
+		const profileImageInput = document.getElementById('profileImageInput');
+const profileImagePreview = document.getElementById('profileImagePreview');
+
+profileImageInput.addEventListener('change', function(e) {
+  if (e.target.files && e.target.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      profileImagePreview.src = e.target.result;
     }
-    
-    
-</script>
+    reader.readAsDataURL(e.target.files[0]);
+  }
+});
+	</script>
 </body>
 </html>

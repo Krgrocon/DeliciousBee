@@ -33,6 +33,7 @@ import com.example.deliciousBee.model.mypage.MyPageUpdateForm;
 import com.example.deliciousBee.model.mypage.MyPageVisit;
 import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.repository.MyPageRepository;
+import com.example.deliciousBee.repository.ReviewRepository;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.FollowService;
 import com.example.deliciousBee.service.member.MyPageService;
@@ -60,6 +61,7 @@ public class MyPageController {
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final ReviewService reviewService;
 	private final FollowService followService;
+	private final ReviewRepository reviewRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 
 
@@ -68,24 +70,36 @@ public class MyPageController {
 
 	// **************마이페이지 이동******************
 	@GetMapping("myPage")
-	public String myPage(@RequestHeader("Authorization") String token, Model model) {
-		if (token == null || !token.startsWith("Bearer ")) {
-			return "redirect:/member/login";
+	public String myPage(@AuthenticationPrincipal BeeMember loginMember,
+			@RequestParam(name = "id", required = false) Long id,
+			@RequestParam(name = "sort", defaultValue = "createDate") String sort,
+			Model model) {
+			MyPage myPage = null;
+
+		// 로그인한 경우
+		if (loginMember != null) {
+			if (id == null) {
+				myPage = myPageRepository.findMyPageWithVisitsByMemberId(loginMember.getMember_id());
+			} else {
+				myPage = myPageService.findById(id); // 다른 사용자의 마이페이지
+			}
+			model.addAttribute("loginMember", loginMember);
+		} else {
+			// 로그인하지 않은 경우
+			if (id != null) {
+				myPage = myPageService.findById(id); // 다른 사용자의 마이페이지만 조회 가능
+			} else {
+				return "redirect:/login"; // 자신의 마이페이지를 보려면 로그인 필요
+			}
 		}
 
-		// JWT 토큰에서 사용자 정보 추출
-		String jwt = token.substring(7); // "Bearer " 부분 제거
-		String memberId = jwtTokenProvider.getMemberIdFromJWT(jwt);
+		handleMyPageAccess(myPage, loginMember, sort, model);
 
-		// 데이터베이스에서 최신 회원 정보 가져오기
-		BeeMember updatedMember = beeMemberService.findMemberById(memberId);
-		model.addAttribute("loginMember", updatedMember); // 최신 회원 정보 전달
-
-		return "member/myPage"; // 마이페이지로 이동
+		return "member/myPage";
 	}
 
 
-	private void handleMyPageAccess(MyPage myPage, BeeMember loginMember, Model model) {
+	private void handleMyPageAccess(MyPage myPage, BeeMember loginMember, String sort, Model model) {
 		myPageService.increaseHitCount(myPage.getId(), loginMember); // 조회수 증가
 		myPageService.increaseVisitCount(myPage.getId(), loginMember); // 방문자 수 증가
 
@@ -106,7 +120,22 @@ public class MyPageController {
 	    boolean isOwner = loginMember != null && loginMember.getMyPage().getId().equals(myPage.getId());
 	    model.addAttribute("isOwner", isOwner); // isOwner 변수를 모델에 추가
 	    
-	    //리뷰 최신순
+	    List<Review> reviews;
+	    if ("visitDate".equals(sort)) {
+	        reviews = reviewRepository.findByBeeMemberOrderByVisitDateDesc(myPage.getBeeMember());
+	    } else {
+	        reviews = reviewRepository.findByBeeMemberOrderByCreateDateDesc(myPage.getBeeMember());
+	    }
+	    model.addAttribute("reviews", reviews);
+	    
+	    //평균 별점
+	    double averageRating = reviews.stream()
+	            .mapToInt(Review::getRating)
+	            .average()
+	            .orElse(0.0); 
+
+	    model.addAttribute("averageRating", averageRating); 
+		
 	    
 		
 	}
@@ -148,7 +177,7 @@ public class MyPageController {
 		MyPage myPage = loginMember.getMyPage(); // MyPage 객체를 가져옵니다.
 		model.addAttribute("myPage", myPage); // myPage를 모델에 추가합니다.
 		model.addAttribute("loginMember", loginMember);
-		handleMyPageAccess(myPage, loginMember, model);
+		 handleMyPageAccess(myPage, loginMember, "createDate", model); // "createDate" 또는 원하는 sort 값 전달
 		return "member/updateMyPage";
 	}
 

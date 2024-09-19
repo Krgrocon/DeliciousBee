@@ -37,7 +37,6 @@ public class MyPageUpdateForm {
 		myPage.setId(myPageUpdateForm.getMyPage_id());
 		myPage.setIntroduce(myPageUpdateForm.getIntroduce());
 		myPage.setBeeMember(myPageUpdateForm.getBeeMember());
-		myPage.setMainImage(myPageUpdateForm.getMainImage());
 
 		return myPage;
 	}
