@@ -72,109 +72,239 @@
 			</p>
 		</div>
 	</div>
-<form th:action="@{/member/updateMyPage}" onsubmit="return formCheck()" method="POST">
-	<div class="main-info">
-		<!-- 메인 이미지 -->
-		<img th:if="${myPage.mainImage == null}" src="/image/back.jpg"
-			alt="기본 이미지" class="default-main-image"> <img
-			th:unless="${myPage.mainImage == null}"
-			th:src="'/myPageImage/' + ${myPage.mainImage.savedFilename}"
-			alt="메인 이미지" class="main-image">
+	<form th:action="@{/member/updateMyPage}" onsubmit="return formCheck()"
+		method="POST">
+		<div class="main-info">
+			<!-- 메인 이미지 -->
+			<label for="mainImageInput" data-hover-text="프로필 이미지 변경">
+   				 <img th:if="${myPage.mainImage == null}" src="/myPageImage/no-img.png" alt="기본 이미지" class="default-main-image profile-photo">
+    			 <img th:unless="${myPage.mainImage == null}" th:src="'/myPageImage/' + ${myPage.mainImage.savedFilename}" alt="메인 이미지" >
+   				 <input type="file" name="mainImage" id="mainImageInput" accept="image/*" style="display: none;">
+			</label>
 
-		<!-- 프로필 이미지 -->
-		<div class="profile-image">
-			<img th:if="${myPage.beeMember.profileImage == null}"
-				src="/image/bee.jpg" alt="기본 이미지" class="default-main-image">
-			<img th:unless="${myPage.beeMember.profileImage == null}"
-				th:src="'/myPageImage/' + ${myPage.profileImage.savedFilename}"
-				alt="메인 이미지" class="main-image">
-		</div>
-	</div>
-
-
-	<div class="myPageOwner">
-		<div class="owner-profile">
-			<div class="nickname-header">
-			<h4 class="nickname" th:text="${myPage.beeMember.nickname} + ' 님의 마이페이지' "></h4>
-			 <a class="myinfo-button" th:href="@{/member/myInfo}">내 정보</a>
+			
+			<!-- 프로필 이미지 -->
+			<div class="profile-image">
+				<img th:if="${myPage.beeMember.profileImage == null}"
+					src="/image/bee.jpg" alt="기본 이미지" class="default-main-image">
+				<img th:unless="${myPage.beeMember.profileImage == null}"
+					th:src="'/myPageImage/' + ${myPage.profileImage.savedFilename}"
+					alt="메인 이미지" class="main-image">
 			</div>
-			<h4 class="intro-title">소개글</h4>
-			<input type="text" name="introduce"  id="introduceInput" th:value="${myPage.introduce}" th:placeholder="${myPage.introduce == null || myPage.introduce.isEmpty()} ? '소개글을 입력하세요' : ''"
-			 maxlength="100" oninput="updateCharacterCount()">
-			 <p id="charCount">0/100 자</p>
 		</div>
-	
-		
-		<div class="owner-stats">
-			<span th:text="'리뷰한수 : ' + ${myPage.beeMember.review.size()}"></span>
-			<span th:text="'조회수: ' + ${myPage.hit}"></span> <span
-				th:text="'오늘 방문자 수: ' + ${todayVisitCount}"></span>
-			<a class="today_visitor" onclick="showVisitorsModal()">오늘의 방문자보기</a>
-		</div>
-	</div>
-	
-		 <!-- 오늘의 방문자 목록 모달 -->
-    <div id="visitorsModal" class="modal">
-        <div class="visit-modal-content">
-            <span class="close" onclick="closeVisitorsModal()">×</span>
-            <h3>오늘의 방문자</h3>
-            <ul>
-                 <li th:each="visit : ${visitors}"> 
-                <span th:text="${visit.visitor.nickname}"></span> 
-            </li>
-            </ul>
-        </div>
-    </div>
-    
-	
-	<div class="myPageMain">
-		<div th:if="${!myPage.beeMember.review.isEmpty()}"
-			class="myPageReview">
-			<div th:each="review : ${myPage.beeMember.review}" class="review-box">
 
-				<div class="restaurant_name_head">
-					<span><img src="/image/bee.jpg" alt="벌 이미지"
-						style="width: 35px; height: 35px; object-fit: cover;"></span> <a
-						th:href="@{/restaurant/rtread(id=${review.restaurant.id})}"
-						title="식당 정보로 이동"> <span th:text="${review.restaurant.name}"
-						class="restaurant_name"></span>
-					</a>
-					<div class="rating-stars">
-						<span th:each="i : ${#numbers.sequence(1, 5)}"> <img
-							th:if="${review.rating >= i}" src="/image/full_star.png"
-							alt="꽉 찬 별"> <img th:unless="${review.rating >= i}"
-							src="/image/empty_star.png" alt="빈 별">
+
+		<div class="myPageOwner">
+			<div class="owner-profile">
+				<div class="nickname-header">
+					<h4 class="nickname"
+						th:text="${myPage.beeMember.nickname} + ' 님의 마이페이지' "></h4>
+					<a class="myinfo-button" th:href="@{/member/myInfo}">내 정보</a>
+				</div>
+				<h4 class="intro-title">소개글</h4>
+				<input type="text" name="introduce" id="introduceInput"
+					th:value="${myPage.introduce}"
+					th:placeholder="${myPage.introduce == null || myPage.introduce.isEmpty()} ? '소개글을 입력하세요' : ''"
+					maxlength="100" oninput="updateCharacterCount()">
+				<p id="charCount">0/100 자</p>
+			</div>
+
+
+			<div class="owner-stats">
+				<span th:text="'리뷰한수 : ' + ${myPage.beeMember.review.size()}"></span>
+				<span th:text="'평균 별점 : (' + ${averageRating} + '/5.0)'"></span> <span
+					th:text="'조회수: ' + ${myPage.hit}"></span> <span
+					th:text="'오늘 방문자 수: ' + ${todayVisitCount}"></span> <a
+					class="today_visitor" onclick="showVisitorsModal()">오늘의 방문자보기</a>
+			</div>
+		</div>
+
+		<!-- 오늘의 방문자 목록 모달 -->
+		<div id="visitorsModal" class="modal">
+			<div class="visit-modal-content">
+				<span class="close" onclick="closeVisitorsModal()">×</span>
+				<h3>오늘의 방문자</h3>
+				<ul>
+					<li th:each="visit : ${visitors}"><a
+						th:href="@{/member/myPage(id=${visit.visitor.myPage.id})}"
+						th:text="${visit.visitor.nickname}"></a></li>
+				</ul>
+			</div>
+		</div>
+
+		</div>
+		<div class="review-sort-container">
+			<select id="reviewSort" class="sort-select" onchange="sortReviews()">
+				<option value="createDate">리뷰 작성 날짜순</option>
+				<option value="visitDate">방문 날짜순</option>
+			</select>
+		</div>
+		<div class="myPageMain">
+			<div id="reviewListContainer" th:if="${!reviews.isEmpty()}"
+				class="myPageReview">
+				<div th:each="review, status : ${reviews}" class="review-box"
+					th:id="'reviewBox' + ${status.index}">
+					<div class="restaurant_name_head">
+						<span><img src="/image/bee.jpg" alt="벌 이미지"
+							style="width: 35px; height: 35px; object-fit: cover;"></span> <a
+							th:href="@{/restaurant/rtread(id=${review.restaurant.id})}"
+							title="식당 정보로 이동"> <span th:text="${review.restaurant.name}"
+							class="restaurant_name" style="text-decoration: none;"></span>
+						</a>
+						<div class="rating-stars">
+							<span th:each="i : ${#numbers.sequence(1, 5)}"> <img
+								th:if="${review.rating >= i}" src="/myPageImage/full_star.png"
+								alt="꽉 찬 별"> <img th:unless="${review.rating >= i}"
+								src="/myPageImage/empty_star.png" alt="빈 별">
+							</span>
+						</div>
+						<span class="review-date"
+							th:text="'방문 날짜 :   ' + ${review.visitDate}"></span> <span
+							class="go-review"> <a
+							th:href="@{/restaurant/rtread/{restaurantId}(restaurantId=${review.restaurant.id}, reviewId=${review.id})}">리뷰보러
+								가기</a>
 						</span>
 					</div>
-					<span><a
-						th:href="@{/review/allreview/{restaurantId}(restaurantId=${review.restaurant.id})}">리뷰보기</a></span>
-				</div>
-				<div th:each="file : ${review.attachedFile}">
-					<div th:if="${file.saved_filename}">
-						<img
-							th:src="@{'/review/display?filename='+${file.saved_filename}}"
-							alt="Review Image"
-							style="width: 300px; height: 300px; object-fit: cover;">
+					<div class="img-and-review">
+						<div class="image-box"
+							th:if="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
+							<div th:each="file : ${review.attachedFile}">
+								<div th:if="${file.saved_filename}">
+									<img
+										th:src="@{'/review/display?filename='+${file.saved_filename}}"
+										alt="Review Image"
+										style="width: 160px; height: 160px; object-fit: cover;">
+								</div>
+							</div>
+						</div>
+						<div class="image-box"
+							th:unless="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
+							<img src="/myPageImage/no-review-img.jpg" alt="No Review Image"
+								style="width: 160px; height: 160px; object-fit: cover;">
+						</div>
+						<div class="review-main">
+							<div class="review-rating">
+								<p>
+									친절 포인트: <span class="gauge-container"> <span
+										class="gauge"
+										th:style="'width:' + ${review.kindRating * 33.33} + '%'"></span>
+									</span> 맛 포인트: <span class="gauge-container"> <span
+										class="gauge"
+										th:style="'width:' + ${review.tasteRating * 33.33} + '%'"></span>
+									</span> 가격 포인트: <span class="gauge-container"> <span
+										class="gauge"
+										th:style="'width:' + ${review.priceRating * 33.33} + '%'"></span>
+									</span>
+								</p>
+							</div>
+							<div class="review-comment">
+								<div class="recommendItems">
+									<span>추천 메뉴: </span> <span
+										th:each="reviewMenu, iterStat : ${review.reviewMenuList}"
+										th:text="${reviewMenu?.menu?.name 
+                  					 ?: reviewMenu?.customMenuName 
+                   					?: ''} + ${!iterStat.last ? ', ' : ''}"></span>
+								</div>
+								<div class="review_content"
+									th:id="'reviewContent' + ${review.id}"
+									th:data-short-content="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) : review.reviewContents}"
+									th:data-full-content="	${review.reviewContents}">
+									<span th:if="${review.reviewContents.length() > 100}"
+										th:text="${review.reviewContents.substring(0, 100)} + '...'">
+									</span> <span th:unless="${review.reviewContents.length() > 100}"
+										th:text="${review.reviewContents}"> </span>
+									<button th:if="${review.reviewContents.length() > 100}"
+										th:id="'moreButton' + ${review.id}" class="more-button"
+										th:attr="onclick=|toggleReview(this, '${review.id}')|">더보기</button>
+								</div>
+								<div class="review-create-date"
+									th:text="'리뷰 작성 날짜 : '+ ${review.createDate}"></div>
+							</div>
+						</div>
 					</div>
 				</div>
-				<div th:text="'추천 메뉴 : ' + ${review.recommendItems}"
-					class="recommendItems"></div>
-				<div th:text="'리뷰 : ' + ${review.reviewContents}"
-					class="review_content"></div>
+			</div>
+			<div class="no-review"
+				th:unless="${!myPage.beeMember.review.isEmpty()}">
+				<div class="no-review-info">
+					작성된 리뷰가 없습니다ㅠ
+					<p th:if="${#authentication.isAuthenticated() and isOwner}">
+						<a href="rtlist.html">리뷰 작성하러 가기</a> 👉
+					</p>
+				</div>
+			</div>
+			<div class="ranking">
+				<h2>리뷰왕👑</h2>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th style="text-align: left;">닉네임</th>
+							<th style="text-align: light; white-space: nowrap;">리뷰 수</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="myPage, status : ${reviewCount}"
+							th:if="${status.index} < 4">
+							<td class="center" th:if="${status.index} == 0">🥇</td>
+							<td class="center" th:if="${status.index} == 1">🥈</td>
+							<td class="center" th:if="${status.index} == 2">🥉</td>
+							<td class="center" th:unless="${status.index} < 3"
+								th:text="${status.index + 1} + ." style="padding-left: 8px;"></td>
+							<td class="center"><a
+								th:href="@{/member/myPage(id=${myPage.id})}"
+								class="nickname-link"> <span
+									th:text="${myPage.beeMember.nickname}"></span>
+							</a> 님</td>
+							<td class="center" style="text-align: center;"
+								th:text="${myPage.beeMember.review.size()}"></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="random-review" id="randomReviewSlider">
+					<h3>오늘의 리뷰</h3>
+					<div th:if="${randomReview != null}" class="random-review-item">
+						<a
+							th:href="@{/restaurant/rtread(id=${randomReview.restaurant.id})}"
+							title="식당 정보로 이동"> <span class="restaurant-name"
+							th:text="${randomReview.restaurant.name}"></span>
+						</a> <img
+							th:if="${randomReview.attachedFile != null and !randomReview.attachedFile.isEmpty()}"
+							th:each="file : ${randomReview.attachedFile}"
+							th:src="@{'/review/display?filename='+${file.saved_filename}}"
+							alt="Review Image"
+							style="width: 200px; height: 200px; object-fit: cover;"> <img
+							th:unless="${randomReview.attachedFile != null and !randomReview.attachedFile.isEmpty()}"
+							src="/myPageImage/no-review-img.jpg" alt="No Review Image"
+							style="width: 200px; height: 200px; object-fit: cover;">
+					</div>
+					<div th:unless="${randomReview != null}">
+						<p>리뷰가 없습니다.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="goUpdate-button"
+			th:if="${loginMember != null and loginMember.member_id == myPage.beeMember.member_id}">
+			<button type="submit">저장하기</button>
+		</div>
+		<!-- 위로가는 화살표 버튼 -->
+		<a href="#" onclick="scrollToTop()" id="scrollToTopButton"> <svg
+				xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+				viewBox="0 0 24 24" fill="none" stroke="currentColor"
+				stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+				class="feather-arrow-up">
+            <line x1="12" y1="19" x2="12" y2="5"></line>
+            <polyline points="7 10 12 5 17 10"></polyline>
+        </svg>
+		</a>
 
-			</div>
+		<div class="under-bar">
+			<img src="/image/bee.jpg" class="under-image"> <span
+				class="under-comment">DeliciousBee</span>
 		</div>
-		<div class="noReview" th:unless="${!myPage.beeMember.review.isEmpty()}">
-			<div class="no-review">작성된 리뷰가 없습니다ㅠ
-			</div>
-		</div>
-	</div>
-	
-	<div class="goUpdate-button"
-		th:if="${loginMember != null and loginMember.member_id == myPage.beeMember.member_id}">
-		<button type="submit">저장하기</button>
-	</div>
-</form>
+
+	</form>
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
@@ -290,6 +420,29 @@ function formCheck() {
         return false;
     }
 }
+
+//위로가는 화살표 버튼 클릭 이벤트
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // 부드러운 스크롤 효과
+    });
+}
+
+//이미지 미리보기
+const mainImageInput = document.getElementById('mainImageInput');
+const mainImagePreview = document.getElementById('mainImagePreview');
+
+mainImageInput.addEventListener('change', function(e) {
+if (e.target.files && e.target.files[0]) {
+const reader = new FileReader();
+reader.onload = function(e) {
+	mainImagePreview.src = e.target.result;
+}
+reader.readAsDataURL(e.target.files[0]);
+}
+});
+
 	</script>
 </body>
 

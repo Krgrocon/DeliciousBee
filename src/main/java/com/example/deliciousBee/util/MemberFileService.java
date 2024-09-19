@@ -18,12 +18,6 @@ public class MemberFileService {
     @Value("${file.upload.path}")
     private String uploadPath;
 
-    /**
-     * 업로드 된 파일을 지정된 경로에 저장하고, 저장된 파일명을 리턴
-     * @param mfile 업로드 된 파일
-     * @param path 저장한 경로
-     * @return 저장된 파일명
-     */
     
     
     public MemberAttachedFile saveFile(MultipartFile mfile) {
@@ -67,9 +61,20 @@ public class MemberFileService {
      * @return 삭제 여부
      */
     public boolean deleteFile(String fullpath) {
-        // 파일 삭제 로직 추가
-        File file = new File(fullpath);
-        return file.exists() && file.delete();
+    	// 파일 삭제 여부를 리턴할 변수
+        boolean result = false;
+
+        // 전달된 전체 경로로 File 객체 생성
+        File delFile = new File(fullpath);
+
+        // 해당 파일이 존재하면 삭제
+        if (delFile.isFile()) {
+            delFile.delete();
+
+            return true;
+        }
+
+        return result;
     }
 
 }

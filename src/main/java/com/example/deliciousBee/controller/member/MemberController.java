@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,7 +56,7 @@ public class MemberController {
 		return "member/joinForm"; // member 밑에 joinForm을 열어달라
 
 	}
-
+	//************회원가입 진행*******
 	@PostMapping("join")
 	public String join(
 			@Valid @ModelAttribute("member") BeeJoinForm beeJoinForm,
@@ -119,7 +120,12 @@ public class MemberController {
 		beeMember.setRole(Role.USER); // 회원가입시 기본권한
 		beeMember.setPassword(passwordEncoder.encode(beeMember.getPassword())); // 비밀번호 암호화
 
-		beeMemberService.saveMember(beeMember);
+		// MyPage 객체 생성 및 저장
+				MyPage myPage = new MyPage();
+				myPage.setBeeMember(beeMember);
+				beeMember.setMyPage(myPage); // BeeMember에 MyPage 설정
+
+				beeMemberService.saveMember(beeMember, null);
 
 		return "redirect:/"; // redirect:/url에 안남기고
 	}
@@ -143,20 +149,16 @@ public class MemberController {
 
 	// ***************@@@@내정보 이동@@@********************
 	@GetMapping("myInfo")
-	public String myInfo(@RequestHeader("Authorization") String token, Model model) {
-		if (token == null || !token.startsWith("Bearer ")) {
+	public String myInfo(@AuthenticationPrincipal BeeMember loginMember, Model model) {
+		if (loginMember == null) {
 			return "redirect:/member/login";
 		}
 
-		// JWT 토큰에서 사용자 정보 추출
-		String jwt = token.substring(7); // "Bearer " 부분 제거
-		String memberId = jwtTokenProvider.getMemberIdFromJWT(jwt);
-
+	
 		// 데이터베이스에서 최신 회원 정보 가져오기
-		BeeMember updatedMember = beeMemberService.findMemberById(memberId);
-		model.addAttribute("loginMember", updatedMember); // 최신 회원 정보 전달
-
-		return "member/myInfo"; // 마이페이지로 이동
+	    BeeMember updatedMember = beeMemberService.findMemberById(loginMember.getMember_id());
+		model.addAttribute("loginMember", updatedMember); // LoginForm()의 빈객체를 담아 보내줌, 필드를 활용하려고
+		return "member/myInfo";
 	}
 
 
@@ -168,23 +170,24 @@ public class MemberController {
 		return "member/updateMyInfo";
 	}
 
-	// ***************@@@@내정보 수정페이지에서 수정@@@@*****************
 // ***************@@@@내정보 수정페이지에서 수정@@@@*****************
 	@PostMapping("updateMyInfo")
 	public String update(@AuthenticationPrincipal BeeMember loginMember,
-						 @Validated @ModelAttribute BeeUpdateForm beeUpdateForm, BindingResult result,
-						 RedirectAttributes redirectAttributes, HttpServletRequest request, Model model) {
+			@Validated @ModelAttribute BeeUpdateForm beeUpdateForm, BindingResult result,
+			RedirectAttributes redirectAttributes, HttpServletRequest request,
+			@RequestParam(name = "file", required = false) MultipartFile file,
+			Model model) {
 
 		// 회원 정보 업데이트
 		BeeMember updatedMember = BeeUpdateForm.toBeeMember(beeUpdateForm);
 		updatedMember.setMember_id(loginMember.getMember_id()); // 회원 ID 유지
 		updatedMember.setBirth(loginMember.getBirth());
 		updatedMember.setGender(loginMember.getGender());
-		beeMemberService.updateMember(updatedMember); // 서비스 호출하여 업데이트 수행
+		beeMemberService.updateMember(updatedMember, beeUpdateForm.isFileRemoved(), file); // 서비스 호출하여 업데이트 수행
 
-		// 세션 업데이트 제거 (JWT 사용 시 불필요)
-		// request.getSession().setAttribute("loginMember", beeMemberService.findMemberById(loginMember.getMember_id()));
-
+		// 세션 업데이트
+	    request.getSession().setAttribute("loginMember", beeMemberService.findMemberById(loginMember.getMember_id())); 
+	    	
 		return "redirect:/member/myInfo"; // 수정 완료 후 프로필 페이지로 리다이렉트
 	}
 
@@ -199,7 +202,6 @@ public class MemberController {
 	}
 
 	// ********************비밀번호 변경페이지에서 변경***************
-// ********************비밀번호 변경페이지에서 변경***************
 	@PostMapping("passwordChange")
 	public String passwordChange(@AuthenticationPrincipal BeeMember loginMember,
 								 @Validated @ModelAttribute PasswordChange passwordChange, BindingResult result,
