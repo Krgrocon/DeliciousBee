@@ -22,7 +22,7 @@ public class MaliController {
     // 인증 이메일 전송
     @PostMapping("/mailSend")
     @ResponseBody
-    public ResponseEntity<?> mailSend(@RequestParam String email) {
+    public ResponseEntity<?> mailSend(@RequestParam("email") String email) {
         HashMap<String, Object> map = new HashMap<>();
         try {
             // 이메일 중복 확인
@@ -51,7 +51,7 @@ public class MaliController {
     // 인증번호 일치 여부 확인
     @PostMapping("/mailCheck")
     @ResponseBody
-    public ResponseEntity<?> mailCheck(@RequestParam String verificationCode, @RequestParam String token) {
+    public ResponseEntity<?> mailCheck(@RequestParam("verificationCode") String verificationCode, @RequestParam("token") String token) {
         HashMap<String, Object> map = new HashMap<>();
         try {
             if (!jwtTokenProvider.validateToken(token)) {

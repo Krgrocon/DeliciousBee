@@ -22,8 +22,16 @@
  			</ul>
         </nav>
         <div class="main">
-        	<h1>내 정보</h1>
         	
+        	<h1>내 정보</h1>
+			 <div class="profile-image-label">
+                <img th:if="${loginMember.profileImage != null}" 
+                     th:src="@{'/upload/' + ${loginMember.profileImage.saved_filename}}" 
+                     alt="프로필 이미지" class="profile-photo ">
+                <img th:unless="${loginMember.profileImage != null}" 
+                     src="/myPageImage/no-profil.png" 
+                     alt="기본 프로필 이미지" class="profile-photo ">
+            </div>            
             <div class="info">
                 <h4>닉네임</h4>
                 <div class="name" th:text="${loginMember.nickname}"></div>
