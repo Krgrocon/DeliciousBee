@@ -1,6 +1,7 @@
 package com.example.deliciousBee.controller.member;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.member.*;
@@ -11,9 +12,20 @@ import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.MyPageService;
 
 import com.example.deliciousBee.util.FileService;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -37,6 +49,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("member")
 public class MemberController {
 
+	@Value("${spring.cloud.gcp.storage.bucket}")
+	private String bucketName;
+	
+	
 	private final BeeMemberService beeMemberService;
 	private final HttpSession session;
 	private final BCryptPasswordEncoder passwordEncoder;
@@ -157,7 +173,7 @@ public class MemberController {
 	
 		// 데이터베이스에서 최신 회원 정보 가져오기
 	    BeeMember updatedMember = beeMemberService.findMemberById(loginMember.getMember_id());
-		model.addAttribute("loginMember", updatedMember); // LoginForm()의 빈객체를 담아 보내줌, 필드를 활용하려고
+	    model.addAttribute("loginMember", updatedMember); // LoginForm()의 빈객체를 담아 보내줌, 필드를 활용하려고
 		return "member/myInfo";
 	}
 
@@ -186,7 +202,9 @@ public class MemberController {
 		beeMemberService.updateMember(updatedMember, beeUpdateForm.isFileRemoved(), file); // 서비스 호출하여 업데이트 수행
 
 		// 세션 업데이트
-	    request.getSession().setAttribute("loginMember", beeMemberService.findMemberById(loginMember.getMember_id())); 
+		BeeMember updatedLoginMember = beeMemberService.findMemberById(loginMember.getMember_id()); // 업데이트된 회원 정보 가져오기
+	    request.getSession().setAttribute("loginMember", updatedLoginMember);
+	    redirectAttributes.addFlashAttribute("loginMember", updatedLoginMember); // 리다이렉트된 페이지에 업데이트된 회원 정보 전달
 	    	
 		return "redirect:/member/myInfo"; // 수정 완료 후 프로필 페이지로 리다이렉트
 	}
@@ -296,8 +314,51 @@ public class MemberController {
 
 		return "redirect:/";
 	}
+	
+	//이미지 출력
+	@GetMapping("/display")
+	@ResponseBody
+	public ResponseEntity<Resource> display(@RequestParam("filename") String filename) {
+	    try {
+	        // Google Cloud Storage 키 파일 설정
+	        String keyFileName = "deliciousbee-acb114448e3c.json"; // GCP 서비스 계정 키 파일명
+	        InputStream keyFile = getClass().getResourceAsStream("/" + keyFileName);
 
+	        // Google Cloud Storage 클라이언트 생성
+	        Storage storage = StorageOptions.newBuilder().setCredentials(GoogleCredentials.fromStream(keyFile)).build()
+	                .getService();
 
+	        // 파일을 GCS에서 가져오기
+	        Blob blob = storage.get(bucketName, filename);
+
+	        if (blob == null || !blob.exists()) {
+	            // 파일을 찾을 수 없는 경우 기본 이미지를 반환하도록 수정
+	            InputStream defaultImageStream = getClass().getResourceAsStream("/myPageImage/no-profil.png"); 
+	            if (defaultImageStream != null) {
+	                Resource defaultResource = new ByteArrayResource(defaultImageStream.readAllBytes());
+	                HttpHeaders defaultHeaders = new HttpHeaders();
+	                defaultHeaders.add("Content-Type", "image/png"); // 기본 이미지의 Content-Type에 맞게 수정
+	                return new ResponseEntity<>(defaultResource, defaultHeaders, HttpStatus.OK);
+	            } else {
+	                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	            }
+	        }
+
+	        // Blob의 데이터를 ByteArrayResource로 변환
+	        Resource resource = new ByteArrayResource(blob.getContent());
+
+	        // 헤더 설정
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.add("Content-Type", blob.getContentType());
+
+	        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
+	
 
 
 }

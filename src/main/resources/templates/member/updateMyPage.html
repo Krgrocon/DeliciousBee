@@ -78,7 +78,7 @@
 			<!-- 메인 이미지 -->
 			<label for="mainImageInput" data-hover-text="프로필 이미지 변경">
    				 <img th:if="${myPage.mainImage == null}" src="/myPageImage/no-img.png" alt="기본 이미지" class="default-main-image profile-photo">
-    			 <img th:unless="${myPage.mainImage == null}" th:src="'/myPageImage/' + ${myPage.mainImage.savedFilename}" alt="메인 이미지" >
+    			 <img th:unless="${myPage.mainImage == null}" th:src="@{'/loginMember/display?filename=' + ${loginMember.profileImage.saved_filename}}">
    				 <input type="file" name="mainImage" id="mainImageInput" accept="image/*" style="display: none;">
 			</label>
 
@@ -88,7 +88,7 @@
 				<img th:if="${myPage.beeMember.profileImage == null}"
 					src="/image/bee.jpg" alt="기본 이미지" class="default-main-image">
 				<img th:unless="${myPage.beeMember.profileImage == null}"
-					th:src="'/myPageImage/' + ${myPage.profileImage.savedFilename}"
+					th:src="@{'/loginMember/display?filename=' + ${loginMember.profileImage.saved_filename}}"
 					alt="메인 이미지" class="main-image">
 			</div>
 		</div>
@@ -112,7 +112,7 @@
 
 			<div class="owner-stats">
 				<span th:text="'리뷰한수 : ' + ${myPage.beeMember.review.size()}"></span>
-				<span th:text="'평균 별점 : (' + ${averageRating} + '/5.0)'"></span> <span
+				<span th:text="'평균 별점 : (' + ${#numbers.formatDecimal(averageRating, 1, 1)} + '/5.0)'"></span> <span
 					th:text="'조회수: ' + ${myPage.hit}"></span> <span
 					th:text="'오늘 방문자 수: ' + ${todayVisitCount}"></span> <a
 					class="today_visitor" onclick="showVisitorsModal()">오늘의 방문자보기</a>

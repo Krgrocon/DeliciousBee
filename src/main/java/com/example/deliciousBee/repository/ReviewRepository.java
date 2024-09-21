@@ -28,7 +28,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 //	@Query("SELECT r FROM Review r JOIN r.restaurant rest WHERE :category MEMBER OF rest.category")
 //	List<Review> findByRestaurantCategoryContaining(@Param("category") CategoryType category);
 
-	List<Review> findByRestaurant(Restaurant restaurant);
+	List<Review> findByRestaurant(Restaurant restaurㅁant);
 
 	List<Review> findByBeeMemberOrderByCreateDateDesc(BeeMember beeMember);
 

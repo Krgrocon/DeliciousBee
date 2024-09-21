@@ -100,25 +100,15 @@ public class MyPageService implements UserDetailsService {
 
 	// *****************조회수********************
 	@Transactional
-	public void increaseHitCount(Long myPageId, BeeMember loginMember) {
-		String HIT_COUNT_KEY = "visitedMyPage_" + myPageId;
+	public void increaseHitCount(Long myPageId) { // loginMember 매개변수 제거
+	    String HIT_COUNT_KEY = "visitedMyPage_" + myPageId;
 
-		if (loginMember != null) {
-			// 로그인한 사용자: 세션 사용
-			HIT_COUNT_KEY += "_" + loginMember.getMember_id(); // 사용자 ID 추가
-			Long lastVisitedTime = (Long) session.getAttribute(HIT_COUNT_KEY);
-			if (lastVisitedTime == null || System.currentTimeMillis() - lastVisitedTime > 60 * 1000) { // 1분
-				updateHitCount(myPageId);
-				session.setAttribute(HIT_COUNT_KEY, System.currentTimeMillis());
-			}
-		} else {
-			// 익명 사용자: 쿠키 사용
-			String cookieValue = CookieUtils.getCookieValue(request, HIT_COUNT_KEY);
-			if (cookieValue == null) {
-				updateHitCount(myPageId);
-				CookieUtils.createCookie(response, HIT_COUNT_KEY, "visited", 60); // 3분
-			}
-		}
+	    // 쿠키 사용
+	    String cookieValue = CookieUtils.getCookieValue(request, HIT_COUNT_KEY);
+	    if (cookieValue == null) {
+	        updateHitCount(myPageId);
+	        CookieUtils.createCookie(response, HIT_COUNT_KEY, "visited", 60); // 1분
+	    }
 	}
 
 	// 조회수 업데이트

@@ -24,14 +24,21 @@
 		<div class="update-form">
 			<h1>내 정보 수정</h1>
 			<form action="/member/updateMyInfo" method="POST"
-				onsubmit="return formCheck()">
+				enctype="multipart/form-data" onsubmit="return formCheck()">
 				<div class="info">
 					<label for="profileImageInput" class="profile-image-label"
 						data-hover-text="프로필 이미지 변경"> <img
-						id="profileImagePreview" src="/myPageImage/no-profil.png"
-						alt="프로필 이미지 미리보기" class="profile-photo">
-					</label> <input type="file" name="profileImage" id="profileImageInput"
+						id="profileImagePreview"
+						th:if="${loginMember.profileImage != null}"
+						th:src="@{'/member/display?filename=' + ${loginMember.profileImage.saved_filename}}"
+						alt="프로필 이미지" class="profile-photo"> <img
+						id="profileImagePreview"
+						th:unless="${loginMember.profileImage != null}"
+						src="/myPageImage/no-profil.png" alt="기본 프로필 이미지 미리보기"
+						class="profile-photo">
+					</label> <input type="file" name="file" id="profileImageInput"
 						accept="image/*" style="display: none;">
+					
 				</div>
 				<div class="info">
 					<h4>닉네임(2~8자)</h4>
@@ -86,20 +93,21 @@
 				return false;
 			}
 		}
-		
+
 		//이미지 미리보기
 		const profileImageInput = document.getElementById('profileImageInput');
-const profileImagePreview = document.getElementById('profileImagePreview');
+		const profileImagePreview = document
+				.getElementById('profileImagePreview');
 
-profileImageInput.addEventListener('change', function(e) {
-  if (e.target.files && e.target.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      profileImagePreview.src = e.target.result;
-    }
-    reader.readAsDataURL(e.target.files[0]);
-  }
-});
+		profileImageInput.addEventListener('change', function(e) {
+			if (e.target.files && e.target.files[0]) {
+				const reader = new FileReader();
+				reader.onload = function(e) {
+					profileImagePreview.src = e.target.result;
+				}
+				reader.readAsDataURL(e.target.files[0]);
+			}
+		});
 	</script>
 </body>
 </html>

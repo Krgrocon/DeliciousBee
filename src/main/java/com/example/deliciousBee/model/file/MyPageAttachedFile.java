@@ -1,7 +1,6 @@
 package com.example.deliciousBee.model.file;
 
 
-import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.mypage.MyPage;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -21,7 +20,7 @@ public class MyPageAttachedFile {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long MyPageAttachedFile_id;   //첨부파일 아이디
+	private Long MyPageMainImage_id;   //첨부파일 아이디
 
 	
 	@OneToOne
