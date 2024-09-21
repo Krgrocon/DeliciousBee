@@ -168,7 +168,7 @@
         }
 
         .tab-buttons button {
-            background-color: #ffc107;
+            background-color: #61686c;
             color: white;
             padding: 0.8rem 1.5rem;
             border: none;
@@ -180,7 +180,7 @@
 
         .tab-buttons button:hover,
         .tab-buttons button.active {
-            background-color: #e0a800;
+            background-color: #61686c;
         }
 
         .content-section {
@@ -224,46 +224,6 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="nav-container">
-        <div class="navbar-brand-group">
-            <a class="navbar-brand" href="/">Delicious Bee</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a href="#" th:onclick="|location.href='@{/restaurant/rtwrite}'|" class="nav-link">맛집등록</a>
-                </li>
-                <li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
-                <div class="tooltip-container" sec:authorize="isAuthenticated()">
-                    <div class="button-content">
-                        <span class="text">내 정보</span>
-                    </div>
-                    <div class="tooltip-content">
-                        <div class="infos">
-                            <a href="/member/myPage" class="info">
-                                <p>마이페이지</p>
-                            </a>
-                            <a href="#" class="info" th:href="@{/logout}">
-                                <p>로그아웃</p>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <li class="nav-item" sec:authorize="!isAuthenticated()">
-                    <a class="nav-link" id="loginButton" href="#">로그인</a>
-                </li>
-
-            </ul>
-        </div>
-    </div>
-</nav>
-
-
 
 <div class="container">
     <h1>관리자 페이지</h1>
@@ -280,60 +240,32 @@
 
 
 </div>
-<div id="loginModal" class="modal">
-    <div class="form-container">
-        <span class="close" onclick="closeModal()">×</span>
-        <p class="title">DeliciousBee</p>
-        <form action="/member/login" method="post" class="form">
-            <input type="text" name="member_id" class="input" placeholder="아이디">
-            <input type="password" name="password" class="input" placeholder="비밀번호">
-            <p class="page-link">
-                <span class="page-link-label">Forgot Password?</span>
-            </p>
-            <button class="form-btn" type="submit">Log in</button>
-        </form>
-        <div class="buttons-container">
-            <div class="google-login-button">
-                <svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1.1" x="0px" y="0px"
-                     class="google-icon" viewBox="0 0 48 48" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="#FFC107"
-                          d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12 c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24 c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
-                    <path fill="#FF3D00"
-                          d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657 C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
-                    <path fill="#4CAF50"
-                          d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36 c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
-                    <path fill="#1976D2"
-                          d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571 c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
-                </svg>
-                <a href="/oauth2/authorization/google" class="google-text">Login with google</a>
-            </div>
-        </div>
-        <p class="sign-up-label">
-            Don't have an account?<a href="member/join" class="sign-up-link" >회원가입</a>
-
-        </p>
-    </div>
-</div>
 
 
 <div id="reviewModal" class="review-modal-container" style="display: none;">
-    <p class="reviewUp-title">리뷰</p>
+    <p class="reviewUp-title">리뷰 관리</p>
     <form class="review-modal-inner-form">
-        <p class ="modal-title">이름</p>
-        <input type="text" class="modal-input" placeholder="이름">
+        <p class="modal-title">이름</p>
+        <input type="text" class="modal-input" placeholder="이름" readonly>
         <p class="modal-title">리뷰 내용</p>
-        <textarea class="inputbox" placeholder="리뷰내용"></textarea>
+        <textarea class="inputbox" placeholder="리뷰내용" readonly></textarea>
         <div class="modal-image-container">
-            <img class ="modal-image"/>
-            <img class ="modal-image"/>
-            <img class ="modal-image"/>
-            <img class ="modal-image"/>
+            <img class="modal-image" />
+            <img class="modal-image" />
+            <img class="modal-image" />
+            <img class="modal-image" />
         </div>
-        <button class="form-btn">리뷰 수정</button>
+        <div class="reviewupdate-container">
+            <button type="button" class="form-btn approve-btn">승인</button>
+            <button type="button" class="form-btn delete-btn">삭제</button>
+            <button type="button" class="form-btn" onclick="closeModal()">닫기</button>
+        </div>
     </form>
 </div>
-<script>
 
+<script>
+    let currentReportId = null; // 현재 관리 중인 신고 ID
+    let currentReviewId = null; // 현재 관리 중인 리뷰 ID
     // 로그인 모달 제어
     document.addEventListener('DOMContentLoaded', function() {
         var loginButton = document.getElementById('loginButton');
@@ -364,7 +296,6 @@
             modal.style.display = 'none';
         }
     }
-
     function loadContent(contentType) {
 
         // 활성화된 탭 버튼 스타일 변경
@@ -372,137 +303,218 @@
         document.querySelector(`.tab-buttons button[onclick="loadContent('${contentType}')"]`).classList.add('active');
 
         // AJAX 요청을 사용하여 콘텐츠 로드
-        let content = '';
         switch (contentType) {
             case 'pendingRestaurants':
                 // AJAX 요청
-                fetch('/admin/restaurants/pending')
-                    .then(response => response.json())
+                fetch('/admin/restaurants/pending', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'Authorization': `Bearer ${token}` // 제거
+                    },
+                    credentials: 'include' // 쿠키 포함
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         console.log('미승인 레스토랑 목록:', data);
                         if (data.success) {
                             let rows = '';
-                            data.pending.forEach(restaurant => { // data.pending으로 변경
+                            data.pending.forEach(restaurant => {
                                 rows += `
-                        <tr>
-                            <td>${restaurant.id}</td>
-                            <td>${restaurant.name}</td>
-                            <td>${restaurant.address}</td>
-                            <td>${restaurant.description}</td>
-                            <td><button onclick="approveRestaurant(${restaurant.id})">승인</button></td>
-                        </tr>
-                    `;
+                                <tr>
+                                    <td>${restaurant.id}</td>
+                                    <td>${restaurant.name}</td>
+                                    <td>${restaurant.address}</td>
+                                    <td><a href="/restaurant/rtread/${restaurant.id}" class="btn btn-primary">보기</a></td>
+                                    <td><button onclick="approveRestaurant(${restaurant.id})">승인</button></td>
+                                </tr>
+                            `;
                             });
-                            content = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>점포 ID</th>
-                                <th>점포명</th>
-                                <th>주소</th>
-                                <th>보기</th>
-                                <th>승인</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rows}
-                        </tbody>
-                    </table>
-                `;
+                            const content = `
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>점포 ID</th>
+                                        <th>점포명</th>
+                                        <th>주소</th>
+                                        <th>보기</th>
+                                        <th>승인</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rows}
+                                </tbody>
+                            </table>
+                        `;
                             document.getElementById('content').innerHTML = content;
                         } else {
                             // 오류 처리
+                            alert("미승인 레스토랑 목록을 가져오는데 실패했습니다.");
+                            console.error('Error fetching pending restaurants:', data.message);
                         }
+                    })
+                    .catch(error => {
+                        alert("오류가 발생했습니다. 다시 시도해주세요.");
+                        console.error('오류 발생:', error);
                     });
                 break;
             case 'reportedReviews':
                 // AJAX 요청
-                fetch('/admin/reports/all')
-                    .then(response => response.json())
+                fetch('/admin/reports/all', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'Authorization': `Bearer ${token}` // 제거
+                    },
+                    credentials: 'include' // 쿠키 포함
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         console.log('신고된 리뷰 목록:', data);
                         if (data.success) {
                             let rows = '';
                             data.reports.forEach(report => {
                                 rows += `
-                        <tr>
-                            <td>${report.reviewId}</td>
-                            <td>${report.reason}</td>
-                            <td>${report.reportDate}</td>
-                           <td><button onclick="openModal(${report.id}, ${report.reviewId})" data-report-id="${report.id}">관리</button></td>
-                        </tr>
-                                `;
-                            });
-                            content = `
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>리뷰 ID</th>
-                                            <th>내용</th>
-                                            <th>신고일</th>
-                                            <th>관리</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${rows}
-                                    </tbody>
-                                </table>
+                                <tr>
+                                    <td>${report.reviewId}</td>
+                                    <td>${report.reason}</td>
+                                    <td>${report.reportDate}</td>
+                                   <td><button onclick="openModal(${report.id}, ${report.reviewId})" data-report-id="${report.id}">관리</button></td>
+                                </tr>
                             `;
+                            });
+                            const content = `
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>리뷰 ID</th>
+                                        <th>내용</th>
+                                        <th>신고일</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rows}
+                                </tbody>
+                            </table>
+                        `;
                             document.getElementById('content').innerHTML = content;
                         } else {
                             // 오류 처리
+                            alert("신고된 리뷰 목록을 가져오는데 실패했습니다.");
+                            console.error('Error fetching reported reviews:', data.message);
                         }
+                    })
+                    .catch(error => {
+                        alert("오류가 발생했습니다. 다시 시도해주세요.");
+                        console.error('오류 발생:', error);
                     });
                 break;
             case 'reportedRestaurants':
-                content = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>레스토랑 ID</th>
-                                <th>레스토랑명</th>
-                                <th>신고일</th>
-                                <th>관리</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- 여기에 신고된 레스토랑 목록이 표시됩니다. -->
-                        </tbody>
-                    </table>
-                `;
+                // AJAX 요청 (해당 엔드포인트가 있다면 추가)
+                fetch('/admin/reports/restaurants/all', { // 예시 엔드포인트
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'Authorization': `Bearer ${token}` // 제거
+                    },
+                    credentials: 'include' // 쿠키 포함
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('신고된 레스토랑 목록:', data);
+                        if (data.success) {
+                            let rows = '';
+                            data.reports.forEach(report => {
+                                rows += `
+                                <tr>
+                                    <td>${report.restaurantId}</td>
+                                    <td>${report.name}</td>
+                                    <td>${report.reportDate}</td>
+                                    <td><button onclick="handleReport(${report.id}, ${report.restaurantId})">관리</button></td>
+                                </tr>
+                            `;
+                            });
+                            const content = `
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>레스토랑 ID</th>
+                                        <th>레스토랑명</th>
+                                        <th>신고일</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rows}
+                                </tbody>
+                            </table>
+                        `;
+                            document.getElementById('content').innerHTML = content;
+                        } else {
+                            // 오류 처리
+                            alert("신고된 레스토랑 목록을 가져오는데 실패했습니다.");
+                            console.error('Error fetching reported restaurants:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert("오류가 발생했습니다. 다시 시도해주세요.");
+                        console.error('오류 발생:', error);
+                    });
                 break;
+            default:
+                document.getElementById('content').innerHTML = '<p>Invalid content type.</p>';
         }
-        document.getElementById('content').innerHTML = content;
     }
 
-    function deleteReport(reportId) {
-        fetch(`/admin/report/${reportId}`, { method: 'DELETE' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // 삭제 성공 시 처리
-                    loadContent('reportedReviews');
-                } else {
-                    // 삭제 실패 시 처리
-                }
-            });
-    }
 
 
     function approveRestaurant(restaurantId){
-        fetch(`/admin/restaurant/approve/${restaurantId}`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // 삭제 성공 시 처리
-                    loadContent('reportedReviews');
-                } else {
-					console.log('gogo')
-                }
-            });
+        // 사용자에게 승인 확인
+        if (confirm("승인하시겠습니까?")) {
+            fetch(`/admin/restaurant/approve/${restaurantId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 승인 성공 시 콘텐츠 새로고침
+                        alert("레스토랑이 성공적으로 승인되었습니다.");
+                        loadContent('pendingRestaurants');
+                        console.log("성공")
+                    } else {
+                        // 승인 실패 시 에러 메시지 표시
+                        alert("레스토랑 승인에 실패했습니다. 다시 시도해주세요.");
+                        console.log("왜")
+                        console.error('승인 실패:', data.message);
+                    }
+                })
+                .catch(error => {
+                    // 네트워크 또는 서버 오류 처리
+                    alert("오류가 발생했습니다. 다시 시도해주세요.");
+                    console.error('오류 발생:', error);
+                });
+        }
     }
 
-   function openModal(reportId, reviewId) { // reviewId 인자 추가
+    function openModal(reportId, reviewId) { // reviewId 인자 추가
+        currentReportId = reportId;
+        currentReviewId = reviewId;
+        console.log(reviewId); // 이 값을 확인해보세요
+
         // 모달 표시
         const reviewModal = document.getElementById("reviewModal");
         reviewModal.style.display = "block";
@@ -520,14 +532,14 @@
                 // 사진 데이터 설정 (review.attachedFile 에서 가져오기)
                 const photos = review.attachedFile.map(file => file.saved_filename); // Review 엔티티의 attachedFile 필드 사용
 
-// 사진을 표시할 컨테이너 요소
+                // 사진을 표시할 컨테이너 요소
                 const photoContainer = document.querySelector(".modal-image-container"); // 이미 존재하는 컨테이너 사용
                 photoContainer.innerHTML = ""; // 기존 사진 삭제
 
-// 초기 표시할 사진 개수 (필요에 따라 수정)
+                // 초기 표시할 사진 개수 (필요에 따라 수정)
                 const initialDisplayCount = Math.min(photos.length, 4);
 
-// 사진 출력 함수
+                // 사진 출력 함수
                 function displayPhotos(startIndex, endIndex) {
                     for (let i = startIndex; i < endIndex; i++) {
                         const photoUrl = photos[i];
@@ -540,19 +552,24 @@
                         }
                     }
                 }
+
                 // 더보기 버튼 생성
                 const moreButton = document.createElement("button");
                 moreButton.textContent = "더보기";
                 moreButton.classList.add("more-button");
 
                 // 더보기 버튼 클릭 이벤트 처리
+                let currentStartIndex = initialDisplayCount;
+
                 moreButton.addEventListener("click", () => {
-                    currentStartIndex += initialDisplayCount;
                     const nextEndIndex = Math.min(currentStartIndex + initialDisplayCount, photos.length);
 
                     if (currentStartIndex < photos.length) {
                         displayPhotos(currentStartIndex, nextEndIndex);
-                    } else {
+                        currentStartIndex += initialDisplayCount;
+                    }
+
+                    if (currentStartIndex >= photos.length) {
                         moreButton.disabled = true; // 더 이상 표시할 사진이 없으면 버튼 비활성화
                         moreButton.textContent = "더 이상 사진이 없습니다.";
                     }
@@ -566,11 +583,90 @@
                     photoContainer.appendChild(moreButton);
                 }
 
+                // 승인 및 삭제 버튼에 이벤트 리스너 추가
+                const approveBtn = document.querySelector(".approve-btn");
+                const deleteBtn = document.querySelector(".delete-btn");
+
+                approveBtn.onclick = function() {
+                    approveReport(currentReportId);
+                };
+
+                deleteBtn.onclick = function() {
+                    deleteReview(currentReviewId);
+                }
+
             })
             .catch(error => {
                 console.error("리뷰 정보를 가져오는 중 오류 발생:", error);
                 // 오류 처리 (예: 사용자에게 오류 메시지 표시)
             });
+    }
+
+    function approveReport(currentReportId) {
+        if (confirm("리포트를 승인(삭제)하시겠습니까?")) {
+            fetch(`/admin/reports/${currentReportId}/approve`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Authorization' 헤더 제거
+                },
+                credentials: 'include' // 쿠키 포함
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw err; });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert("리포트가 성공적으로 승인(삭제)되었습니다.");
+                        closeModal();
+                        loadContent('reportedReviews');
+                    } else {
+                        alert("리포트 승인에 실패했습니다. 다시 시도해주세요.");
+                        console.error('승인 실패:', data.message);
+                    }
+                })
+                .catch(error => {
+                    alert("오류가 발생했습니다. 다시 시도해주세요.");
+                    console.error('오류 발생:', error);
+                });
+        }
+    }
+
+
+    function deleteReview(currentReviewId) {
+        if (confirm("리뷰를 삭제하시겠습니까?")) {
+            fetch(`/admin/reviews/${currentReviewId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Authorization' 헤더 제거
+                },
+                credentials: 'include',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw err; });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert("리뷰가 성공적으로 삭제되었습니다.");
+                        closeModal();
+                        loadContent('reportedReviews');
+                    } else {
+                        alert("리뷰 삭제에 실패했습니다. 다시 시도해주세요.");
+                        console.error('삭제 실패:', data.message);
+                    }
+                })
+                .catch(error => {
+                    alert("오류가 발생했습니다. 다시 시도해주세요.");
+                    console.error('오류 발생:', error);
+                });
+        }
     }
 
 

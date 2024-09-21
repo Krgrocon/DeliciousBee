@@ -72,5 +72,4 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
                                          @Param("radius") Double radius,
                                          Pageable pageable);
 
-
 }

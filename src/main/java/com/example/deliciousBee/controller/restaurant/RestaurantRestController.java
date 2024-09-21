@@ -43,6 +43,7 @@ public class RestaurantRestController {
     private final FileService fileService;
     private final RestaurantFileService restaurantFileService;
 
+
     @GetMapping("search")
     public ResponseEntity<PagedModel<EntityModel<RestaurantDto>>> getRestaurants(
             @RequestParam(value = "keyword", required = false) String keyword,

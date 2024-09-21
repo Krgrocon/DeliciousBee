@@ -25,8 +25,8 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
                                         Authentication authentication) throws IOException, ServletException {
         String token = tokenProvider.generateToken(authentication);
 
-        // Set JWT as an HTTP-only cookie
-        Cookie jwtCookie = new Cookie("Authorization", "Bearer " + token);
+        // Set JWT as an HTTP-only cookie without "Bearer " prefix
+        Cookie jwtCookie = new Cookie("Authorization", token);
         jwtCookie.setHttpOnly(true);
         jwtCookie.setSecure(false); // Set to true in production (requires HTTPS)
         jwtCookie.setPath("/");
@@ -34,7 +34,7 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
         response.addCookie(jwtCookie);
 
-        // Optionally, you can still return the token in the response body if needed
+        // Optionally, you can still return a success message in the response body
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("{\"message\": \"Login successful\"}");

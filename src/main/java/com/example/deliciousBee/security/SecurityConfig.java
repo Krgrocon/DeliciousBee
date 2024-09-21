@@ -58,6 +58,7 @@ public class SecurityConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -80,7 +81,7 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())) // 헤더 설정
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/restaurant/rtwrite", "/comments/save").hasRole("USER")
+                        .requestMatchers("/restaurant/rtwrite", "/comments/save" , "/restaurant/rtread/report/**").hasRole("USER")
                         .requestMatchers("/", "/member/login", "/member/mailSend", "/member/mailCheck","/member/join", "/css/**", "images/**", "/js/**", "/login/**", "/logout/**", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**", "/restaurant/display/**", "/image/**", "/restaurant/search", "/api/restaurants/search", "/restaurant/rtread/**","/member/api/check-auth", "/oauth2/**").permitAll() // 인증 없이 접근 가능
                         .anyRequest().authenticated() // 그 외의 요청은 인증 필요
                 )

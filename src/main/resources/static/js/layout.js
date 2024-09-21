@@ -107,6 +107,21 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // 닫기 버튼 이벤트 리스너 추가
+    var closeModalButton = document.getElementById('closeModalButton');
+    if (closeModalButton) {
+        closeModalButton.addEventListener('click', closeModal);
+    }
+
+    // 모달 외부를 클릭하면 모달 닫기
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('loginModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    });
+
+    // 모달 닫기 함수
     function closeModal() {
         var loginModal = document.getElementById('loginModal');
         if (loginModal) loginModal.style.display = 'none';
