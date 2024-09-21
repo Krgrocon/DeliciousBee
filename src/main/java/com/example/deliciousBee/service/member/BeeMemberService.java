@@ -1,5 +1,6 @@
 package com.example.deliciousBee.service.member;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,10 +32,6 @@ public class BeeMemberService implements UserDetailsService {
 
 	@Value("${file.upload.path}") 
     private String uploadPath; 
-
-	
-	
-
 
 	private final BeeMemberRepository beeMemberRepository;
 	private final MemberFileRepository memberFileRepository;
@@ -80,6 +77,7 @@ public class BeeMemberService implements UserDetailsService {
 			findMember.setNational(updateMember.getNational());
 			findMember.setEmail(updateMember.getEmail());
 
+			
 			// 첨부파일 삭제전 체크
 			MemberAttachedFile attachedFile = findFileByMemberId(findMember);
 			if (attachedFile != null && (isFileRemoved || (file != null && file.getSize() > 0))) { // 없는경우에도 수정하기때문에 확인작업
@@ -89,15 +87,17 @@ public class BeeMemberService implements UserDetailsService {
 			}
 
 			// 새로운 파일 저장
-			if (file != null && file.getSize() > 0) {
-				// 첨푸파일을 서버에 저장
-				MemberAttachedFile newSaveFile = memberFileService.saveFile(file);
-				// 데이터베이스에 저장될 보드 세팅
-				newSaveFile.setBeeMember(findMember); // 첨부파일이 어디에 붙어있는지 모르기때문에 이렇게준다
-				// 첨부파일 내용을 데이터베이스에 저장
-				saveMember(findMember, newSaveFile);
-
-			}
+			 if (file != null && file.getSize() > 0) {
+			        try {
+			            MemberAttachedFile newSaveFile = memberFileService.saveFile(file);
+			            newSaveFile.setBeeMember(findMember);
+			            findMember.setProfileImage(newSaveFile);
+			            saveMember(findMember, newSaveFile); 
+			        } catch (IOException e) {
+			            // 예외 처리
+			            // 추가적인 오류 처리 로직 (예: 사용자에게 오류 메시지 표시)
+			        }
+			    }
 
 			beeMemberRepository.save(findMember);
 
@@ -106,7 +106,9 @@ public class BeeMemberService implements UserDetailsService {
 		// 사진찾기
 		private MemberAttachedFile findFileByMemberId(BeeMember beeMember) {
 			// 쿼리 메서드
-			MemberAttachedFile attachedFile = memberFileRepository.findByBeeMember(beeMember); // findBy로 시작해야 쿼리만들어줌
+ 			MemberAttachedFile attachedFile = memberFileRepository.findByBeeMember(beeMember); // findBy로 시작해야 쿼리만들어줌
+			
+			System.out.println("확인용");
 			return attachedFile;
 		}
 		
@@ -114,7 +116,7 @@ public class BeeMemberService implements UserDetailsService {
 			public void removeFile(MemberAttachedFile attachedFile) {
 				//첨부파일 삭제(서버, DB 둘다 삭제), 파일삭제를 요청했거나 새로운 파일이 업로드되면 기존파일삭제
 				//1)DB에서 삭제
-				memberFileRepository.deleteById(attachedFile.getMemberAttachedFile_id()); 
+				memberFileRepository.deleteById(attachedFile.getProfilImage_id()); 
 				//2)서버(로컬)에서 삭제
 				String fullPath = uploadPath + "/" + attachedFile.getSaved_filename();
 				memberFileService.deleteFile(fullPath);

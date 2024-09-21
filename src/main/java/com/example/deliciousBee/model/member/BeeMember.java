@@ -48,8 +48,8 @@ public class BeeMember implements UserDetails, OAuth2User {
 	@Column(length = 100)
 	private String email;
 	private boolean isSocialUser; // 소셜 로그인 플래그
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "profile_image_id") // 외래 키 컬럼 이름 지정
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "profilImage_id")
 	private MemberAttachedFile profileImage;
 	@OneToOne(mappedBy = "beeMember", cascade = CascadeType.ALL)
 	@JsonIgnore

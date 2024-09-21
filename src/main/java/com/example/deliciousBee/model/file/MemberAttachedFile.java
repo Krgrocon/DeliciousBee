@@ -21,7 +21,7 @@ public class MemberAttachedFile {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long MemberAttachedFile_id;   //첨부파일 아이디
+	private Long profilImage_id;   //첨부파일 아이디
 
 	
 	@OneToOne

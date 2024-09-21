@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.mypage.MyPage;
@@ -100,9 +101,9 @@ public class MyPageController {
 
 
 	private void handleMyPageAccess(MyPage myPage, BeeMember loginMember, String sort, Model model) {
-		myPageService.increaseHitCount(myPage.getId(), loginMember); // 조회수 증가
+		myPageService.increaseHitCount(myPage.getId()); // 조회수 증가
 		myPageService.increaseVisitCount(myPage.getId(), loginMember); // 방문자 수 증가
-
+		
 		// 오늘 방문자 수 및 방문 기록 모델에 추가
 		model.addAttribute("todayVisitCount", myPageService.getTodayVisitCount(myPage.getId()));
 		List<MyPageVisit> visits = myPageService.getTodayMyPageVisits(myPage.getId()); // 오늘 방문 기록만 가져오도록 수정
@@ -186,6 +187,7 @@ public class MyPageController {
 	public String updateMyPage(@AuthenticationPrincipal BeeMember loginMember,
 			@Validated @ModelAttribute("myPageUpdateForm") MyPageUpdateForm myPageUpdateForm,
 		    BindingResult result,
+		    @RequestParam(name = "file", required = false) MultipartFile file,
 			HttpServletRequest request, Model model) {
 
 		if (result.hasErrors()) {
@@ -198,7 +200,7 @@ public class MyPageController {
 		MyPage myPage = loginMember.getMyPage(); 
 	    myPage.setIntroduce(myPageUpdateForm.getIntroduce()); // MyPageUpdateForm에서 introduce 값 사용
 		    
-		 myPageRepository.save(myPage); // MyPage 객체 저장
+		myPageRepository.save(myPage); // MyPage 객체 저장
 		return "redirect:/member/myPage";
 	}
 

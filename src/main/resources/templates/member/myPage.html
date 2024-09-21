@@ -78,14 +78,15 @@
 		<img th:if="${myPage.mainImage == null}" src="/image/back.jpg"
 			alt="기본 이미지" class="default-main-image"> <img
 			th:unless="${myPage.mainImage == null}"
-			th:src="'/myPageImage/' + ${myPage.mainImage.savedFilename}"
+			th:src="@{'/loginMember/display?filename=' + ${loginMember.profileImage.saved_filename}}"
 			alt="메인 이미지" class="main-image">
 		<!-- 프로필 이미지 -->
 		<div class="profile-image">
 			<img th:if="${myPage.beeMember.profileImage == null}"
-				src="/myPageImage/no-profil.png" alt="기본 이미지" class="default-profile-image">
-			<img th:unless="${myPage.beeMember.profileImage == null}"
-				th:src="'/myPageImage/' + ${myPage.profileImage.savedFilename}"
+				src="/myPageImage/no-profil.png" alt="기본 이미지"
+				class="default-profile-image"> <img
+				th:unless="${myPage.beeMember.profileImage == null}"
+				th:src="@{'/member/display?filename=' + ${loginMember.profileImage.saved_filename}}"
 				alt="메인 이미지" class="profile-image">
 		</div>
 	</div>
@@ -129,7 +130,7 @@
 		<!-- 팔로워 목록 모달 -->
 		<div id="followersModal" class="modal">
 			<div class="follow-modal-content">
-				<span class="close" onclick="closeFollowersModal()">×</span>
+				<span class="close-modal" onclick="closeFollowersModal()">×</span>
 				<h3>팔로워 목록</h3>
 				<p>
 					팔로워수: <span th:text="${myPage.beeMember.followerList.size()}"></span>
@@ -145,7 +146,7 @@
 		<!-- 팔로잉 목록 모달 -->
 		<div id="followingModal" class="modal">
 			<div class="follow-modal-content">
-				<span class="close" onclick="closeFollowingModal()">×</span>
+				<span class="close-modal" onclick="closeFollowingModal()">×</span>
 				<h3>팔로잉 목록</h3>
 				<p>
 					팔로워수: <span th:text="${myPage.beeMember.followingList.size()}"></span>
@@ -160,7 +161,8 @@
 
 		<div class="owner-stats">
 			<span th:text="'리뷰한수 : ' + ${myPage.beeMember.review.size()}"></span>
-			<span th:text="'평균 별점 : (' + ${averageRating} + '/5.0)'"></span>
+			<span
+				th:text="'평균 별점 : (' + ${#numbers.formatDecimal(averageRating, 1, 1)} + '/5.0)'"></span>
 			<span th:text="'조회수: ' + ${myPage.hit}"></span> <span
 				th:text="'오늘 방문자 수: ' + ${todayVisitCount}"></span> <a
 				class="today_visitor" onclick="showVisitorsModal()">오늘의 방문자보기</a>
@@ -169,7 +171,7 @@
 		<!-- 오늘의 방문자 목록 모달 -->
 		<div id="visitorsModal" class="modal">
 			<div class="visit-modal-content">
-				<span class="close" onclick="closeVisitorsModal()">×</span>
+				<span class="close-modal" onclick="closeVisitorsModal()">×</span>
 				<h3>오늘의 방문자</h3>
 				<ul>
 					<li th:each="visit : ${visitors}"><a
@@ -215,13 +217,42 @@
 				<div class="img-and-review">
 					<div class="image-box"
 						th:if="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
-						<div th:each="file : ${review.attachedFile}">
-							<div th:if="${file.saved_filename}">
-								<img
-									th:src="@{'/review/display?filename='+${file.saved_filename}}"
-									alt="Review Image"
-									style="width: 160px; height: 160px; object-fit: cover;">
+						<div th:if="${review.attachedFile.size() > 1}">
+							<img
+								th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
+								alt="Review Image"
+								style="width: 160px; height: 160px; object-fit: cover;">
+							<button class="image-more-button"
+								th:onclick="|showImageModal(${review.id})|">
+								사진 더보기 <span th:text="|+${review.attachedFile.size() - 1}|"></span>
+							</button>
+							<div class="image-modal" th:id="'imageModal' + ${review.id}">
+								<div class="image-modal-content">
+									<span class="close-modal"
+										th:onclick="|closeImageModal(${review.id})|">×</span>
+									<div th:each="file : ${review.attachedFile}">
+										<img
+											th:src="@{'/review/display?filename='+${file.saved_filename}}"
+											alt="Review Image"
+											th:onclick="|showLargeImageModal('@{'/review/display?filename='+${file.saved_filename}}', ${review.id})|">
+									</div>
+								</div>
 							</div>
+
+							<!-- largeImageModal을 imageModal과 같은 레벨로 이동 -->
+							<div id="largeImageModal" class="modal">
+								<div class="large-image-modal-content">
+									<span class="close-modal" onclick="closeLargeImageModal()">×</span>
+									<img id="largeImage" src="" alt="Large Image">
+								</div>
+							</div>
+						</div>
+						<div th:unless="${review.attachedFile.size() > 1}">
+							<img
+								th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
+								alt="Review Image"
+								style="width: 160px; height: 160px; object-fit: cover;"
+								th:onclick="|showLargeImageModal('@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}')|">
 						</div>
 					</div>
 					<div class="image-box"
@@ -255,11 +286,13 @@
 							<div class="review_content"
 								th:id="'reviewContent' + ${review.id}"
 								th:data-short-content="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) : review.reviewContents}"
-								th:data-full-content="	${review.reviewContents}">
-								<span th:if="${review.reviewContents.length() > 100}"
-									th:text="${review.reviewContents.substring(0, 100)} + '...'">
-								</span> <span th:unless="${review.reviewContents.length() > 100}"
-									th:text="${review.reviewContents}"> </span>
+								th:data-full-content="${review.reviewContents}">
+
+								<span th:id="'shortContent' + ${review.id}"
+									th:text="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) + '...' : review.reviewContents}">
+								</span> <span th:id="'fullContent' + ${review.id}"
+									th:text="${review.reviewContents}" style="display: none;"></span>
+
 								<button th:if="${review.reviewContents.length() > 100}"
 									th:id="'moreButton' + ${review.id}" class="more-button"
 									th:attr="onclick=|toggleReview(this, '${review.id}')|">더보기</button>
@@ -337,14 +370,14 @@
 		<button onclick="location.href='/member/updateMyPage'">수정하기</button>
 	</div>
 	<!-- 위로가는 화살표 버튼 -->
-	<a href="#" onclick="scrollToTop()" id="scrollToTopButton"> <svg
+	<a onclick="scrollToTop()" id="scrollToTopButton"> <svg
 			xmlns="http://www.w3.org/2000/svg" width="24" height="24"
 			viewBox="0 0 24 24" fill="none" stroke="currentColor"
 			stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
 			class="feather-arrow-up">
-            <line x1="12" y1="19" x2="12" y2="5"></line>
-            <polyline points="7 10 12 5 17 10"></polyline>
-        </svg>
+        <line x1="12" y1="19" x2="12" y2="5"></line>
+        <polyline points="7 10 12 5 17 10"></polyline>
+    </svg>
 	</a>
 
 	<div class="under-bar">
@@ -410,54 +443,77 @@
 	    }
 		
 		
-		//*************팔로워 팔로잉 모달****************
-function showFollowersModal() {
-    document.getElementById('followersModal').style.display = 'block';
-}
+		// 팔로워 목록 모달 열기 함수
+		function showFollowersModal() {
+		    document.getElementById('followersModal').style.display = 'block';
 
-// 팔로워 목록 모달 닫기 함수
-function closeFollowersModal() {
-    document.getElementById('followersModal').style.display = 'none';
-}
+		    // 모달 외부 클릭 시 닫기
+		    window.onclick = function (event) {
+		        if (event.target == document.getElementById('followersModal')) {
+		            closeFollowersModal();
+		        }
+		    };
+		}
 
-// 팔로잉 목록 모달 열기 함수
-function showFollowingModal() {
-    document.getElementById('followingModal').style.display = 'block';
-}
+		// 팔로워 목록 모달 닫기 함수
+		function closeFollowersModal() {
+		    document.getElementById('followersModal').style.display = 'none';
+		    window.onclick = null; // 닫힐 때 이벤트 리스너 제거
+		}
 
-// 팔로잉 목록 모달 닫기 함수
-function closeFollowingModal() {
-    document.getElementById('followingModal').style.display = 'none';
-}
+		// 팔로잉 목록 모달 열기 함수
+		function showFollowingModal() {
+		    document.getElementById('followingModal').style.display = 'block';
 
-//오늘의 방문자 목록 모달 열기 함수
-function showVisitorsModal() {
-    document.getElementById('visitorsModal').style.display = 'block';
-}
+		    // 모달 외부 클릭 시 닫기
+		    window.onclick = function (event) {
+		        if (event.target == document.getElementById('followingModal')) {
+		            closeFollowingModal();
+		        }
+		    };
+		}
 
-// 오늘의 방문자 목록 모달 닫기 함수
-function closeVisitorsModal() {
-    document.getElementById('visitorsModal').style.display = 'none';
-}
+		// 팔로잉 목록 모달 닫기 함수
+		function closeFollowingModal() {
+		    document.getElementById('followingModal').style.display = 'none';
+		    window.onclick = null; // 닫힐 때 이벤트 리스너 제거
+		}
+
+		// 오늘의 방문자 목록 모달 열기 함수
+		function showVisitorsModal() {
+		    document.getElementById('visitorsModal').style.display = 'block';
+
+		    // 모달 외부 클릭 시 닫기
+		    window.onclick = function (event) {
+		        if (event.target == document.getElementById('visitorsModal')) {
+		            closeVisitorsModal();
+		        }
+		    };
+		}
+
+		// 오늘의 방문자 목록 모달 닫기 함수
+		function closeVisitorsModal() {
+		    document.getElementById('visitorsModal').style.display = 'none';
+		    window.onclick = null; // 닫힐 때 이벤트 리스너 제거
+		}
 
 
 
-//더보기 버튼
-function toggleReview(button, reviewId) {
-    const contentElement = document.getElementById('reviewContent' + reviewId);
-    const moreButton = document.getElementById('moreButton' + reviewId);
+		//더보기 버튼
+		function toggleReview(button, reviewId) {
+		  var shortContent = document.getElementById('shortContent' + reviewId);
+		  var fullContent = document.getElementById('fullContent' + reviewId);
 
-    if (moreButton.textContent === '더보기') {
-        contentElement.innerHTML = contentElement.getAttribute('data-full-content');
-        moreButton.textContent = '접기'; 
-        // expanded 클래스 관련 코드 제거
-    } else {
-        const shortContent = contentElement.getAttribute('data-short-content');
-        contentElement.innerHTML = '리뷰: ' + shortContent + '...';
-        moreButton.textContent = '더보기';
-        // expanded 클래스 관련 코드 제거
-    }
-}
+		  if (button.textContent === '더보기') {
+		    shortContent.style.display = 'none'; // 짧은 내용 숨김
+		    fullContent.style.display = 'inline'; // 전체 내용 표시
+		    button.textContent = '접기'; // 버튼 텍스트 변경
+		  } else {
+		    shortContent.style.display = 'inline'; // 짧은 내용 표시
+		    fullContent.style.display = 'none'; // 전체 내용 숨김
+		    button.textContent = '더보기'; // 버튼 텍스트 변경
+		  }
+		}
 
 // 위로가는 화살표 버튼 클릭 이벤트
 function scrollToTop() {
@@ -541,6 +597,47 @@ $(document).ready(function() {
         }
     });
 }
+
+//이미지 모달 닫기 함수 (showImageModal 외부로 이동)
+ function closeImageModal(reviewId) {
+   document.getElementById('imageModal' + reviewId).style.display = 'none';
+   window.removeEventListener('click', handleImageModalOutsideClick);  // 리스너 제거
+ }
+
+ // 이미지 모달 열기 함수
+ function showImageModal(reviewId) {
+   const modal = document.getElementById('imageModal' + reviewId);
+   modal.style.display = 'block';
+
+   // 이미지 모달 외부 클릭 시 닫기 (클로저 함수 사용)
+   function handleImageModalOutsideClick(event) {
+     if (event.target == modal) {
+       closeImageModal(reviewId); // 이제 외부에서 정의된 closeImageModal 함수를 호출합니다.
+     }
+   }
+   window.addEventListener('click', handleImageModalOutsideClick);
+ }
+
+//큰 이미지 모달 닫기 함수 (showLargeImageModal 외부로 이동)
+ function closeLargeImageModal() {
+   document.getElementById('largeImageModal').style.display = 'none';
+   window.removeEventListener('click', handleLargeImageModalOutsideClick); // 리스너 제거
+ }
+
+ // 큰 이미지 모달 열기 함수
+ function showLargeImageModal(imageUrl) {
+   const modal = document.getElementById('largeImageModal');
+   document.getElementById('largeImage').src = imageUrl;
+   modal.style.display = 'block';
+
+   // 큰 이미지 모달 외부 클릭 시 닫기 (클로저 함수 사용)
+   function handleLargeImageModalOutsideClick(event) {
+     if (event.target == modal) {
+       closeLargeImageModal(); // 이제 외부에서 정의된 closeLargeImageModal 함수를 호출합니다.
+     }
+   }
+   window.addEventListener('click', handleLargeImageModalOutsideClick);
+ }
 	</script>
 
 </body>

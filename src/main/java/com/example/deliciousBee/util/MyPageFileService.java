@@ -13,7 +13,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.deliciousBee.model.file.MemberAttachedFile;
+import com.example.deliciousBee.model.file.MyPageAttachedFile;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
@@ -22,17 +22,17 @@ import com.google.cloud.storage.StorageOptions;
 
 
 @Service
-public class MemberFileService {
+public class MyPageFileService {
 	@Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
 
     private final ResourceLoader resourceLoader;
 
-    public MemberFileService(ResourceLoader resourceLoader) {
+    public MyPageFileService(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
 
-    public MemberAttachedFile saveFile(MultipartFile mfile) throws IOException {
+    public MyPageAttachedFile saveFile(MultipartFile mfile) throws IOException {
         if (mfile == null || mfile.isEmpty()) {
             return null;
         }
@@ -62,7 +62,7 @@ public class MemberFileService {
         Blob blob = storage.create(blobInfo, mfile.getInputStream());
 
         // 업로드된 파일의 정보를 AttachedFile 객체로 반환
-        return new MemberAttachedFile(originalFilename, savedFilename, mfile.getSize());
+        return new  MyPageAttachedFile(originalFilename, savedFilename, mfile.getSize());
     }
 
     public boolean deleteFile(String savedFilename) {
