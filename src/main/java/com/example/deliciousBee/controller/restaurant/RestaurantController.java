@@ -154,13 +154,13 @@ public class RestaurantController {
 		String memberId = loginMember.getMember_id();
 		Pageable pageable = PageRequest.of(page, 5); // 페이지당 5개 리뷰로 설정
 		Page<Review> reviewsByRestaurant = reviewService.getReviewsByRestaurantIdWithFiles(restaurant_id, memberId, pageable);
+		log.info("reviewsByRestaurant:{}", reviewsByRestaurant);
 		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant.getContent()); 
 		model.addAttribute("currentPage", page); 
 		model.addAttribute("totalPages", reviewsByRestaurant.getTotalPages()); 
 
 		// 카테고리 가져오기
 		Map<KeywordCategory, List<KeyWord>> keywordsByCategory = reviewKeyWordService.getKeywordsByCategory();
-		log.info("keywordsByCategory:{}", keywordsByCategory);
 		model.addAttribute("keywordsByCategory", keywordsByCategory);
 		return "restaurant/rtread";
 	}
