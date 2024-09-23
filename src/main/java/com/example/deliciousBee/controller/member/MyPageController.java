@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.springframework.web.bind.annotation.RequestHeader;
+import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -28,16 +28,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.deliciousBee.model.board.CategoryType;
-import com.example.deliciousBee.model.file.MemberAttachedFile;
-import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
-import com.example.deliciousBee.model.member.BeeUpdateForm;
 import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.model.mypage.MyPageUpdateForm;
 import com.example.deliciousBee.model.mypage.MyPageVisit;
 import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.repository.MyPageRepository;
+import com.example.deliciousBee.repository.ReviewRepository;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.FollowService;
 import com.example.deliciousBee.service.member.MyPageService;
@@ -65,6 +62,9 @@ public class MyPageController {
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final ReviewService reviewService;
 	private final FollowService followService;
+	private final ReviewRepository reviewRepository;
+	private final JwtTokenProvider jwtTokenProvider;
+
 
 	@Autowired
 	private MemberFileService memberFileService; // fileStore 주입 받음.
@@ -72,8 +72,10 @@ public class MyPageController {
 	// **************마이페이지 이동******************
 	@GetMapping("myPage")
 	public String myPage(@AuthenticationPrincipal BeeMember loginMember,
-			@RequestParam(name = "id", required = false) Long id, Model model) {
-		MyPage myPage = null;
+			@RequestParam(name = "id", required = false) Long id,
+			@RequestParam(name = "sort", defaultValue = "createDate") String sort,
+			Model model) {
+			MyPage myPage = null;
 
 		// 로그인한 경우
 		if (loginMember != null) {
@@ -92,15 +94,16 @@ public class MyPageController {
 			}
 		}
 
-		handleMyPageAccess(myPage, loginMember, model);
+		handleMyPageAccess(myPage, loginMember, sort, model);
 
 		return "member/myPage";
 	}
 
-	private void handleMyPageAccess(MyPage myPage, BeeMember loginMember, Model model) {
-		myPageService.increaseHitCount(myPage.getId(), loginMember); // 조회수 증가
-		myPageService.increaseVisitCount(myPage.getId(), loginMember); // 방문자 수 증가
 
+	private void handleMyPageAccess(MyPage myPage, BeeMember loginMember, String sort, Model model) {
+		myPageService.increaseHitCount(myPage.getId()); // 조회수 증가
+		myPageService.increaseVisitCount(myPage.getId(), loginMember); // 방문자 수 증가
+		
 		// 오늘 방문자 수 및 방문 기록 모델에 추가
 		model.addAttribute("todayVisitCount", myPageService.getTodayVisitCount(myPage.getId()));
 		List<MyPageVisit> visits = myPageService.getTodayMyPageVisits(myPage.getId()); // 오늘 방문 기록만 가져오도록 수정
@@ -118,7 +121,22 @@ public class MyPageController {
 	    boolean isOwner = loginMember != null && loginMember.getMyPage().getId().equals(myPage.getId());
 	    model.addAttribute("isOwner", isOwner); // isOwner 변수를 모델에 추가
 	    
-	    //리뷰 최신순
+	    List<Review> reviews;
+	    if ("visitDate".equals(sort)) {
+	        reviews = reviewRepository.findByBeeMemberOrderByVisitDateDesc(myPage.getBeeMember());
+	    } else {
+	        reviews = reviewRepository.findByBeeMemberOrderByCreateDateDesc(myPage.getBeeMember());
+	    }
+	    model.addAttribute("reviews", reviews);
+	    
+	    //평균 별점
+	    double averageRating = reviews.stream()
+	            .mapToInt(Review::getRating)
+	            .average()
+	            .orElse(0.0); 
+
+	    model.addAttribute("averageRating", averageRating); 
+		
 	    
 		
 	}
@@ -160,7 +178,7 @@ public class MyPageController {
 		MyPage myPage = loginMember.getMyPage(); // MyPage 객체를 가져옵니다.
 		model.addAttribute("myPage", myPage); // myPage를 모델에 추가합니다.
 		model.addAttribute("loginMember", loginMember);
-		handleMyPageAccess(myPage, loginMember, model);
+		 handleMyPageAccess(myPage, loginMember, "createDate", model); // "createDate" 또는 원하는 sort 값 전달
 		return "member/updateMyPage";
 	}
 
@@ -169,6 +187,7 @@ public class MyPageController {
 	public String updateMyPage(@AuthenticationPrincipal BeeMember loginMember,
 			@Validated @ModelAttribute("myPageUpdateForm") MyPageUpdateForm myPageUpdateForm,
 		    BindingResult result,
+		    @RequestParam(name = "file", required = false) MultipartFile file,
 			HttpServletRequest request, Model model) {
 
 		if (result.hasErrors()) {
@@ -181,7 +200,7 @@ public class MyPageController {
 		MyPage myPage = loginMember.getMyPage(); 
 	    myPage.setIntroduce(myPageUpdateForm.getIntroduce()); // MyPageUpdateForm에서 introduce 값 사용
 		    
-		 myPageRepository.save(myPage); // MyPage 객체 저장
+		myPageRepository.save(myPage); // MyPage 객체 저장
 		return "redirect:/member/myPage";
 	}
 

@@ -1,35 +1,47 @@
 package com.example.deliciousBee.controller.member;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.member.*;
 import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.repository.MyPageVisitRepository;
+import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.MyPageService;
 
 import com.example.deliciousBee.util.FileService;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+
+
 
 @Slf4j
 @Controller // 응답 html
@@ -37,11 +49,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("member")
 public class MemberController {
 
+	@Value("${spring.cloud.gcp.storage.bucket}")
+	private String bucketName;
+	
+	
 	private final BeeMemberService beeMemberService;
 	private final HttpSession session;
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final MyPageService myPageService;
 	private final MyPageVisitRepository myPageVisitRepository;
+	private final JwtTokenProvider jwtTokenProvider;
+
+
 
 	@Autowired
 	private FileService fileService; // fileStore 주입 받음.
@@ -53,18 +72,42 @@ public class MemberController {
 		return "member/joinForm"; // member 밑에 joinForm을 열어달라
 
 	}
+	//************회원가입 진행*******
+	@PostMapping("join")
+	public String join(
+			@Valid @ModelAttribute("member") BeeJoinForm beeJoinForm,
+			BindingResult result) throws IOException {
 
-	// *************회원가입***************
-	@PostMapping("join") // @ModelAttribute("member") : 담을때 "member"라고담아라, 안그러면 MemberJoinFOrm으로 담아서
-	// joinForm에서 못찾음
-	public String join(@Validated @ModelAttribute("member") BeeJoinForm beeJoinForm // 사용자가 회원가입할 정보 :member 로 날려옴,
-	// @Validated: member를 유효성체크 하겠다
-			, BindingResult result) throws IOException { // BindingResult result: try catch 처럼 예외 잡아줌 예외가발생했어도 프로그램계속되라
-		// @Validated를 쓸꺼면 BindingResult같이 써야됨
+		// 이메일 인증 확인
+		if (beeJoinForm.getToken() == null || beeJoinForm.getToken().isEmpty()) {
+			result.reject("tokenError", "인증 토큰이 필요합니다.");
+			return "/member/joinForm";
+		}
+
+		if (!jwtTokenProvider.validateToken(beeJoinForm.getToken())) {
+			result.reject("tokenError", "유효하지 않거나 만료된 인증 토큰입니다.");
+			return "/member/joinForm";
+		}
+
+		String emailFromToken = jwtTokenProvider.getEmailFromJWT(beeJoinForm.getToken());
+		Integer verificationCodeFromToken = jwtTokenProvider.getVerificationCodeFromJWT(beeJoinForm.getToken());
+
+		// 클라이언트에서 전달된 인증 번호와 토큰 내의 인증 번호를 비교
+		String userVerificationCode = beeJoinForm.getVerificationCode();
+		if (verificationCodeFromToken == null || !verificationCodeFromToken.toString().equals(userVerificationCode)) {
+			result.reject("verificationError", "인증 번호가 일치하지 않습니다.");
+			return "/member/joinForm";
+		}
+
+		// 이메일을 폼에서 가져온 이메일과 토큰에서 가져온 이메일이 일치하는지 확인
+		if (!emailFromToken.equals(beeJoinForm.getEmail())) {
+			result.reject("emailError", "이메일이 일치하지 않습니다.");
+			return "/member/joinForm";
+		}
+
+		// 유효성 검사 오류 처리
 		if (result.hasErrors()) {
-			// 예외 발생
-
-			return "/member/joinForm"; // 회원가입 폼으로 다시보낸다
+			return "/member/joinForm";
 		}
 
 		// Email 체크 *reject : 좀더 제한을 주고싶을때
@@ -81,27 +124,24 @@ public class MemberController {
 
 		// id 체크(안하면 동일한ID가있는데 다시 쓰면 덮어씌어버림)
 		BeeMember findMember = beeMemberService.findMemberById(beeMember.getMember_id());
-		log.info("findMember() 실행: {}", findMember);
+		System.out.println("findMember() 실행: " + findMember);
 
 		// id 중복
 		if (findMember != null) { // id가 있더라(중복)
-			result.reject("duplicate", "이이디가 중복되었습니다");
+			result.reject("duplicate", "아이디가 중복되었습니다");
 			return "/member/joinForm"; // 회원가입 성공후 list로 보내는데 url에 안남기고
 		}
 
 		// 회원가입 진행
-
-		beeMember.setRole(Role.USER);// 회원가입시 기본권한
+		beeMember.setRole(Role.USER); // 회원가입시 기본권한
 		beeMember.setPassword(passwordEncoder.encode(beeMember.getPassword())); // 비밀번호 암호화
 
 		// MyPage 객체 생성 및 저장
-		MyPage myPage = new MyPage();
-		myPage.setBeeMember(beeMember);
-		beeMember.setMyPage(myPage); // BeeMember에 MyPage 설정
+				MyPage myPage = new MyPage();
+				myPage.setBeeMember(beeMember);
+				beeMember.setMyPage(myPage); // BeeMember에 MyPage 설정
 
-		beeMemberService.saveMember(beeMember);
-		
-		
+				beeMemberService.saveMember(beeMember, null);
 
 		return "redirect:/"; // redirect:/url에 안남기고
 	}
@@ -117,21 +157,10 @@ public class MemberController {
 	// *******로그아웃 처리
 	@GetMapping("logout")
 	public String logout(HttpServletResponse response, HttpServletRequest request) {
-		// 쿠키 로그아웃
-		// 쿠키삭제는 새로운걸 덮어씌우는 방식밖에없다,-> 전과 같은 이름을 만들어서 값을 null로 대체
-//					Cookie cookie = new Cookie("cookieLoginId", null);
-//					cookie.setPath("/");
-//					cookie.setMaxAge(0); //쿠기 살아있는 시간 0-> 만들자마자 사라짐
-//					response.addCookie(cookie);
-
-		// 세션 로그아웃(2가지방법)
-		HttpSession session = request.getSession();
-		// 1.쿠키처럼 업는걸덮어씌우기
-		session.setAttribute("loginMember", null);
-		// 2.일괄적으로 세션값을 리셋
-		session.invalidate();
-
-		return "redirect:/"; // 보내도 쿠키가 살아있음
+		// JWT 기반 로그아웃은 클라이언트 측에서 로컬에 저장된 토큰을 삭제하는 것이 일반적
+		// 서버 측에서는 세션을 사용하지 않으므로, 세션 무효화는 불필요
+		// 클라이언트에서 로그아웃을 처리하도록 안내
+		return "redirect:/";
 	}
 
 	// ***************@@@@내정보 이동@@@********************
@@ -144,9 +173,10 @@ public class MemberController {
 	
 		// 데이터베이스에서 최신 회원 정보 가져오기
 	    BeeMember updatedMember = beeMemberService.findMemberById(loginMember.getMember_id());
-		model.addAttribute("loginMember", updatedMember); // LoginForm()의 빈객체를 담아 보내줌, 필드를 활용하려고
+	    model.addAttribute("loginMember", updatedMember); // LoginForm()의 빈객체를 담아 보내줌, 필드를 활용하려고
 		return "member/myInfo";
 	}
+
 
 	// **************@@@@내정보 수정페이지 이동@@@@**************
 	@GetMapping("updateMyInfo")
@@ -156,24 +186,29 @@ public class MemberController {
 		return "member/updateMyInfo";
 	}
 
-	// ***************@@@@내정보 수정페이지에서 수정@@@@*****************
+// ***************@@@@내정보 수정페이지에서 수정@@@@*****************
 	@PostMapping("updateMyInfo")
 	public String update(@AuthenticationPrincipal BeeMember loginMember,
 			@Validated @ModelAttribute BeeUpdateForm beeUpdateForm, BindingResult result,
-			RedirectAttributes redirectAttributes, HttpServletRequest request, Model model) {
+			RedirectAttributes redirectAttributes, HttpServletRequest request,
+			@RequestParam(name = "file", required = false) MultipartFile file,
+			Model model) {
 
 		// 회원 정보 업데이트
 		BeeMember updatedMember = BeeUpdateForm.toBeeMember(beeUpdateForm);
 		updatedMember.setMember_id(loginMember.getMember_id()); // 회원 ID 유지
 		updatedMember.setBirth(loginMember.getBirth());
 		updatedMember.setGender(loginMember.getGender());
-		beeMemberService.updateMember(updatedMember); // 서비스 호출하여 업데이트 수행
+		beeMemberService.updateMember(updatedMember, beeUpdateForm.isFileRemoved(), file); // 서비스 호출하여 업데이트 수행
 
 		// 세션 업데이트
-	    request.getSession().setAttribute("loginMember", beeMemberService.findMemberById(loginMember.getMember_id())); 
+		BeeMember updatedLoginMember = beeMemberService.findMemberById(loginMember.getMember_id()); // 업데이트된 회원 정보 가져오기
+	    request.getSession().setAttribute("loginMember", updatedLoginMember);
+	    redirectAttributes.addFlashAttribute("loginMember", updatedLoginMember); // 리다이렉트된 페이지에 업데이트된 회원 정보 전달
 	    	
 		return "redirect:/member/myInfo"; // 수정 완료 후 프로필 페이지로 리다이렉트
 	}
+
 
 	// *******************비밀번호 변경페이지 이동****************
 	@GetMapping("passwordChange")
@@ -187,24 +222,18 @@ public class MemberController {
 	// ********************비밀번호 변경페이지에서 변경***************
 	@PostMapping("passwordChange")
 	public String passwordChange(@AuthenticationPrincipal BeeMember loginMember,
-			@Validated @ModelAttribute PasswordChange passwordChange, BindingResult result,
-			RedirectAttributes redirectAttributes, HttpServletRequest request, Model model) {
+								 @Validated @ModelAttribute PasswordChange passwordChange, BindingResult result,
+								 RedirectAttributes redirectAttributes, HttpServletRequest request, Model model) {
+
 		if (result.hasErrors()) {
 			// 검증 오류가 있는 경우 수정 페이지로 돌아가서 오류 메시지를 표시
 			model.addAttribute("loginMember", loginMember);
-			return "member/updateMyInfo"; // 수정 페이지로 돌아가기
+			return "member/passwordChange";
 		}
 
 		// 비밀번호 확인(바꿀 비밀번호와 비밀번호 확인이 같은지)
 		if (!passwordChange.getPassword().equals(passwordChange.getConfirmPassword())) {
 			result.rejectValue("confirmPassword", "error.confirmPassword", "비밀번호가 서로 다릅니다.");
-			model.addAttribute("loginMember", loginMember);
-			return "member/passwordChange";
-		}
-
-		// 비밀번호 길이 검증
-		if (passwordChange.getPassword().length() < 4 || passwordChange.getPassword().length() > 20) {
-			result.rejectValue("password", "error.passwordLength", "비밀번호는 4~20자여야 합니다.");
 			model.addAttribute("loginMember", loginMember);
 			return "member/passwordChange";
 		}
@@ -222,10 +251,8 @@ public class MemberController {
 
 		beeMemberService.updatePassword(updatedMember);
 
-		// 세션에서 현재 사용자 정보를 업데이트 (비밀번호만 변경되므로 ID는 동일)
-		HttpSession session = request.getSession();
-		BeeMember updatedUser = beeMemberService.findMemberById(loginMember.getMember_id());
-		session.setAttribute("loginMember", updatedUser);
+		// JWT 기반 인증에서는 토큰을 갱신할 필요가 있음
+		// 클라이언트가 재로그인하도록 유도하거나 JWT를 갱신하는 방식으로 처리
 
 		return "redirect:/member/myInfo";
 	}
@@ -265,10 +292,10 @@ public class MemberController {
 	}
 
 	// *************************회원탈퇴하기*****************************
+// *************************회원탈퇴하기*****************************
 	@PostMapping("deleteMember")
 	public String deleteMember(@AuthenticationPrincipal BeeMember loginMember,
-			@RequestParam("password") String password, HttpServletRequest request,
-			RedirectAttributes redirectAttributes) {
+							   @RequestParam("password") String password, RedirectAttributes redirectAttributes) {
 
 		// 비밀번호 확인
 		if (!passwordEncoder.matches(password, loginMember.getPassword())) {
@@ -277,20 +304,61 @@ public class MemberController {
 		}
 
 		// 회원 삭제 전에 관련된 방문 기록 삭제
-	    myPageVisitRepository.deleteByVisitor(loginMember);
-		
+		myPageVisitRepository.deleteByVisitor(loginMember);
+
 		// 회원 삭제
 		beeMemberService.deleteMember(loginMember.getMember_id());
 
-		// 세션 무효화
-		HttpSession session = request.getSession(false);
-		if (session != null) {
-			session.invalidate();
-		}
+		// 세션 무효화 대신 클라이언트 측에서 토큰 삭제 안내
+		// 클라이언트 측에서 로컬 스토리지의 JWT 토큰 삭제 유도
 
 		return "redirect:/";
 	}
+	
+	//이미지 출력
+	@GetMapping("/display")
+	@ResponseBody
+	public ResponseEntity<Resource> display(@RequestParam("filename") String filename) {
+	    try {
+	        // Google Cloud Storage 키 파일 설정
+	        String keyFileName = "deliciousbee-acb114448e3c.json"; // GCP 서비스 계정 키 파일명
+	        InputStream keyFile = getClass().getResourceAsStream("/" + keyFileName);
 
+	        // Google Cloud Storage 클라이언트 생성
+	        Storage storage = StorageOptions.newBuilder().setCredentials(GoogleCredentials.fromStream(keyFile)).build()
+	                .getService();
+
+	        // 파일을 GCS에서 가져오기
+	        Blob blob = storage.get(bucketName, filename);
+
+	        if (blob == null || !blob.exists()) {
+	            // 파일을 찾을 수 없는 경우 기본 이미지를 반환하도록 수정
+	            InputStream defaultImageStream = getClass().getResourceAsStream("/myPageImage/no-profil.png"); 
+	            if (defaultImageStream != null) {
+	                Resource defaultResource = new ByteArrayResource(defaultImageStream.readAllBytes());
+	                HttpHeaders defaultHeaders = new HttpHeaders();
+	                defaultHeaders.add("Content-Type", "image/png"); // 기본 이미지의 Content-Type에 맞게 수정
+	                return new ResponseEntity<>(defaultResource, defaultHeaders, HttpStatus.OK);
+	            } else {
+	                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	            }
+	        }
+
+	        // Blob의 데이터를 ByteArrayResource로 변환
+	        Resource resource = new ByteArrayResource(blob.getContent());
+
+	        // 헤더 설정
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.add("Content-Type", blob.getContentType());
+
+	        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
+	
 
 
 }

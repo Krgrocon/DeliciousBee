@@ -8,6 +8,7 @@ import com.example.deliciousBee.model.member.BeeMember;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,9 +19,9 @@ public class BeeUpdateForm {
 
 	private String member_id;
 
+	@NotBlank //빈, null 허용안함
 	private String nickname;     //닉네임
 
-	
 
 	private LocalDate birth;        //생년월일
 	
@@ -30,6 +31,8 @@ public class BeeUpdateForm {
 
 	private NationalType national;
 
+	private boolean fileRemoved;
+	
 	public static BeeMember toBeeMember(BeeUpdateForm beeUpdateForm) {
 		BeeMember member = new BeeMember();
 		member.setMember_id(beeUpdateForm.getMember_id()); 

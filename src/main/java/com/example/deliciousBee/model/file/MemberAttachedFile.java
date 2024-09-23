@@ -1,17 +1,16 @@
 package com.example.deliciousBee.model.file;
 
 
-import com.example.deliciousBee.model.mypage.MyPage;
+import com.example.deliciousBee.model.member.BeeMember;
 
-import com.example.deliciousBee.model.review.Review;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,18 +21,18 @@ public class MemberAttachedFile {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long MemberAttachedFile_id;   //첨부파일 아이디
+	private Long profilImage_id;   //첨부파일 아이디
 
 	
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="myPage_id")
-	private MyPage myPage;
-
+	@OneToOne
+	@JoinColumn(name="beeMember_id")
+	@JsonBackReference
+	private BeeMember beeMember;
+	
 	private String original_filename;  //원본 파일이름
 	private String saved_filename;     //저장할 파일이름
 	private Long file_size;            //파일용량
 	
-
 	public MemberAttachedFile(String original_filename, String saved_filename, Long file_size) {
 		this.original_filename = original_filename;
 		this.saved_filename = saved_filename;

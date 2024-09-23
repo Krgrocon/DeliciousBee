@@ -1,75 +1,90 @@
 package com.example.deliciousBee.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.file.MemberAttachedFile;
-import com.example.deliciousBee.model.mypage.MyPage;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 
 
-@Component
+@Service
 public class MemberFileService {
-    @Value("${file.upload.path}")
-    private String uploadPath;
+	@Value("${spring.cloud.gcp.storage.bucket}")
+    private String bucketName;
 
-    /**
-     * 업로드 된 파일을 지정된 경로에 저장하고, 저장된 파일명을 리턴
-     * @param mfile 업로드 된 파일
-     * @param path 저장한 경로
-     * @return 저장된 파일명
-     */
-    
-    
-    public MemberAttachedFile saveFile(MultipartFile mfile) {
-        if (mfile == null || mfile.isEmpty() || mfile.getSize() == 0) {
+    private final ResourceLoader resourceLoader;
+
+    public MemberFileService(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
+    public MemberAttachedFile saveFile(MultipartFile mfile) throws IOException {
+        if (mfile == null || mfile.isEmpty()) {
             return null;
         }
 
-        File path = new File(uploadPath + "/myPageImage");
-        if (!path.isDirectory()) {
-            path.mkdirs();
-        }
+        // Google Cloud Storage 키 파일 설정
+        String keyFileName = "deliciousbee-acb114448e3c.json";  // GCP 서비스 계정 키 파일명
+        Resource resource = resourceLoader.getResource("classpath:" + keyFileName);
+        InputStream keyFile = resource.getInputStream();
 
+        // Google Cloud Storage 클라이언트 생성
+        Storage storage = StorageOptions.newBuilder()
+                .setCredentials(GoogleCredentials.fromStream(keyFile))
+                .build()
+                .getService();
+
+        // 원본 파일명
         String originalFilename = mfile.getOriginalFilename();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        String savedFilename = sdf.format(new Date());
 
-        String ext;
-        int lastIndex = originalFilename.lastIndexOf(".");
-        ext = (lastIndex == -1) ? "" : "." + originalFilename.substring(lastIndex + 1);
+        // GCS에 저장할 고유 파일명 생성
+        String savedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
 
-        File serverFile = null;
-        while (true) {
-            serverFile = new File(path, savedFilename + ext);
-            if (!serverFile.isFile()) break;
-            savedFilename = savedFilename + new Date().getTime();
-        }
+        // GCS에 파일 업로드
+        BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, savedFilename)
+                .setContentType(mfile.getContentType())
+                .build();
 
+        Blob blob = storage.create(blobInfo, mfile.getInputStream());
+
+        // 업로드된 파일의 정보를 AttachedFile 객체로 반환
+        return new MemberAttachedFile(originalFilename, savedFilename, mfile.getSize());
+    }
+
+    public boolean deleteFile(String savedFilename) {
         try {
-            mfile.transferTo(serverFile);
-        } catch (Exception e) {
+            // Google Cloud Storage 클라이언트 생성 (같은 방식으로 생성)
+            String keyFileName = "deliciousbee-acb114448e3c.json";  // GCP 서비스 계정 키 파일명
+            Resource resource = resourceLoader.getResource("classpath:" + keyFileName);
+            InputStream keyFile = resource.getInputStream();
+
+            Storage storage = StorageOptions.newBuilder()
+                    .setCredentials(GoogleCredentials.fromStream(keyFile))
+                    .build()
+                    .getService();
+
+            // GCS에서 파일 삭제
+            boolean deleted = storage.delete(bucketName, savedFilename);
+            return deleted;
+
+        } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            return false;
         }
-
-        return new MemberAttachedFile(originalFilename, savedFilename + ext, mfile.getSize());
     }
-
-    /**
-     * 서버에 저장된 파일의 전체 경로를 전달받아, 해당 파일을 삭제
-     * @param fullpath 삭제할 파일의 경로
-     * @return 삭제 여부
-     */
-    public boolean deleteFile(String fullpath) {
-        // 파일 삭제 로직 추가
-        File file = new File(fullpath);
-        return file.exists() && file.delete();
-    }
-
 }
+

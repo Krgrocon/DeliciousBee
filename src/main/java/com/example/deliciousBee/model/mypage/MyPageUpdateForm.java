@@ -21,10 +21,6 @@ public class MyPageUpdateForm {
 
 	private String introduce;
 
-	private MemberAttachedFile mainImage;
-	
-	private MemberAttachedFile profileImage;
-
 	private boolean fileRemoved; // 기본값 false 삭제됬으면 ture 반환, boolea의 getter는 get이아니라 is
 
 	private Long hit;
@@ -37,14 +33,8 @@ public class MyPageUpdateForm {
 		myPage.setId(myPageUpdateForm.getMyPage_id());
 		myPage.setIntroduce(myPageUpdateForm.getIntroduce());
 		myPage.setBeeMember(myPageUpdateForm.getBeeMember());
-		myPage.setMainImage(myPageUpdateForm.getMainImage());
 
 		return myPage;
 	}
-	public static BeeMember toBeeMember(MyPageUpdateForm myPageUpdateForm) {
-		BeeMember beeMember = new BeeMember();
-		
-		beeMember.setProfileImage(myPageUpdateForm.getProfileImage());
-		return beeMember;
-	}
+	
 }

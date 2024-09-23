@@ -3,6 +3,7 @@ package com.example.deliciousBee.service.review;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -237,5 +238,10 @@ public class ReviewService {
 	public Page<Review> findAll(Pageable pageable) {
 		return reviewRepository.findAll(pageable);
 	}
+	
+	
+
+
+
 
 }

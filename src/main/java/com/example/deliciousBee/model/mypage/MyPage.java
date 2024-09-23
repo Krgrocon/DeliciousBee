@@ -3,7 +3,7 @@ package com.example.deliciousBee.model.mypage;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.example.deliciousBee.model.file.MemberAttachedFile;
+import com.example.deliciousBee.model.file.MyPageAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 
 import jakarta.persistence.CascadeType;
@@ -37,9 +37,9 @@ public class MyPage {
 	private String introduce;
 
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "main_image_id") // 외래 키 컬럼 이름 지정
-	private MemberAttachedFile mainImage;
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "mainImage_id")
+	private MyPageAttachedFile mainImage;
 
 
 	private Long hit = 0L;  // 조회수
@@ -60,7 +60,6 @@ public class MyPage {
 		myPageUpdateForm.setMyPage_id(myPage.getId());
 		myPageUpdateForm.setIntroduce(myPage.getIntroduce());
 		myPageUpdateForm.setBeeMember(myPage.getBeeMember());
-		myPageUpdateForm.setMainImage(myPage.getMainImage());
 
 		return myPageUpdateForm;
 

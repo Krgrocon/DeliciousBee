@@ -1,5 +1,7 @@
 package com.example.deliciousBee.controller.member;
 
+import com.example.deliciousBee.security.jwt.JwtTokenProvider;
+import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,55 +16,67 @@ import java.util.HashMap;
 public class MaliController {
 
     private final MailService mailService;
-    private int number; // 이메일 인증 숫자를 저장하는 변수
+    private final JwtTokenProvider jwtTokenProvider;
+    private final BeeMemberService beeMemberService;
 
-//    // 인증 이메일 전송
-//    @PostMapping("/mailSend")
-//    public HashMap<String, Object> mailSend(String mail) {
-//        HashMap<String, Object> map = new HashMap<>();
-//        System.out.println("mailSend");
-//        try {
-//            number = mailService.sendMail(mail);
-//            String num = String.valueOf(number);
-//
-//            System.out.println("mailSend");
-//            map.put("success", Boolean.TRUE);
-//            map.put("number", num);
-//            System.out.println("mailSend");
-//        } catch (Exception e) {
-//            map.put("success", Boolean.FALSE);
-//            map.put("error", e.getMessage());
-//        }
-//
-//        return map;
-//    }
-
+    // 인증 이메일 전송
     @PostMapping("/mailSend")
-    public ResponseEntity<?> mailSend(String email) {
+    @ResponseBody
+    public ResponseEntity<?> mailSend(@RequestParam("email") String email) {
         HashMap<String, Object> map = new HashMap<>();
-        System.out.println("mailSend");
         try {
-            number = mailService.sendMail(email);
-            String num = String.valueOf(number);
+            // 이메일 중복 확인
+            if (beeMemberService.existsByEmail(email)) {
+                map.put("success", false);
+                map.put("error", "이미 등록된 이메일입니다.");
+                return ResponseEntity.badRequest().body(map);
+            }
 
-            System.out.println("mailSend");
-            map.put("success", Boolean.TRUE);
-            map.put("number", num);
-            System.out.println("mailSend");
-            return ResponseEntity.ok(map); // ResponseEntity와 함께 map 반환
+            int verificationCode = mailService.generateVerificationCode();
+            mailService.sendMail(email, verificationCode);
+
+            // JWT 토큰 생성
+            String token = jwtTokenProvider.generateEmailVerificationToken(email, verificationCode);
+
+            map.put("success", true);
+            map.put("token", token);
+            return ResponseEntity.ok(map);
         } catch (Exception e) {
-            map.put("success", Boolean.FALSE);
+            map.put("success", false);
             map.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(map); // 오류 응답 반환
+            return ResponseEntity.badRequest().body(map);
         }
     }
 
-    // 인증번호 일치여부 확인
-    @GetMapping("/mailCheck")
-    public ResponseEntity<?> mailCheck(@RequestParam String userNumber) {
+    // 인증번호 일치 여부 확인
+    @PostMapping("/mailCheck")
+    @ResponseBody
+    public ResponseEntity<?> mailCheck(@RequestParam("verificationCode") String verificationCode, @RequestParam("token") String token) {
+        HashMap<String, Object> map = new HashMap<>();
+        try {
+            if (!jwtTokenProvider.validateToken(token)) {
+                map.put("success", false);
+                map.put("error", "유효하지 않거나 만료된 토큰입니다.");
+                return ResponseEntity.badRequest().body(map);
+            }
 
-        boolean isMatch = userNumber.equals(String.valueOf(number));
+            Integer tokenVerificationCode = jwtTokenProvider.getVerificationCodeFromJWT(token);
+            String email = jwtTokenProvider.getEmailFromJWT(token);
 
-        return ResponseEntity.ok(isMatch);
+            if (tokenVerificationCode != null && tokenVerificationCode.toString().equals(verificationCode)) {
+                map.put("success", true);
+                map.put("email", email);
+                return ResponseEntity.ok(map);
+            } else {
+                map.put("success", false);
+                map.put("error", "인증 번호가 일치하지 않습니다.");
+                return ResponseEntity.badRequest().body(map);
+            }
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(map);
+        }
     }
+
 }

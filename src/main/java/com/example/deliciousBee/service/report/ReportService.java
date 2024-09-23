@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.example.deliciousBee.dto.report.ReportDto;
+import com.example.deliciousBee.repository.FileRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.example.deliciousBee.model.report.Report;
@@ -22,7 +24,7 @@ public class ReportService {
 	
 	private final ReportRepository reportRepository;
 	private final ReviewRepository reviewRepository;
-
+	private final FileRepository fileRepository;
 
 
 	public Optional<Report> getReportById(Long reportId) {
@@ -74,8 +76,39 @@ public class ReportService {
 
 		return dto;
 	}
-
+	@Transactional
 	public void deleteReport(Long reportId) {
 		reportRepository.deleteById(reportId);
+	}
+
+
+	// 리포트 승인 (삭제) 메서드로 변경
+	@Transactional
+	public void approveReport(Long reportId) throws Exception {
+		Report report = reportRepository.findById(reportId)
+				.orElseThrow(() -> new Exception("리포트를 찾을 수 없습니다."));
+		reportRepository.delete(report);
+	}
+
+	// 리뷰 삭제 시 연관된 모든 리포트도 함께 삭제
+	@Transactional
+	public void deleteReview(Long reviewId) throws Exception {
+		Review review = reviewRepository.findById(reviewId)
+				.orElseThrow(() -> new Exception("리뷰를 찾을 수 없습니다."));
+
+		// 해당 리뷰와 연관된 모든 리포트 조회
+		List<Report> reports = reportRepository.findByReviewId(reviewId);
+		reportRepository.deleteAll(reports);
+
+		try {
+			if (reportRepository.existsById(reviewId)) {
+				reportRepository.deleteById(reviewId);
+			}
+			fileRepository.deleteByReviewId(reviewId);
+			reviewRepository.deleteById(reviewId);
+
+		} catch (Exception e) {
+			log.error("Error deleting review with id: " + reviewId, e);
+		}
 	}
 }

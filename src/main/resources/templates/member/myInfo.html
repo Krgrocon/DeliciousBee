@@ -3,56 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="/css/myInfo.css">
-<title>마이 페이지</title>
+<title>마이 정보</title>
 </head>
 <body>
- <div class="header">
-        <a href="/" class="bee-image">
-            <img src="/image/bee.jpg" class="home-image" alt="메인 페이지로 이동">
-        </a>
- </div>
- <div class=container>
- 		<nav class="sidebar">
-            <ul>
- 				<li><a href="/member/myPage">마이 페이지</a></li>
-                <li><a href="/member/myInfo" class ="active">내 정보</a></li>
-                <li><a href="/member/myList">내가 쓴글</a></li>
-                <li><a href="/member/myReply">내가 쓴 댓글</a></li>
-                <li><a href="/member/deleteMember">회원탈퇴</a></li>
- 			</ul>
-        </nav>
-        <div class="main">
-        	<h1>내 정보</h1>
-        	
-            <div class="info">
-                <h4>닉네임</h4>
-                <div class="name" th:text="${loginMember.nickname}"></div>
-            </div>
-            <div class="info">
-                <h4>아이디</h4>
-                <div class="id" th:text="${loginMember.member_id}"></div>
-            </div>
-            <div class="info">
-                <h4>이메일</h4>
-                <div class="email" th:text="${loginMember.email}"></div>
-            </div>
-            <div class="info">
-                <h4>생년월일</h4>
-                <div class="birth" th:text="${loginMember.birth}"></div>
-            </div>
-            <div class="info">
-                <h4>성별</h4>
-                <div class="gender" th:text="${loginMember.gender}"></div>
-            </div>
-            <div class="info">
-                <h4>내/외국인</h4>
-                <div class="national" th:text="${loginMember.national}"></div>
-            </div>
-            
-        	 <form action="/member/updateMyInfo">
-                    <button onclick="location.href='/member/updateMyInfo'" >수정하기</button>
-             </form>
-        </div>
-</div>
+	<div class="header">
+		<a href="/" class="bee-image"> <img src="/image/bee.jpg"
+			class="home-image" alt="메인 페이지로 이동">
+		</a>
+	</div>
+	<div class=container>
+		<nav class="sidebar">
+			<ul>
+				<li><a href="/member/myPage">마이 페이지</a></li>
+				<li><a href="/member/myInfo" class="active">내 정보</a></li>
+				<li><a href="/member/myList">내가 쓴글</a></li>
+				<li><a href="/member/myReply">내가 쓴 댓글</a></li>
+				<li><a href="/member/deleteMember">회원탈퇴</a></li>
+			</ul>
+		</nav>
+		<div class="main">
+
+			<h1>내 정보</h1>
+			<div class="profile-image-label">
+				 <img th:if="${loginMember.profileImage != null}"
+         th:src="@{'/member/display?filename=' + ${loginMember.profileImage.saved_filename}}"
+         alt="프로필 이미지" class="profile-photo"> <img
+					th:unless="${loginMember.profileImage != null}"
+					src="/myPageImage/no-profil.png" alt="기본 프로필 이미지"
+					class="profile-photo">
+			</div>
+			<div class="info">
+				<h4>닉네임</h4>
+				<div class="name" th:text="${loginMember.nickname}"></div>
+			</div>
+			<div class="info">
+				<h4>아이디</h4>
+				<div class="id" th:text="${loginMember.member_id}"></div>
+			</div>
+			<div class="info">
+				<h4>이메일</h4>
+				<div class="email" th:text="${loginMember.email}"></div>
+			</div>
+			<div class="info">
+				<h4>생년월일</h4>
+				<div class="birth" th:text="${loginMember.birth}"></div>
+			</div>
+			<div class="info">
+				<h4>성별</h4>
+				<div class="gender" th:text="${loginMember.gender}"></div>
+			</div>
+			<div class="info">
+				<h4>내/외국인</h4>
+				<div class="national" th:text="${loginMember.national}"></div>
+			</div>
+
+			<form action="/member/updateMyInfo">
+				<button onclick="location.href='/member/updateMyInfo'">수정하기</button>
+			</form>
+		</div>
+	</div>
 </body>
 </html>

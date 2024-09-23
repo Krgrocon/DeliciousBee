@@ -33,6 +33,10 @@ public class BeeJoinForm {
 
 	private NationalType national;
 
+	// 인증 번호와 토큰 추가
+	private String verificationCode;
+	private String token;
+
 	//유효성검사다하면 Member객체로 변환해서 리턴
 	public static BeeMember toMember(BeeJoinForm BeeJoinForm) {
 		//MemberJoinForm 을 Member 객체로 변환하기
